@@ -1,0 +1,7 @@
+companies.csv is the proper reference over which we have to build
+for each stock we want categorisation like categories.png
+
+
+i used html_builder.py and templates as a script to build the site/ folder which you can run as a python server to take an idea on what my aim was to build using this
+right now you may treat it independent of each stock page.
+later, we will add backreference from each stock to its category like in the attached photo

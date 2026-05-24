@@ -1,0 +1,14 @@
+build template for one page of any listed stock, say RELIANCE
+use https://www.screener.in/company/RELIANCE/consolidated/ as reference
+
+hardcore the price like price.png and simply add togglable button for nse/bse with slightly different values.
+also, add conditional coloring over price changes (green +, red -)
+
+
+
+charts.png (TradingView) is a sample reference to chart views.
+plot the charts over close value only, no need to have full ohlcv
+on hover, show volume of that respective date as well (from the .csv)
+include 1 day, 1 week, 1 month, 6month, YTD chart buttons to toggle over different time frames.
+
+

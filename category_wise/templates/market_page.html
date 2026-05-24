@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$title</title>
+  <meta name="description" content="$meta_description">
+  <link rel="stylesheet" href="$asset_href">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="$market_index_href">Industry Market</a>
+      <div class="nav-links">
+        $nav_links
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        $breadcrumb
+      </ol>
+    </nav>
+
+    <section class="card">
+      <div class="hero">
+        <div>
+          <h1>$heading</h1>
+          <div class="sub">$page_info</div>
+        </div>
+        $child_filter
+      </div>
+
+      <div class="toolbar">
+        <div class="path-label">$breadcrumb_text</div>
+      </div>
+
+      $table_section
+
+      $pagination
+    </section>
+  </main>
+
+  <footer>
+    Static market pages generated from industry codes and Screener company tables.
+  </footer>
+</body>
+</html>
