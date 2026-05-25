@@ -1,1 +1,8 @@
 category_wise/site/
+.capy/
+src/app/preview/
+.next/
+out/
+node_modules/
+.env*
+.DS_Store

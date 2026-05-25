@@ -1,0 +1,94 @@
+"use client";
+
+import { BarChart3, ChevronDown, Circle } from "lucide-react";
+import { useState } from "react";
+
+import { formatIndianNumber, marketHref } from "@/lib/data/format";
+import type { Company, PricePoint, Stock } from "@/lib/data/types";
+
+export function StockHeader({
+  stock,
+  company,
+  prices
+}: {
+  stock: Stock;
+  company?: Company;
+  prices: PricePoint[];
+}) {
+  const [exchange, setExchange] = useState<"NSE" | "BSE">("NSE");
+
+  const latest = prices[prices.length - 1];
+  const previous = prices[prices.length - 2];
+  const nsePrice = latest?.close ?? 0;
+  const nseChange = latest && previous ? latest.close - previous.close : 0;
+  const nsePct = previous ? (nseChange / previous.close) * 100 : 0;
+  const price = exchange === "NSE" ? nsePrice : nsePrice + 0.45;
+  const change = exchange === "NSE" ? nseChange : nseChange + 0.05;
+  const pct = exchange === "NSE" ? nsePct : nsePct + 0.02;
+  const positive = change >= 0;
+
+  const industryHref = company ? marketHref(company.leaf.code ? [
+    company.sector.code,
+    company.group.code,
+    company.industry.code,
+    company.leaf.code
+  ] : []) : "/market/";
+
+  return (
+    <section className="stock-head">
+      <div className="stock-logo" aria-hidden="true">
+        <span>{stock.ticker.slice(0, 1)}</span>
+      </div>
+      <div className="stock-quote">
+        <h1>{stock.overview.companyName}</h1>
+        <div className="quote-controls">
+          <div className="ticker-select">
+            <span>{stock.ticker}</span>
+            <span className="quote-dot">·</span>
+            <span className="exchange-icon" aria-hidden="true">
+              <BarChart3 size={18} />
+            </span>
+            <span>{exchange}</span>
+            <span className="exchange-mini" aria-hidden="true">
+              <BarChart3 size={16} />
+            </span>
+            <ChevronDown size={18} aria-hidden="true" />
+          </div>
+          {company ? (
+            <a className="industry-chip" href={industryHref}>
+              {company.leaf.name}
+            </a>
+          ) : null}
+          <span className="market-status" title="Market status placeholder">
+            <Circle size={12} fill="currentColor" aria-hidden="true" />
+          </span>
+        </div>
+        <div className="price-line">
+          <span className="price-value">{formatIndianNumber(price, { dp: 2 })}</span>
+          <span className="price-currency">INR</span>
+          <span className={`numeric ${positive ? "up" : "down"}`}>
+            {positive ? "+" : ""}
+            {formatIndianNumber(change, { dp: 2 })} {positive ? "+" : ""}
+            {formatIndianNumber(pct, { dp: 2 })}%
+          </span>
+        </div>
+        <p className="quote-time">
+          {latest ? `As of ${latest.date} · ${exchange}` : `As of latest · ${exchange}`}
+        </p>
+      </div>
+
+      <div className="exchange-toggle quote-exchange" aria-label="Exchange">
+        {(["NSE", "BSE"] as const).map((candidate) => (
+          <button
+            className={candidate === exchange ? "active" : ""}
+            key={candidate}
+            type="button"
+            onClick={() => setExchange(candidate)}
+          >
+            {candidate}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
