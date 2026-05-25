@@ -522,10 +522,6 @@ tbody tr {
   cursor: pointer;
 }
 
-tbody tr.is-unavailable {
-  cursor: default;
-}
-
 tbody tr:nth-child(even) td {
   background: rgba(238, 243, 237, 0.45);
 }
@@ -786,6 +782,48 @@ tbody tr:hover td {
   font-weight: 800;
 }
 
+.listing-data-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.listing-data-row {
+  display: grid;
+  min-height: 78px;
+  align-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcf8;
+  padding: 12px;
+}
+
+.listing-data-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 15px;
+}
+
+.listing-data-note {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding: 14px 16px;
+}
+
+.listing-data-note p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.listing-data-note a {
+  width: fit-content;
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
 .chart-surface {
   position: relative;
   overflow: hidden;
@@ -908,12 +946,16 @@ tbody tr:hover td {
   list-style: none;
 }
 
-.peer-list div {
+.peer-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   border-top: 1px solid var(--line);
   padding-top: 10px;
+}
+
+.peer-row:hover {
+  color: var(--accent-2);
 }
 
 .peer-name {
@@ -1375,6 +1417,7 @@ tbody tr:hover td {
 @media (max-width: 1000px) {
   .sector-grid,
   .rails-grid,
+  .listing-data-grid,
   .metric-grid,
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1434,6 +1477,7 @@ tbody tr:hover td {
 
   .sector-grid,
   .rails-grid,
+  .listing-data-grid,
   .metric-grid,
   .stat-grid,
   .pros-cons {

@@ -9,6 +9,10 @@ import type { Company, IndustryNode } from "./types";
 const COMPANY_FILE = path.join(process.cwd(), "category_wise", "companies.csv");
 let rawCache: Company[] | null = null;
 let dedupedCache: Company[] | null = null;
+let indexesCache: {
+  byCode: Map<string, Company>;
+  byNodeCode: Map<string, Company[]>;
+} | null = null;
 
 function normalizeCompany(row: Record<string, string>): Company {
   return {
@@ -89,6 +93,38 @@ export function getCompanies(): Company[] {
   return dedupedCache;
 }
 
+function getCompanyIndexes() {
+  if (indexesCache) {
+    return indexesCache;
+  }
+
+  const byCode = new Map<string, Company>();
+  const byNodeCode = new Map<string, Company[]>();
+
+  getCompanies().forEach((company) => {
+    const code = company.code.toUpperCase();
+    const existing = byCode.get(code);
+    if (!existing || (company.marketCapCr ?? 0) > (existing.marketCapCr ?? 0)) {
+      byCode.set(code, company);
+    }
+
+    [company.sector.code, company.group.code, company.industry.code, company.leaf.code].forEach(
+      (nodeCode) => {
+        if (!nodeCode) {
+          return;
+        }
+
+        const nodeCompanies = byNodeCode.get(nodeCode) ?? [];
+        nodeCompanies.push(company);
+        byNodeCode.set(nodeCode, nodeCompanies);
+      }
+    );
+  });
+
+  indexesCache = { byCode, byNodeCode };
+  return indexesCache;
+}
+
 function attachCompanyCounts(companies: Company[]) {
   const { nodes } = getIndustryData();
   nodes.forEach((node) => {
@@ -108,25 +144,11 @@ function attachCompanyCounts(companies: Company[]) {
 }
 
 export function getCompaniesForNode(node: IndustryNode): Company[] {
-  return getCompanies().filter((company) => {
-    if (node.depth === 1) {
-      return company.sector.code === node.code;
-    }
-    if (node.depth === 2) {
-      return company.group.code === node.code;
-    }
-    if (node.depth === 3) {
-      return company.industry.code === node.code;
-    }
-    return company.leaf.code === node.code;
-  });
+  return getCompanyIndexes().byNodeCode.get(node.code) ?? [];
 }
 
 export function getCompanyByCode(code: string): Company | undefined {
-  const normalized = code.toUpperCase();
-  return getCompanies()
-    .filter((company) => company.code.toUpperCase() === normalized)
-    .sort((a, b) => (b.marketCapCr ?? 0) - (a.marketCapCr ?? 0))[0];
+  return getCompanyIndexes().byCode.get(code.toUpperCase());
 }
 
 export function topCompanies(

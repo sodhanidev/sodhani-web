@@ -8,14 +8,11 @@ import { companyHref } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
 export function LandingSearch({
-  companies,
-  availableStockCodes
+  companies
 }: {
   companies: Company[];
-  availableStockCodes: string[];
 }) {
   const [query, setQuery] = useState("");
-  const available = useMemo(() => new Set(availableStockCodes), [availableStockCodes]);
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -33,7 +30,7 @@ export function LandingSearch({
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const first = results[0];
-    if (first && available.has(first.code)) {
+    if (first) {
       window.location.href = companyHref(first.code);
       return;
     }
@@ -58,18 +55,16 @@ export function LandingSearch({
       </div>
       {results.length ? (
         <div className="landing-results">
-          {results.map((company) => {
-            const href = available.has(company.code)
-              ? companyHref(company.code)
-              : `/search/?q=${encodeURIComponent(company.name)}`;
-
-            return (
-              <Link className="landing-result" href={href} key={`${company.code}-${company.leaf.code}`}>
-                <span>{company.name}</span>
-                <span>{company.code}</span>
-              </Link>
-            );
-          })}
+          {results.map((company) => (
+            <Link
+              className="landing-result"
+              href={companyHref(company.code)}
+              key={`${company.code}-${company.leaf.code}`}
+            >
+              <span>{company.name}</span>
+              <span>{company.code}</span>
+            </Link>
+          ))}
         </div>
       ) : null}
     </form>

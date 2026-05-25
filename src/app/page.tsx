@@ -4,7 +4,7 @@ import { ChevronDown, Heart, Laptop, Moon, Sun, UserRound, Zap } from "lucide-re
 
 import { LandingSearch } from "@/components/LandingSearch";
 import { getCompanies } from "@/lib/data/companies";
-import { getAvailableStockCodes } from "@/lib/data/stocks";
+import { companyHref } from "@/lib/data/format";
 
 const exampleCompanies = [
   "Avantel",
@@ -22,7 +22,16 @@ const exampleCompanies = [
 
 export default function HomePage() {
   const companies = getCompanies();
-  const availableStockCodes = getAvailableStockCodes();
+  const examples = exampleCompanies.map((name) => {
+    const match = companies.find((company) =>
+      `${company.name} ${company.code}`.toLowerCase().includes(name.toLowerCase())
+    );
+
+    return {
+      name,
+      href: match ? companyHref(match.code) : `/search/?q=${encodeURIComponent(name)}`
+    };
+  });
 
   return (
     <main className="landing-page">
@@ -59,14 +68,14 @@ export default function HomePage() {
             <span>sodhani</span>
           </h1>
           <p>Stock analysis and screening tool for investors in India.</p>
-          <LandingSearch availableStockCodes={availableStockCodes} companies={companies} />
+          <LandingSearch companies={companies} />
 
           <div className="landing-examples">
             <span>Or analyse:</span>
             <div>
-              {exampleCompanies.map((name) => (
-                <Link href={`/search/?q=${encodeURIComponent(name)}`} key={name}>
-                  {name}
+              {examples.map((example) => (
+                <Link href={example.href} key={example.name}>
+                  {example.name}
                 </Link>
               ))}
             </div>

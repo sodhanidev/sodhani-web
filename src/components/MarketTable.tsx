@@ -58,12 +58,10 @@ function valueClass(key: SortKey, company: Company): string {
 
 export function MarketTable({
   companies,
-  availableStockCodes,
   initialPage = 1,
   pageSize = 25
 }: {
   companies: Company[];
-  availableStockCodes: string[];
   initialPage?: number;
   pageSize?: number;
 }) {
@@ -95,7 +93,6 @@ export function MarketTable({
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * pageSize;
   const pageRows = filtered.slice(start, start + pageSize);
-  const available = useMemo(() => new Set(availableStockCodes), [availableStockCodes]);
 
   function cycleSort(key: SortKey) {
     if (key === sortKey) {
@@ -151,18 +148,14 @@ export function MarketTable({
           </thead>
           <tbody>
             {pageRows.map((company, index) => (
-              // Only rows backed by a local stock JSON navigate internally.
               <tr
-                className={available.has(company.code) ? "" : "is-unavailable"}
                 key={`${company.code}-${company.leaf.code}`}
-                tabIndex={available.has(company.code) ? 0 : -1}
+                tabIndex={0}
                 onClick={() => {
-                  if (available.has(company.code)) {
-                    window.location.href = companyHref(company.code);
-                  }
+                  window.location.href = companyHref(company.code);
                 }}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter" && available.has(company.code)) {
+                  if (event.key === "Enter") {
                     window.location.href = companyHref(company.code);
                   }
                 }}
@@ -174,13 +167,9 @@ export function MarketTable({
                     key={column.key}
                   >
                     {column.kind === "text" ? (
-                      available.has(company.code) ? (
-                        <a href={companyHref(company.code)} onClick={(event) => event.stopPropagation()}>
-                          {company.name}
-                        </a>
-                      ) : (
-                        <span>{company.name}</span>
-                      )
+                      <a href={companyHref(company.code)} onClick={(event) => event.stopPropagation()}>
+                        {company.name}
+                      </a>
                     ) : (
                       <span className="numeric">
                         {formatMetric(company[column.key] as number | null, column.kind)}

@@ -8,7 +8,6 @@ import { SectorCard } from "@/components/SectorCard";
 import { getCompanies, getCompaniesForNode, topCompanies } from "@/lib/data/companies";
 import { formatIndianNumber, marketHref } from "@/lib/data/format";
 import { getIndustryData, getNodeByPath } from "@/lib/data/industry";
-import { getAvailableStockCodes } from "@/lib/data/stocks";
 
 const PAGE_SIZE = 25;
 export const dynamicParams = false;
@@ -68,7 +67,6 @@ export default async function MarketPage({ params }: PageProps) {
   const parsed = parseSlug(slug);
   getCompanies();
   const { roots, nodes } = getIndustryData();
-  const availableStockCodes = getAvailableStockCodes();
 
   if (parsed.pathParts.length === 0) {
     return (
@@ -131,7 +129,6 @@ export default async function MarketPage({ params }: PageProps) {
       </section>
       {companies.length ? (
         <MarketTable
-          availableStockCodes={availableStockCodes}
           companies={companies}
           initialPage={parsed.page}
           pageSize={PAGE_SIZE}

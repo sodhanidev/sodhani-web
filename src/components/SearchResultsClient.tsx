@@ -9,11 +9,9 @@ import type { Company, IndustryNode } from "@/lib/data/types";
 
 export function SearchResultsClient({
   companies,
-  availableStockCodes,
   nodes
 }: {
   companies: Company[];
-  availableStockCodes: string[];
   nodes: IndustryNode[];
 }) {
   const searchParams = useSearchParams();
@@ -43,7 +41,6 @@ export function SearchResultsClient({
         : [],
     [nodes, needle]
   );
-  const available = useMemo(() => new Set(availableStockCodes), [availableStockCodes]);
 
   return (
     <section className="grid rails-grid">
@@ -52,17 +49,10 @@ export function SearchResultsClient({
         <ul className="rail-list">
           {companyResults.map((company) => (
             <li key={`${company.code}-${company.leaf.code}`}>
-              {available.has(company.code) ? (
-                <Link className="rail-row" href={companyHref(company.code)}>
-                  <span className="rail-name">{company.name}</span>
-                  <span className="count-badge">{company.code}</span>
-                </Link>
-              ) : (
-                <div className="rail-row">
-                  <span className="rail-name">{company.name}</span>
-                  <span className="count-badge">{company.code}</span>
-                </div>
-              )}
+              <Link className="rail-row" href={companyHref(company.code)}>
+                <span className="rail-name">{company.name}</span>
+                <span className="count-badge">{company.code}</span>
+              </Link>
             </li>
           ))}
         </ul>

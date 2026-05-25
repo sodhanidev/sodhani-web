@@ -19,12 +19,12 @@ export function StockHeader({
 
   const latest = prices[prices.length - 1];
   const previous = prices[prices.length - 2];
-  const nsePrice = latest?.close ?? 0;
+  const nsePrice = latest?.close ?? company?.cmp ?? 0;
   const nseChange = latest && previous ? latest.close - previous.close : 0;
   const nsePct = previous ? (nseChange / previous.close) * 100 : 0;
-  const price = exchange === "NSE" ? nsePrice : nsePrice + 0.45;
-  const change = exchange === "NSE" ? nseChange : nseChange + 0.05;
-  const pct = exchange === "NSE" ? nsePct : nsePct + 0.02;
+  const price = nsePrice;
+  const change = nseChange;
+  const pct = nsePct;
   const positive = change >= 0;
 
   const industryHref = company ? marketHref(company.leaf.code ? [
