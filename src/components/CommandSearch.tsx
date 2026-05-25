@@ -4,17 +4,14 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-export type SearchItem = {
-  kind: "Company" | "Industry";
-  label: string;
-  meta: string;
-  href: string;
-};
+import type { SearchItem } from "@/lib/data/search-index";
 
-export function CommandSearch({ items }: { items: SearchItem[] }) {
+export function CommandSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [items, setItems] = useState<SearchItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -37,6 +34,29 @@ export function CommandSearch({ items }: { items: SearchItem[] }) {
       window.setTimeout(() => inputRef.current?.focus(), 0);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open || items.length || loadingRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+    loadingRef.current = true;
+    fetch("/search-index.json")
+      .then((response) => (response.ok ? response.json() : []))
+      .then((nextItems: SearchItem[]) => {
+        if (!cancelled) {
+          setItems(nextItems);
+        }
+      })
+      .finally(() => {
+        loadingRef.current = false;
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items.length, open]);
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();

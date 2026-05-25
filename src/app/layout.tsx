@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 
 import { AppNav } from "@/components/AppNav";
-import { getCompanies } from "@/lib/data/companies";
-import { getIndustryData } from "@/lib/data/industry";
 
 import "./globals.css";
 
@@ -19,13 +17,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const companies = getCompanies();
-  const nodes = [...getIndustryData().nodes.values()];
-
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <AppNav companies={companies} nodes={nodes} />
+        <AppNav />
         {children}
       </body>
     </html>

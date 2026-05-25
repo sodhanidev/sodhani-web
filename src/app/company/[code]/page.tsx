@@ -9,7 +9,7 @@ import { DocumentsTabs } from "@/components/DocumentsTabs";
 import { FinancialTable } from "@/components/FinancialTable";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
-import { getCompanyByCode, getCompanies, getCompaniesForNode, topCompanies } from "@/lib/data/companies";
+import { getCompanyByCode, getCompanies, getTopCompaniesForNode } from "@/lib/data/companies";
 import { companyHref, formatMetric } from "@/lib/data/format";
 import { getNodeByCode } from "@/lib/data/industry";
 import { getAvailableStockCodes, getPricePoints, getStock } from "@/lib/data/stocks";
@@ -99,15 +99,6 @@ function pricePointsFromCompany(company: Company): PricePoint[] {
 function CompanyDatasetPanel({ company }: { company: Company }) {
   const rows = [
     ["Company code", company.code],
-    ["CMP", formatMetric(company.cmp, "currency")],
-    ["P/E", formatMetric(company.pe, "number")],
-    ["Market cap", formatMetric(company.marketCapCr, "crore")],
-    ["Dividend yield", formatMetric(company.divYieldPct, "percent")],
-    ["Net profit quarter", formatMetric(company.npQtrCr, "crore")],
-    ["Quarter profit var", formatMetric(company.profitVarPct, "percent")],
-    ["Sales quarter", formatMetric(company.salesQtrCr, "crore")],
-    ["Quarter sales var", formatMetric(company.salesVarPct, "percent")],
-    ["ROCE", formatMetric(company.rocePct, "percent")],
     ["Sector", company.sector.name || "-"],
     ["Group", company.group.name || "-"],
     ["Industry", company.industry.name || "-"],
@@ -174,14 +165,19 @@ export default async function CompanyPage({ params }: PageProps) {
   const prices = stockData ? getPricePoints(code) : company ? pricePointsFromCompany(company) : [];
   const leafNode = company ? getNodeByCode(company.leaf.code) : undefined;
   const peers = leafNode
-    ? topCompanies(getCompaniesForNode(leafNode), "marketCapCr", 7)
+    ? getTopCompaniesForNode(leafNode.code, "marketCapCr", 7)
         .filter((peer) => peer.code !== stock.ticker)
         .slice(0, 6)
     : [];
 
   return (
     <main className="shell page-stack">
-      <StockHeader company={company} prices={prices} stock={stock} />
+      <StockHeader
+        company={company}
+        hasFullStockData={hasFullStockData}
+        prices={prices}
+        stock={stock}
+      />
 
       <section className="stock-layout">
         <div className="stock-main">
@@ -203,7 +199,9 @@ export default async function CompanyPage({ params }: PageProps) {
                     </li>
                   ))}
                 </ul>
-              ) : null}
+              ) : (
+                <p className="muted">No listed peers available in this category.</p>
+              )}
             </section>
           ) : null}
 
@@ -281,7 +279,7 @@ export default async function CompanyPage({ params }: PageProps) {
         </div>
 
         <aside className="stock-side">
-          {company ? (
+          {company && hasFullStockData ? (
             <section className="panel panel-pad">
               <h2>Listing row</h2>
               <div className="metric-row">

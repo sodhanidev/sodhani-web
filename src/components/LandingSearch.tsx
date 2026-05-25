@@ -2,17 +2,37 @@
 
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-import { companyHref } from "@/lib/data/format";
-import type { Company } from "@/lib/data/types";
+import type { SearchItem } from "@/lib/data/search-index";
 
-export function LandingSearch({
-  companies
-}: {
-  companies: Company[];
-}) {
+export function LandingSearch() {
   const [query, setQuery] = useState("");
+  const [items, setItems] = useState<SearchItem[]>([]);
+  const loadingRef = useRef(false);
+
+  useEffect(() => {
+    if (!query.trim() || items.length || loadingRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+    loadingRef.current = true;
+    fetch("/search-index.json")
+      .then((response) => (response.ok ? response.json() : []))
+      .then((nextItems: SearchItem[]) => {
+        if (!cancelled) {
+          setItems(nextItems.filter((item) => item.kind === "Company"));
+        }
+      })
+      .finally(() => {
+        loadingRef.current = false;
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items.length, query]);
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -20,18 +40,16 @@ export function LandingSearch({
       return [];
     }
 
-    return companies
-      .filter((company) =>
-        `${company.name} ${company.code}`.toLowerCase().includes(needle)
-      )
+    return items
+      .filter((item) => `${item.label} ${item.code ?? ""}`.toLowerCase().includes(needle))
       .slice(0, 8);
-  }, [companies, query]);
+  }, [items, query]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const first = results[0];
     if (first) {
-      window.location.href = companyHref(first.code);
+      window.location.href = first.href;
       return;
     }
 
@@ -55,14 +73,14 @@ export function LandingSearch({
       </div>
       {results.length ? (
         <div className="landing-results">
-          {results.map((company) => (
+          {results.map((item) => (
             <Link
               className="landing-result"
-              href={companyHref(company.code)}
-              key={`${company.code}-${company.leaf.code}`}
+              href={item.href}
+              key={item.href}
             >
-              <span>{company.name}</span>
-              <span>{company.code}</span>
+              <span>{item.label}</span>
+              <span>{item.code}</span>
             </Link>
           ))}
         </div>

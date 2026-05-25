@@ -6,6 +6,9 @@ import { parseNumericCell } from "./format";
 import type { FinRow, FinancialTable, PricePoint, Stock } from "./types";
 
 const STOCK_DIR = path.join(process.cwd(), "stock_page");
+let availableStockCodesCache: string[] | null = null;
+const stockCache = new Map<string, Stock | undefined>();
+const pricePointsCache = new Map<string, PricePoint[]>();
 
 type RawFinRow = Record<string, string | boolean | RawFinRow[] | undefined>;
 
@@ -40,22 +43,33 @@ function normalizeFinRows(rows: RawFinRow[]): FinancialTable {
 }
 
 export function getAvailableStockCodes(): string[] {
-  return fs
+  if (availableStockCodesCache) {
+    return availableStockCodesCache;
+  }
+
+  availableStockCodesCache = fs
     .readdirSync(STOCK_DIR)
     .filter((file) => file.endsWith(".json"))
     .map((file) => file.replace(/\.json$/u, "").toUpperCase());
+  return availableStockCodesCache;
 }
 
 export function getStock(code: string): Stock | undefined {
+  const cacheKey = code.toUpperCase();
+  if (stockCache.has(cacheKey)) {
+    return stockCache.get(cacheKey);
+  }
+
   const lower = code.toLowerCase();
   const file = path.join(STOCK_DIR, `${lower}.json`);
   if (!fs.existsSync(file)) {
+    stockCache.set(cacheKey, undefined);
     return undefined;
   }
 
   const raw = JSON.parse(fs.readFileSync(file, "utf8"));
 
-  return {
+  const stock = {
     ticker: String(raw.ticker ?? code).toUpperCase(),
     sourceUrl: String(raw.url ?? ""),
     overview: {
@@ -85,16 +99,26 @@ export function getStock(code: string): Stock | undefined {
       concalls: raw.documents?.concalls ?? []
     }
   };
+
+  stockCache.set(cacheKey, stock);
+  return stock;
 }
 
 export function getPricePoints(code: string): PricePoint[] {
+  const cacheKey = code.toUpperCase();
+  const cached = pricePointsCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const lower = code.toLowerCase();
   const file = path.join(STOCK_DIR, `${lower}_chart_data.csv`);
   if (!fs.existsSync(file)) {
+    pricePointsCache.set(cacheKey, []);
     return [];
   }
 
-  return rowsToObjects(parseCsvRows(fs.readFileSync(file, "utf8"))).map((row) => ({
+  const points = rowsToObjects(parseCsvRows(fs.readFileSync(file, "utf8"))).map((row) => ({
     date: row.Date,
     open: parseNumericCell(row.Open) ?? 0,
     high: parseNumericCell(row.High) ?? 0,
@@ -102,4 +126,7 @@ export function getPricePoints(code: string): PricePoint[] {
     close: parseNumericCell(row.Close) ?? 0,
     volume: parseNumericCell(row.Volume) ?? 0
   }));
+
+  pricePointsCache.set(cacheKey, points);
+  return points;
 }

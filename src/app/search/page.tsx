@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 
-import { getCompanies } from "@/lib/data/companies";
-import { getIndustryData } from "@/lib/data/industry";
 import { SearchResultsClient } from "@/components/SearchResultsClient";
 
 export const metadata = {
@@ -9,9 +7,6 @@ export const metadata = {
 };
 
 export default function SearchPage() {
-  const companies = getCompanies();
-  const nodes = [...getIndustryData().nodes.values()];
-
   return (
     <main className="shell page-stack">
       <section className="node-head">
@@ -21,7 +16,7 @@ export default function SearchPage() {
         </div>
       </section>
       <Suspense fallback={<div className="empty-state">Loading search</div>}>
-        <SearchResultsClient companies={companies} nodes={nodes} />
+        <SearchResultsClient />
       </Suspense>
     </main>
   );

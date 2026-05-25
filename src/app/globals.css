@@ -634,6 +634,11 @@ tbody tr:hover td {
   letter-spacing: 0;
 }
 
+.stock-quote,
+.quote-controls {
+  min-width: 0;
+}
+
 .quote-controls {
   display: flex;
   flex-wrap: wrap;
@@ -643,6 +648,7 @@ tbody tr:hover td {
 
 .ticker-select {
   display: inline-flex;
+  min-width: 0;
   min-height: 56px;
   align-items: center;
   gap: 10px;
@@ -653,6 +659,10 @@ tbody tr:hover td {
   color: #04070d;
   font-size: 25px;
   font-weight: 500;
+}
+
+.ticker-static {
+  background: #fbfcf8;
 }
 
 .quote-dot {
@@ -681,6 +691,7 @@ tbody tr:hover td {
 
 .industry-chip {
   display: inline-flex;
+  max-width: 100%;
   min-height: 44px;
   align-items: center;
   border: 1px solid #dfe6eb;
@@ -688,6 +699,8 @@ tbody tr:hover td {
   padding: 0 12px;
   color: #635bff;
   font-size: 15px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .market-status {
@@ -767,6 +780,7 @@ tbody tr:hover td {
 }
 
 .metric-card {
+  min-width: 0;
   padding: 14px;
 }
 
@@ -777,9 +791,12 @@ tbody tr:hover td {
 }
 
 .metric-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 18px;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .listing-data-grid {

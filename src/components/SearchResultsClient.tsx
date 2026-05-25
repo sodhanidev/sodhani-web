@@ -2,44 +2,57 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { companyHref, marketHref } from "@/lib/data/format";
-import type { Company, IndustryNode } from "@/lib/data/types";
+import type { SearchItem } from "@/lib/data/search-index";
 
-export function SearchResultsClient({
-  companies,
-  nodes
-}: {
-  companies: Company[];
-  nodes: IndustryNode[];
-}) {
+export function SearchResultsClient() {
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.trim() ?? "";
   const needle = q.toLowerCase();
+  const [items, setItems] = useState<SearchItem[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/search-index.json")
+      .then((response) => (response.ok ? response.json() : []))
+      .then((nextItems: SearchItem[]) => {
+        if (!cancelled) {
+          setItems(nextItems);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const companyResults = useMemo(
     () =>
       needle
-        ? companies
-            .filter((company) =>
-              `${company.name} ${company.code} ${company.leaf.name}`.toLowerCase().includes(needle)
+        ? items
+            .filter(
+              (item) =>
+                item.kind === "Company" &&
+                `${item.label} ${item.code ?? ""} ${item.meta}`.toLowerCase().includes(needle)
             )
             .slice(0, 30)
         : [],
-    [companies, needle]
+    [items, needle]
   );
 
   const industryResults = useMemo(
     () =>
       needle
-        ? nodes
-            .filter((node) =>
-              `${node.name} ${node.code} ${node.names.join(" ")}`.toLowerCase().includes(needle)
+        ? items
+            .filter(
+              (item) =>
+                item.kind === "Industry" &&
+                `${item.label} ${item.code ?? ""} ${item.meta}`.toLowerCase().includes(needle)
             )
             .slice(0, 20)
         : [],
-    [nodes, needle]
+    [items, needle]
   );
 
   return (
@@ -47,11 +60,11 @@ export function SearchResultsClient({
       <div className="panel panel-pad">
         <h2>Companies</h2>
         <ul className="rail-list">
-          {companyResults.map((company) => (
-            <li key={`${company.code}-${company.leaf.code}`}>
-              <Link className="rail-row" href={companyHref(company.code)}>
-                <span className="rail-name">{company.name}</span>
-                <span className="count-badge">{company.code}</span>
+          {companyResults.map((item) => (
+            <li key={item.href}>
+              <Link className="rail-row" href={item.href}>
+                <span className="rail-name">{item.label}</span>
+                <span className="count-badge">{item.code}</span>
               </Link>
             </li>
           ))}
@@ -60,11 +73,11 @@ export function SearchResultsClient({
       <div className="panel panel-pad">
         <h2>Industries</h2>
         <ul className="rail-list">
-          {industryResults.map((node) => (
-            <li key={node.code}>
-              <Link className="rail-row" href={marketHref(node.path)}>
-                <span className="rail-name">{node.name}</span>
-                <span className="count-badge">{node.companyCount}</span>
+          {industryResults.map((item) => (
+            <li key={item.href}>
+              <Link className="rail-row" href={item.href}>
+                <span className="rail-name">{item.label}</span>
+                <span className="count-badge">{item.count ?? 0}</span>
               </Link>
             </li>
           ))}

@@ -3,8 +3,7 @@ import Image from "next/image";
 import { ChevronDown, Heart, Laptop, Moon, Sun, UserRound, Zap } from "lucide-react";
 
 import { LandingSearch } from "@/components/LandingSearch";
-import { getCompanies } from "@/lib/data/companies";
-import { companyHref } from "@/lib/data/format";
+import { getSearchItems } from "@/lib/data/search-index";
 
 const exampleCompanies = [
   "Avantel",
@@ -21,15 +20,15 @@ const exampleCompanies = [
 ];
 
 export default function HomePage() {
-  const companies = getCompanies();
+  const companyItems = getSearchItems().filter((item) => item.kind === "Company");
   const examples = exampleCompanies.map((name) => {
-    const match = companies.find((company) =>
-      `${company.name} ${company.code}`.toLowerCase().includes(name.toLowerCase())
+    const match = companyItems.find((item) =>
+      `${item.label} ${item.code ?? ""}`.toLowerCase().includes(name.toLowerCase())
     );
 
     return {
       name,
-      href: match ? companyHref(match.code) : `/search/?q=${encodeURIComponent(name)}`
+      href: match ? match.href : `/search/?q=${encodeURIComponent(name)}`
     };
   });
 
@@ -68,7 +67,7 @@ export default function HomePage() {
             <span>sodhani</span>
           </h1>
           <p>Stock analysis and screening tool for investors in India.</p>
-          <LandingSearch companies={companies} />
+          <LandingSearch />
 
           <div className="landing-examples">
             <span>Or analyse:</span>
@@ -97,7 +96,7 @@ export default function HomePage() {
           </div>
           <p className="footer-tagline">Stock analysis and screening tool</p>
           <p className="footer-copy">
-            Mittal Analytics Private Ltd © 2009-2025
+            Sodhani Capital © 2009-2025
             <br />
             Made with <Heart size={14} fill="currentColor" aria-hidden="true" /> in India.
           </p>

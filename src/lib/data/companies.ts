@@ -13,6 +13,7 @@ let indexesCache: {
   byCode: Map<string, Company>;
   byNodeCode: Map<string, Company[]>;
 } | null = null;
+const topCompaniesCache = new Map<string, Company[]>();
 
 function normalizeCompany(row: Record<string, string>): Company {
   return {
@@ -160,4 +161,23 @@ export function topCompanies(
     .filter((company) => typeof company[metric] === "number" && (company[metric] ?? 0) > 0)
     .sort((a, b) => (b[metric] ?? 0) - (a[metric] ?? 0))
     .slice(0, limit);
+}
+
+export function getTopCompaniesForNode(
+  nodeCode: string,
+  metric: keyof Pick<Company, "marketCapCr" | "rocePct" | "profitVarPct">,
+  limit = 10
+): Company[] {
+  const cacheKey = `${nodeCode}|${metric}`;
+  const cached = topCompaniesCache.get(cacheKey);
+  if (cached) {
+    return cached.slice(0, limit);
+  }
+
+  const sorted = [...(getCompanyIndexes().byNodeCode.get(nodeCode) ?? [])]
+    .filter((company) => typeof company[metric] === "number" && (company[metric] ?? 0) > 0)
+    .sort((a, b) => (b[metric] ?? 0) - (a[metric] ?? 0));
+
+  topCompaniesCache.set(cacheKey, sorted);
+  return sorted.slice(0, limit);
 }

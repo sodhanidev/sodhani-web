@@ -9,11 +9,13 @@ import type { Company, PricePoint, Stock } from "@/lib/data/types";
 export function StockHeader({
   stock,
   company,
-  prices
+  prices,
+  hasFullStockData = false
 }: {
   stock: Stock;
   company?: Company;
   prices: PricePoint[];
+  hasFullStockData?: boolean;
 }) {
   const [exchange, setExchange] = useState<"NSE" | "BSE">("NSE");
 
@@ -26,6 +28,8 @@ export function StockHeader({
   const change = nseChange;
   const pct = nsePct;
   const positive = change >= 0;
+  const hasChange = hasFullStockData && Boolean(latest && previous);
+  const supportsExchangeToggle = hasFullStockData;
 
   const industryHref = company ? marketHref(company.leaf.code ? [
     company.sector.code,
@@ -42,53 +46,67 @@ export function StockHeader({
       <div className="stock-quote">
         <h1>{stock.overview.companyName}</h1>
         <div className="quote-controls">
-          <div className="ticker-select">
+          <div className={`ticker-select ${supportsExchangeToggle ? "" : "ticker-static"}`}>
             <span>{stock.ticker}</span>
             <span className="quote-dot">·</span>
             <span className="exchange-icon" aria-hidden="true">
               <BarChart3 size={18} />
             </span>
-            <span>{exchange}</span>
-            <span className="exchange-mini" aria-hidden="true">
-              <BarChart3 size={16} />
-            </span>
-            <ChevronDown size={18} aria-hidden="true" />
+            <span>{supportsExchangeToggle ? exchange : "Listing"}</span>
+            {supportsExchangeToggle ? (
+              <>
+                <span className="exchange-mini" aria-hidden="true">
+                  <BarChart3 size={16} />
+                </span>
+                <ChevronDown size={18} aria-hidden="true" />
+              </>
+            ) : null}
           </div>
           {company ? (
             <a className="industry-chip" href={industryHref}>
               {company.leaf.name}
             </a>
           ) : null}
-          <span className="market-status" title="Market status placeholder">
-            <Circle size={12} fill="currentColor" aria-hidden="true" />
-          </span>
+          {supportsExchangeToggle ? (
+            <span className="market-status" title="Market status placeholder">
+              <Circle size={12} fill="currentColor" aria-hidden="true" />
+            </span>
+          ) : null}
         </div>
         <div className="price-line">
           <span className="price-value">{formatIndianNumber(price, { dp: 2 })}</span>
           <span className="price-currency">INR</span>
-          <span className={`numeric ${positive ? "up" : "down"}`}>
-            {positive ? "+" : ""}
-            {formatIndianNumber(change, { dp: 2 })} {positive ? "+" : ""}
-            {formatIndianNumber(pct, { dp: 2 })}%
-          </span>
+          {hasChange ? (
+            <span className={`numeric ${positive ? "up" : "down"}`}>
+              {positive ? "+" : ""}
+              {formatIndianNumber(change, { dp: 2 })} {positive ? "+" : ""}
+              {formatIndianNumber(pct, { dp: 2 })}%
+            </span>
+          ) : (
+            <span className="numeric muted">Change unavailable</span>
+          )}
         </div>
         <p className="quote-time">
-          {latest ? `As of ${latest.date} · ${exchange}` : `As of latest · ${exchange}`}
+          {latest
+            ? `As of ${latest.date}${supportsExchangeToggle ? ` · ${exchange}` : ""}`
+            : "As of latest data"}
         </p>
       </div>
 
-      <div className="exchange-toggle quote-exchange" aria-label="Exchange">
-        {(["NSE", "BSE"] as const).map((candidate) => (
-          <button
-            className={candidate === exchange ? "active" : ""}
-            key={candidate}
-            type="button"
-            onClick={() => setExchange(candidate)}
-          >
-            {candidate}
-          </button>
-        ))}
-      </div>
+      {supportsExchangeToggle ? (
+        <div className="exchange-toggle quote-exchange" aria-label="Exchange">
+          {(["NSE", "BSE"] as const).map((candidate) => (
+            <button
+              className={candidate === exchange ? "active" : ""}
+              key={candidate}
+              type="button"
+              onClick={() => setExchange(candidate)}
+            >
+              {candidate}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
