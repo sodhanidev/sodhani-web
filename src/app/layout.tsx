@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { AppNav } from "@/components/AppNav";
+import { TickerTape } from "@/components/TickerTape";
 
 import "./globals.css";
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
+        <TickerTape />
         <AppNav />
         {children}
       </body>
