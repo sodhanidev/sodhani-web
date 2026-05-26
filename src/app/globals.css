@@ -1082,7 +1082,7 @@ tbody tr:hover td {
 .landing-nav {
   display: flex;
   width: min(1620px, calc(100% - 190px));
-  margin: 0 auto;
+  margin: 14px auto 0;
   align-items: center;
   justify-content: space-between;
   padding: 7px 0 0;
@@ -1106,10 +1106,16 @@ tbody tr:hover td {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #526071;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
+  color: #1a2233;
+  font-family: "Source Serif Pro", "Source Serif 4", Georgia, "Iowan Old Style", "Times New Roman", ui-serif, serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+}
+
+.landing-links a:hover {
+  color: #4a5568;
 }
 
 .landing-login,

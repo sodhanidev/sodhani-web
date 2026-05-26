@@ -37,10 +37,10 @@ export default function HomePage() {
       <section className="landing-hero">
         <nav className="landing-nav" aria-label="Landing navigation">
           <div className="landing-links">
-            <Link href="/">HOME</Link>
-            <Link href="/market/">SCREENS</Link>
+            <Link href="/">Home</Link>
+            <Link href="/market/">Screens</Link>
             <Link href="/market/">
-              TOOLS <ChevronDown size={14} aria-hidden="true" />
+              Tools <ChevronDown size={14} aria-hidden="true" />
             </Link>
           </div>
           <div className="landing-actions">
