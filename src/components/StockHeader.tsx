@@ -21,14 +21,14 @@ export function StockHeader({
 
   const latest = prices[prices.length - 1];
   const previous = prices[prices.length - 2];
-  const nsePrice = latest?.close ?? company?.cmp ?? 0;
+  const nsePrice = company?.cmp ?? latest?.close ?? 0;
   const nseChange = latest && previous ? latest.close - previous.close : 0;
   const nsePct = previous ? (nseChange / previous.close) * 100 : 0;
   const price = nsePrice;
   const change = nseChange;
   const pct = nsePct;
   const positive = change >= 0;
-  const hasChange = hasFullStockData && Boolean(latest && previous);
+  const hasChange = Boolean(latest && previous);
   const supportsExchangeToggle = hasFullStockData;
 
   const industryHref = company ? marketHref(company.leaf.code ? [

@@ -81,7 +81,6 @@ export function CommandSearch() {
       <button className="search-trigger" type="button" onClick={() => setOpen(true)}>
         <Search size={16} aria-hidden="true" />
         <span>Search companies and industries</span>
-        <kbd>⌘K</kbd>
       </button>
 
       {open ? (
