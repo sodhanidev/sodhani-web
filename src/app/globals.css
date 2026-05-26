@@ -1287,6 +1287,147 @@ tbody tr:hover td {
   font-variant-numeric: tabular-nums;
 }
 
+.research-panel {
+  display: grid;
+  gap: 0;
+}
+
+.research-title-row {
+  align-items: flex-start;
+}
+
+.research-title-row h2 {
+  margin-bottom: 4px;
+}
+
+.research-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.research-score-grid,
+.research-checklist-grid,
+.research-group-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.research-score-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.research-checklist-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  padding: 14px;
+}
+
+.research-metric,
+.research-checklist-card,
+.research-group {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-subtle-bg);
+}
+
+.research-metric {
+  display: grid;
+  min-height: 92px;
+  align-content: space-between;
+  gap: 12px;
+  padding: 12px;
+}
+
+.research-metric-top,
+.research-checklist-top {
+  display: flex;
+  min-width: 0;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.source-pill,
+.verdict-pill {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--control-bg-solid);
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+  padding: 3px 5px;
+  text-transform: uppercase;
+}
+
+.source-pill[data-source="CSV"] {
+  color: var(--accent-2);
+}
+
+.source-pill[data-source="Derived"] {
+  color: var(--accent);
+}
+
+.source-pill[data-source="Estimate"] {
+  color: var(--accent-3);
+}
+
+.research-metric.tone-positive .metric-value {
+  color: var(--up);
+}
+
+.research-metric.tone-negative .metric-value {
+  color: var(--down);
+}
+
+.research-checklist-card {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+}
+
+.research-checklist-card strong {
+  font-size: 15px;
+}
+
+.research-checklist-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.research-checklist-card[data-verdict="Strong"] {
+  border-color: color-mix(in srgb, var(--up) 35%, var(--line));
+}
+
+.research-checklist-card[data-verdict="Weak"] {
+  border-color: color-mix(in srgb, var(--down) 35%, var(--line));
+}
+
+.research-group-list {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding: 14px;
+}
+
+.research-group {
+  padding: 14px;
+}
+
+.research-group h3 {
+  margin-bottom: 12px;
+}
+
+.research-group-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .listing-data-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2106,6 +2247,9 @@ tbody tr:hover td {
   .rails-grid,
   .listing-data-grid,
   .metric-grid,
+  .research-score-grid,
+  .research-checklist-grid,
+  .research-group-grid,
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2166,6 +2310,9 @@ tbody tr:hover td {
   .rails-grid,
   .listing-data-grid,
   .metric-grid,
+  .research-score-grid,
+  .research-checklist-grid,
+  .research-group-grid,
   .stat-grid,
   .pros-cons {
     grid-template-columns: 1fr;

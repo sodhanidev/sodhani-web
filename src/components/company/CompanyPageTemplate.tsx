@@ -7,7 +7,11 @@ import { DocumentsTabs } from "@/components/DocumentsTabs";
 import { FinancialTable } from "@/components/FinancialTable";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
-import type { CompanyPageModel } from "@/lib/data/company-template";
+import type {
+  CompanyPageModel,
+  CompanyResearchMetric,
+  CompanyResearchPack
+} from "@/lib/data/company-template";
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
@@ -69,8 +73,71 @@ function ListingRowPanel({ company }: { company: Company }) {
   );
 }
 
+function toneClass(tone: CompanyResearchMetric["tone"]) {
+  return tone ? `tone-${tone}` : "";
+}
+
+function ResearchMetricCard({ metric }: { metric: CompanyResearchMetric }) {
+  return (
+    <div className={`research-metric ${toneClass(metric.tone)}`}>
+      <div className="research-metric-top">
+        <span className="metric-label">{metric.label}</span>
+        <span className="source-pill" data-source={metric.source}>
+          {metric.source}
+        </span>
+      </div>
+      <strong className="metric-value numeric">{metric.value}</strong>
+    </div>
+  );
+}
+
+function ResearchPackPanel({ research }: { research: CompanyResearchPack }) {
+  return (
+    <section className="panel research-panel">
+      <div className="section-title-row research-title-row">
+        <div>
+          <h2>Research pack</h2>
+          <p className="research-note">{research.generatedFrom}</p>
+        </div>
+      </div>
+
+      <div className="research-score-grid panel-pad">
+        {research.scores.map((metric) => (
+          <ResearchMetricCard key={metric.label} metric={metric} />
+        ))}
+      </div>
+
+      <div className="research-checklist-grid">
+        {research.checklist.map((item) => (
+          <div className="research-checklist-card" data-verdict={item.verdict} key={item.label}>
+            <div className="research-checklist-top">
+              <span className="metric-label">{item.label}</span>
+              <span className="verdict-pill">{item.verdict}</span>
+            </div>
+            <strong>{item.value}</strong>
+            <p>{item.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="research-group-list">
+        {research.groups.map((group) => (
+          <section className="research-group" key={group.title}>
+            <h3>{group.title}</h3>
+            <div className="research-group-grid">
+              {group.metrics.map((metric) => (
+                <ResearchMetricCard key={`${group.title}-${metric.label}`} metric={metric} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
-  const { company, hasFullStockData, leafNode, peers, prices, stock } = model;
+  const { company, hasFullStockData, leafNode, peers, prices, research, stock } = model;
 
   return (
     <main className="shell page-stack">
@@ -86,6 +153,8 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
           {prices.length ? <StockChart points={prices} stock={stock} /> : null}
 
           {company ? <CompanyDatasetPanel company={company} /> : null}
+
+          {research ? <ResearchPackPanel research={research} /> : null}
 
           {leafNode ? (
             <section className="peer-panel">
