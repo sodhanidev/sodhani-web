@@ -6,22 +6,30 @@ import { useState } from "react";
 import { formatIndianNumber, marketHref } from "@/lib/data/format";
 import type { Company, PricePoint, Stock } from "@/lib/data/types";
 
+function parseDisplayNumber(value: string): number | null {
+  const parsed = Number(value.replace(/[\u20b9,%]/gu, "").replace(/\s+/gu, "").replace(/,/gu, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export function StockHeader({
   stock,
   company,
   prices,
+  id,
   hasFullStockData = false
 }: {
   stock: Stock;
   company?: Company;
   prices: PricePoint[];
+  id?: string;
   hasFullStockData?: boolean;
 }) {
   const [exchange, setExchange] = useState<"NSE" | "BSE">("NSE");
 
   const latest = prices[prices.length - 1];
   const previous = prices[prices.length - 2];
-  const nsePrice = company?.cmp ?? latest?.close ?? 0;
+  const livePrice = parseDisplayNumber(stock.overview.currentPriceRaw);
+  const nsePrice = latest?.close ?? livePrice ?? company?.cmp ?? 0;
   const nseChange = latest && previous ? latest.close - previous.close : 0;
   const nsePct = previous ? (nseChange / previous.close) * 100 : 0;
   const price = nsePrice;
@@ -39,7 +47,7 @@ export function StockHeader({
   ] : []) : "/market/";
 
   return (
-    <section className="stock-head">
+    <section className={`stock-head${id ? " section-anchor" : ""}`} id={id}>
       <div className="stock-logo" aria-hidden="true">
         <span>{stock.ticker.slice(0, 1)}</span>
       </div>

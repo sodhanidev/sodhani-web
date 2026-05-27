@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { CompanyPageTemplate } from "@/components/company/CompanyPageTemplate";
-import {
-  getCompanyPageModel,
-  getCompanyTemplateCodes
-} from "@/lib/data/company-template";
+import { getCompanyPageModel } from "@/lib/data/company-template";
 import { getCompanyByCode } from "@/lib/data/companies";
 import { getStock } from "@/lib/data/stocks";
 
@@ -13,11 +10,7 @@ type PageProps = {
   params: Promise<{ code: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return getCompanyTemplateCodes().map((companyCode) => ({ code: companyCode }));
-}
+export const revalidate = 900;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
@@ -39,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CompanyPage({ params }: PageProps) {
   const { code } = await params;
-  const model = getCompanyPageModel(code);
+  const model = await getCompanyPageModel(code);
 
   if (!model) {
     notFound();

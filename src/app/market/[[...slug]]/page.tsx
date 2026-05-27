@@ -105,7 +105,7 @@ export default async function MarketPage({ params }: PageProps) {
   return (
     <main className="shell page-stack">
       <Breadcrumbs node={node} />
-      <section className="node-head">
+      <section className="node-head market-node-head">
         <div>
           <div className="eyebrow">Industry browser</div>
           <h1>{node.name} Companies</h1>

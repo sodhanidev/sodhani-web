@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Heart, Laptop, Moon, Sun, UserRound } from "lucide-react";
+import { ChevronDown, Heart, Laptop, Moon, Sun } from "lucide-react";
 
 import { LandingSearch } from "@/components/LandingSearch";
 import { getSearchItems } from "@/lib/data/search-index";
@@ -47,12 +47,13 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="landing-actions">
-            <Link className="landing-login" href="/company/RELIANCE/">
-              <UserRound size={13} aria-hidden="true" />
-              LOGIN
+            <Link className="landing-login" href="/sign-in/">
+              <span className="landing-action-icon" data-icon="user-round" aria-hidden="true" />
+              Login
             </Link>
-            <Link className="landing-account" href="/market/">
-              GET FREE ACCOUNT
+            <Link className="landing-account" href="/sign-up/">
+              <span className="landing-action-icon" data-icon="user-plus" aria-hidden="true" />
+              Sign up
             </Link>
           </div>
         </nav>

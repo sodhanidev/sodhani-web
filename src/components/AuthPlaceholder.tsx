@@ -9,22 +9,18 @@ type AuthPlaceholderProps = {
 
 const modeCopy = {
   "sign-in": {
-    eyebrow: "Account access",
-    title: "Sign in to Sodhani",
-    lead: "Account access is being prepared. This page keeps the auth flow in place without sending users into market pages.",
-    primary: "Sign in unavailable",
+    title: "Sign in",
+    primary: "Sign in",
     google: "Continue with Google",
-    alternateLabel: "Need an account?",
-    alternateCta: "Create one",
+    alternateLabel: "Don't have an account?",
+    alternateCta: "Sign up",
     alternateHref: "/sign-up/"
   },
   "sign-up": {
-    eyebrow: "New account",
-    title: "Create your Sodhani account",
-    lead: "Account creation is being prepared. This page is the placeholder route for onboarding until auth is wired up.",
-    primary: "Create account unavailable",
-    google: "Sign up with Google",
-    alternateLabel: "Already registered?",
+    title: "Create your account",
+    primary: "Create account",
+    google: "Continue with Google",
+    alternateLabel: "Already have an account?",
     alternateCta: "Sign in",
     alternateHref: "/sign-in/"
   }
@@ -35,68 +31,86 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
 
   return (
     <main className="auth-page">
-      <section className="auth-panel" aria-labelledby="auth-title">
-        <div className="auth-aside">
-          <Link className="auth-brand" href="/">
-            <Image src="/logo-transparent.png" alt="" width={34} height={34} priority />
-            <span>Sodhani</span>
+      <div className="auth-shell">
+        <Link className="auth-brand" href="/">
+          <Image src="/logo-transparent.png" alt="" width={28} height={28} priority />
+          <span>sodhani</span>
+        </Link>
+
+        <h1 className="auth-title">{copy.title}</h1>
+
+        <div className="auth-switch" role="tablist" aria-label="Authentication mode">
+          <Link
+            aria-selected={mode === "sign-in"}
+            className={mode === "sign-in" ? "active" : undefined}
+            href="/sign-in/"
+            role="tab"
+          >
+            Sign in
           </Link>
-          <div>
-            <p className="eyebrow">{copy.eyebrow}</p>
-            <h1 id="auth-title">{copy.title}</h1>
-            <p>{copy.lead}</p>
-          </div>
-          <Link className="auth-back-link" href="/">
-            Back to home
+          <Link
+            aria-selected={mode === "sign-up"}
+            className={mode === "sign-up" ? "active" : undefined}
+            href="/sign-up/"
+            role="tab"
+          >
+            Sign up
           </Link>
         </div>
 
-        <div className="auth-card">
-          <div className="auth-switch" aria-label="Authentication mode">
-            <Link className={mode === "sign-in" ? "active" : undefined} href="/sign-in/">
-              Sign in
-            </Link>
-            <Link className={mode === "sign-up" ? "active" : undefined} href="/sign-up/">
-              Sign up
-            </Link>
-          </div>
+        <button className="auth-google" type="button">
+          <Image src="/icons/google.svg" alt="" width={16} height={16} aria-hidden="true" />
+          {copy.google}
+        </button>
 
-          <button className="auth-google" type="button" disabled>
-            <Image src="/icons/google.svg" alt="" width={18} height={18} aria-hidden="true" />
-            {copy.google}
-          </button>
+        <div className="auth-divider" aria-hidden="true">
+          <span />
+          <p>or with email</p>
+          <span />
+        </div>
 
-          <div className="auth-divider">
-            <span />
-            <p>Email</p>
-            <span />
-          </div>
-
-          <form className="auth-form">
-            {mode === "sign-up" ? (
-              <label>
-                Name
-                <input disabled name="name" placeholder="Your name" type="text" />
-              </label>
-            ) : null}
+        <form className="auth-form" noValidate>
+          {mode === "sign-up" ? (
             <label>
-              Email
-              <input disabled name="email" placeholder="you@example.com" type="email" />
+              <span>Name</span>
+              <input autoComplete="name" name="name" placeholder="Jane Doe" type="text" />
             </label>
-            <label>
+          ) : null}
+          <label>
+            <span>Email</span>
+            <input autoComplete="email" name="email" placeholder="you@example.com" type="email" />
+          </label>
+          <label>
+            <span className="auth-label-row">
               Password
-              <input disabled name="password" placeholder="Password" type="password" />
-            </label>
-            <button type="button" disabled>
-              {copy.primary}
-            </button>
-          </form>
+              {mode === "sign-in" ? (
+                <Link className="auth-inline-link" href="/sign-in/">
+                  Forgot?
+                </Link>
+              ) : null}
+            </span>
+            <input
+              autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
+              name="password"
+              placeholder="••••••••"
+              type="password"
+            />
+          </label>
+          <button className="auth-primary" type="submit">
+            {copy.primary}
+          </button>
+        </form>
 
-          <p className="auth-alt">
-            {copy.alternateLabel} <Link href={copy.alternateHref}>{copy.alternateCta}</Link>
-          </p>
-        </div>
-      </section>
+        <p className="auth-alt">
+          {copy.alternateLabel}{" "}
+          <Link href={copy.alternateHref}>{copy.alternateCta}</Link>
+        </p>
+
+        <p className="auth-fineprint">
+          By continuing you agree to our <Link href="/terms/">Terms</Link> and{" "}
+          <Link href="/privacy/">Privacy Policy</Link>.
+        </p>
+      </div>
     </main>
   );
 }

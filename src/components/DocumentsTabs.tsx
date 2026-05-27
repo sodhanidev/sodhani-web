@@ -13,12 +13,12 @@ const tabs = [
   ["concalls", "Concalls"]
 ] as const;
 
-export function DocumentsTabs({ documents }: { documents: Stock["documents"] }) {
+export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]; id?: string }) {
   const [active, setActive] = useState<(typeof tabs)[number][0]>("announcements");
   const docs = documents[active];
 
   return (
-    <section className="panel">
+    <section className={`panel${id ? " section-anchor" : ""}`} id={id}>
       <div className="section-title-row">
         <h2>Documents</h2>
         <div className="tabs" aria-label="Document tabs">

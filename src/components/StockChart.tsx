@@ -44,14 +44,14 @@ function filterRange(points: PricePoint[], range: RangeKey): PricePoint[] {
   return points;
 }
 
-export function StockChart({ points, stock }: { points: PricePoint[]; stock: Stock }) {
-  const [range, setRange] = useState<RangeKey>("1W");
+export function StockChart({ id, points, stock }: { id?: string; points: PricePoint[]; stock: Stock }) {
+  const [range, setRange] = useState<RangeKey>("1Y");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   const visible = useMemo(() => filterRange(points, range), [points, range]);
   if (!visible.length) {
     return (
-      <section className="chart-surface">
+      <section className={`chart-surface${id ? " section-anchor" : ""}`} id={id}>
         <div className="chart-topbar">
           <h2>Price chart</h2>
         </div>
@@ -106,7 +106,7 @@ export function StockChart({ points, stock }: { points: PricePoint[]; stock: Sto
     : "center";
 
   return (
-    <section className="chart-surface">
+    <section className={`chart-surface${id ? " section-anchor" : ""}`} id={id}>
       <div className="chart-topbar">
         <div className="chart-titleline">
           <span className="chart-logo">{stock.ticker.slice(0, 1)}</span>

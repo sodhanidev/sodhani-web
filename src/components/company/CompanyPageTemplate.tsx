@@ -3,25 +3,32 @@ import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 import { AccordionSection } from "@/components/AccordionSection";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { CompanySectionNav, type CompanySectionLink } from "@/components/CompanySectionNav";
 import { DocumentsTabs } from "@/components/DocumentsTabs";
 import { FinancialTable } from "@/components/FinancialTable";
+import { ShareholdingPieChart } from "@/components/ShareholdingPieChart";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
-import type {
-  CompanyPageModel,
-  CompanyResearchMetric,
-  CompanyResearchPack
-} from "@/lib/data/company-template";
+import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
-function CompanyDatasetPanel({ company }: { company: Company }) {
+function CompanyDatasetPanel({
+  company,
+  liveFetchedAt,
+  liveSource
+}: {
+  company: Company;
+  liveFetchedAt?: string;
+  liveSource?: string;
+}) {
   const rows = [
     ["Company code", company.code],
     ["Sector", company.sector.name || "-"],
     ["Group", company.group.name || "-"],
     ["Industry", company.industry.name || "-"],
     ["Leaf category", company.leaf.name || "-"],
+    ["Live refreshed", liveFetchedAt ? liveFetchedAt.slice(0, 19).replace("T", " ") : "-"],
     ["Last scraped", company.scrapedAt || "-"],
     ["Source page", company.scrapePage || "-"]
   ];
@@ -42,6 +49,11 @@ function CompanyDatasetPanel({ company }: { company: Company }) {
       {company.description || company.scrapeUrl ? (
         <div className="listing-data-note">
           {company.description ? <p>{company.description}</p> : null}
+          {liveSource ? (
+            <a href={liveSource} rel="noopener noreferrer" target="_blank">
+              Live Screener source
+            </a>
+          ) : null}
           {company.scrapeUrl ? (
             <a href={company.scrapeUrl} rel="noopener noreferrer" target="_blank">
               Source row
@@ -73,91 +85,50 @@ function ListingRowPanel({ company }: { company: Company }) {
   );
 }
 
-function toneClass(tone: CompanyResearchMetric["tone"]) {
-  return tone ? `tone-${tone}` : "";
-}
-
-function ResearchMetricCard({ metric }: { metric: CompanyResearchMetric }) {
-  return (
-    <div className={`research-metric ${toneClass(metric.tone)}`}>
-      <div className="research-metric-top">
-        <span className="metric-label">{metric.label}</span>
-        <span className="source-pill" data-source={metric.source}>
-          {metric.source}
-        </span>
-      </div>
-      <strong className="metric-value numeric">{metric.value}</strong>
-    </div>
-  );
-}
-
-function ResearchPackPanel({ research }: { research: CompanyResearchPack }) {
-  return (
-    <section className="panel research-panel">
-      <div className="section-title-row research-title-row">
-        <div>
-          <h2>Research pack</h2>
-          <p className="research-note">{research.generatedFrom}</p>
-        </div>
-      </div>
-
-      <div className="research-score-grid panel-pad">
-        {research.scores.map((metric) => (
-          <ResearchMetricCard key={metric.label} metric={metric} />
-        ))}
-      </div>
-
-      <div className="research-checklist-grid">
-        {research.checklist.map((item) => (
-          <div className="research-checklist-card" data-verdict={item.verdict} key={item.label}>
-            <div className="research-checklist-top">
-              <span className="metric-label">{item.label}</span>
-              <span className="verdict-pill">{item.verdict}</span>
-            </div>
-            <strong>{item.value}</strong>
-            <p>{item.detail}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="research-group-list">
-        {research.groups.map((group) => (
-          <section className="research-group" key={group.title}>
-            <h3>{group.title}</h3>
-            <div className="research-group-grid">
-              {group.metrics.map((metric) => (
-                <ResearchMetricCard key={`${group.title}-${metric.label}`} metric={metric} />
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
-  const { company, hasFullStockData, leafNode, peers, prices, research, stock } = model;
+  const { company, hasFullStockData, leafNode, liveFetchedAt, liveSource, peers, prices, stock } = model;
+  const hasProsCons = hasFullStockData && (stock.prosCons.pros.length > 0 || stock.prosCons.cons.length > 0);
+  const hasAbout = hasFullStockData && Boolean(stock.overview.about);
+  const hasAnalysis = hasProsCons || hasAbout;
+  const sectionLinks = [
+    { id: "overview", label: stock.overview.companyName || stock.ticker },
+    prices.length ? { id: "chart", label: "Chart" } : null,
+    hasAnalysis ? { id: "analysis", label: "Analysis" } : null,
+    leafNode ? { id: "peers", label: "Peers" } : null,
+    hasFullStockData ? { id: "quarters", label: "Quarters" } : null,
+    hasFullStockData ? { id: "profit-loss", label: "Profit & Loss" } : null,
+    hasFullStockData ? { id: "balance-sheet", label: "Balance Sheet" } : null,
+    hasFullStockData ? { id: "cash-flow", label: "Cash Flow" } : null,
+    hasFullStockData ? { id: "ratios", label: "Ratios" } : null,
+    hasFullStockData ? { id: "investors", label: "Investors" } : null,
+    hasFullStockData ? { id: "documents", label: "Documents" } : null
+  ].filter((link): link is CompanySectionLink => Boolean(link));
 
   return (
-    <main className="shell page-stack">
+    <main className="shell page-stack company-page-shell">
+      <CompanySectionNav links={sectionLinks} />
       <StockHeader
         company={company}
         hasFullStockData={hasFullStockData}
+        id="overview"
         prices={prices}
         stock={stock}
       />
 
       <section className="stock-layout">
         <div className="stock-main">
-          {prices.length ? <StockChart points={prices} stock={stock} /> : null}
+          {prices.length ? <StockChart id="chart" points={prices} stock={stock} /> : null}
 
-          {company ? <CompanyDatasetPanel company={company} /> : null}
-
-          {research ? <ResearchPackPanel research={research} /> : null}
+          {company ? (
+            <CompanyDatasetPanel
+              company={company}
+              liveFetchedAt={liveFetchedAt}
+              liveSource={liveSource}
+            />
+          ) : null}
 
           {leafNode ? (
-            <section className="peer-panel">
+            <section className="peer-panel section-anchor" id="peers">
               <Breadcrumbs node={leafNode} title="Peer comparison" variant="peer" />
               {peers.length ? (
                 <ul className="peer-list">
@@ -190,8 +161,8 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             </div>
           </section>
 
-          {hasFullStockData && (stock.prosCons.pros.length || stock.prosCons.cons.length) ? (
-            <section className="grid pros-cons">
+          {hasProsCons ? (
+            <section className="grid pros-cons section-anchor" id="analysis">
               <div className="panel panel-pad">
                 <h2>Pros</h2>
                 <ul className="note-list">
@@ -215,8 +186,11 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             </section>
           ) : null}
 
-          {hasFullStockData && stock.overview.about ? (
-            <section className="panel panel-pad">
+          {hasAbout ? (
+            <section
+              className={`panel panel-pad${hasProsCons ? "" : " section-anchor"}`}
+              id={hasProsCons ? undefined : "analysis"}
+            >
               <h2>About</h2>
               <p>{stock.overview.about}</p>
             </section>
@@ -224,16 +198,17 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
 
           {hasFullStockData ? (
             <>
-              <AccordionSection defaultOpen table={stock.quarterly} title="Quarterly Results" />
-              <AccordionSection table={stock.profitLoss} title="Profit & Loss" />
-              <AccordionSection table={stock.balanceSheet} title="Balance Sheet" />
-              <AccordionSection table={stock.cashFlows} title="Cash Flows" />
-              <AccordionSection table={stock.ratios} title="Ratios" />
+              <AccordionSection defaultOpen id="quarters" table={stock.quarterly} title="Quarterly Results" />
+              <AccordionSection id="profit-loss" table={stock.profitLoss} title="Profit & Loss" />
+              <AccordionSection id="balance-sheet" table={stock.balanceSheet} title="Balance Sheet" />
+              <AccordionSection id="cash-flow" table={stock.cashFlows} title="Cash Flows" />
+              <AccordionSection id="ratios" table={stock.ratios} title="Ratios" />
 
-              <section className="panel">
+              <section className="panel section-anchor" id="investors">
                 <div className="section-title-row">
                   <h2>Shareholding Pattern</h2>
                 </div>
+                <ShareholdingPieChart table={stock.shareholding.quarterly} />
                 <FinancialTable table={stock.shareholding.quarterly} />
               </section>
 
@@ -244,7 +219,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                 <FinancialTable table={stock.shareholding.yearly} />
               </section>
 
-              <DocumentsTabs documents={stock.documents} />
+              <DocumentsTabs documents={stock.documents} id="documents" />
             </>
           ) : null}
         </div>
