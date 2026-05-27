@@ -223,7 +223,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root[data-theme="dark"] {
     --bg: #0e1116;
     --surface: #151922;
     --surface-2: #1e2430;
@@ -350,7 +350,7 @@ html[data-theme="dark"] {
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) {
+  html[data-theme="dark"] {
     color-scheme: dark;
   }
 }
@@ -2018,7 +2018,7 @@ tbody tr:hover td {
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .landing-account {
+  :root[data-theme="dark"] .landing-account {
     color: #0c0f14;
   }
 }

@@ -13,22 +13,13 @@ import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
-function CompanyDatasetPanel({
-  company,
-  liveFetchedAt,
-  liveSource
-}: {
-  company: Company;
-  liveFetchedAt?: string;
-  liveSource?: string;
-}) {
+function CompanyDatasetPanel({ company }: { company: Company }) {
   const rows = [
     ["Company code", company.code],
     ["Sector", company.sector.name || "-"],
     ["Group", company.group.name || "-"],
     ["Industry", company.industry.name || "-"],
     ["Leaf category", company.leaf.name || "-"],
-    ["Live refreshed", liveFetchedAt ? liveFetchedAt.slice(0, 19).replace("T", " ") : "-"],
     ["Last scraped", company.scrapedAt || "-"],
     ["Source page", company.scrapePage || "-"]
   ];
@@ -49,11 +40,6 @@ function CompanyDatasetPanel({
       {company.description || company.scrapeUrl ? (
         <div className="listing-data-note">
           {company.description ? <p>{company.description}</p> : null}
-          {liveSource ? (
-            <a href={liveSource} rel="noopener noreferrer" target="_blank">
-              Live Screener source
-            </a>
-          ) : null}
           {company.scrapeUrl ? (
             <a href={company.scrapeUrl} rel="noopener noreferrer" target="_blank">
               Source row
@@ -86,7 +72,7 @@ function ListingRowPanel({ company }: { company: Company }) {
 }
 
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
-  const { company, hasFullStockData, leafNode, liveFetchedAt, liveSource, peers, prices, stock } = model;
+  const { company, hasFullStockData, leafNode, peers, prices, stock } = model;
   const hasProsCons = hasFullStockData && (stock.prosCons.pros.length > 0 || stock.prosCons.cons.length > 0);
   const hasAbout = hasFullStockData && Boolean(stock.overview.about);
   const hasAnalysis = hasProsCons || hasAbout;
@@ -119,13 +105,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
         <div className="stock-main">
           {prices.length ? <StockChart id="chart" points={prices} stock={stock} /> : null}
 
-          {company ? (
-            <CompanyDatasetPanel
-              company={company}
-              liveFetchedAt={liveFetchedAt}
-              liveSource={liveSource}
-            />
-          ) : null}
+          {company ? <CompanyDatasetPanel company={company} /> : null}
 
           {leafNode ? (
             <section className="peer-panel section-anchor" id="peers">
@@ -227,10 +207,12 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
         <aside className="stock-side">
           {company ? <ListingRowPanel company={company} /> : null}
 
-          <section className="panel panel-pad">
-            <h2>Category</h2>
-            {leafNode ? <Breadcrumbs node={leafNode} /> : <p className="muted">No category data.</p>}
-          </section>
+          {leafNode ? (
+            <section className="panel panel-pad">
+              <h2>Category</h2>
+              <Breadcrumbs node={leafNode} />
+            </section>
+          ) : null}
         </aside>
       </section>
     </main>

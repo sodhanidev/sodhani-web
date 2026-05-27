@@ -14,18 +14,29 @@ const themeScript = `
   function readTheme() {
     try {
       const theme = window.localStorage.getItem(storageKey);
-      return theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
+      return theme === "light" || theme === "dark" || theme === "system" ? theme : "light";
     } catch {
-      return "system";
+      return "light";
     }
+  }
+
+  function systemTheme() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function resolvedTheme(theme) {
+    return theme === "system" ? systemTheme() : theme;
   }
 
   function applyTheme(theme) {
     if (theme === "light" || theme === "dark") {
       document.documentElement.dataset.theme = theme;
-    } else {
-      document.documentElement.removeAttribute("data-theme");
+      document.documentElement.dataset.themePreference = theme;
+      return;
     }
+
+    document.documentElement.dataset.theme = resolvedTheme(theme);
+    document.documentElement.dataset.themePreference = "system";
   }
 
   function syncButtons(theme) {
@@ -68,6 +79,21 @@ const themeScript = `
   } else {
     syncButtons(readTheme());
   }
+
+  try {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncSystemTheme = () => {
+      if (readTheme() === "system") {
+        applyTheme("system");
+      }
+    };
+
+    if (media.addEventListener) {
+      media.addEventListener("change", syncSystemTheme);
+    } else if (media.addListener) {
+      media.addListener(syncSystemTheme);
+    }
+  } catch {}
 })();
 `;
 
