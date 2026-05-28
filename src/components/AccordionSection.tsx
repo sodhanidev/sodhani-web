@@ -17,6 +17,7 @@ export function AccordionSection({
   id?: string;
   defaultOpen?: boolean;
 }) {
+  const hasRows = table.rows.length > 0;
   const [open, setOpen] = useState(defaultOpen);
 
   useEffect(() => {
@@ -35,6 +36,10 @@ export function AccordionSection({
 
     return () => window.removeEventListener("hashchange", openWhenSelected);
   }, [id]);
+
+  if (!hasRows) {
+    return null;
+  }
 
   return (
     <section className={`panel${id ? " section-anchor" : ""}`} id={id}>

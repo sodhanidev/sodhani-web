@@ -31,7 +31,7 @@ function FinTableRow({
         </td>
         {periods.map((period) => (
           <td className="numeric" key={`${row.label}-${period}`}>
-            {row.values[period] || "-"}
+            {row.values[period] ?? ""}
           </td>
         ))}
       </tr>
@@ -46,7 +46,7 @@ function FinTableRow({
 
 export function FinancialTable({ table }: { table: FinancialTableType }) {
   if (!table.rows.length) {
-    return <div className="empty-state">No data available</div>;
+    return null;
   }
 
   return (

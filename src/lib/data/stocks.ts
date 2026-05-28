@@ -118,14 +118,28 @@ export function getPricePoints(code: string): PricePoint[] {
     return [];
   }
 
-  const points = rowsToObjects(parseCsvRows(fs.readFileSync(file, "utf8"))).map((row) => ({
-    date: row.Date,
-    open: parseNumericCell(row.Open) ?? 0,
-    high: parseNumericCell(row.High) ?? 0,
-    low: parseNumericCell(row.Low) ?? 0,
-    close: parseNumericCell(row.Close) ?? 0,
-    volume: parseNumericCell(row.Volume) ?? 0
-  }));
+  const points = rowsToObjects(parseCsvRows(fs.readFileSync(file, "utf8")))
+    .map((row) => {
+      const open = parseNumericCell(row.Open);
+      const high = parseNumericCell(row.High);
+      const low = parseNumericCell(row.Low);
+      const close = parseNumericCell(row.Close);
+      const volume = parseNumericCell(row.Volume);
+
+      if (!row.Date || open === null || high === null || low === null || close === null || volume === null) {
+        return null;
+      }
+
+      return {
+        date: row.Date,
+        open,
+        high,
+        low,
+        close,
+        volume
+      };
+    })
+    .filter((point): point is PricePoint => Boolean(point));
 
   pricePointsCache.set(cacheKey, points);
   return points;

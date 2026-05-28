@@ -70,7 +70,7 @@ export default async function MarketPage({ params }: PageProps) {
 
   if (parsed.pathParts.length === 0) {
     return (
-      <main className="shell page-stack">
+      <main className="shell page-stack market-page-shell">
         <section className="node-head">
           <div>
             <div className="eyebrow">Market</div>
@@ -103,7 +103,7 @@ export default async function MarketPage({ params }: PageProps) {
   const children = node.children.map((code) => nodes.get(code)).filter(Boolean);
 
   return (
-    <main className="shell page-stack">
+    <main className="shell page-stack market-page-shell">
       <Breadcrumbs node={node} />
       <section className="node-head market-node-head">
         <div>

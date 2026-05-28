@@ -1,9 +1,24 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
 import type { FinancialTable } from "@/lib/data/types";
 
 type Slice = {
+  key: string;
   label: string;
   value: number;
   color: string;
+};
+
+type ChartSlice = Slice & {
+  dash: number;
+  offset: number;
+};
+
+type TooltipPosition = {
+  x: number;
+  y: number;
 };
 
 const holderColors: Record<string, string> = {
@@ -34,6 +49,10 @@ function shortHolderLabel(label: string) {
   return label;
 }
 
+function formatPercent(value: number) {
+  return `${value.toFixed(2)}%`;
+}
+
 function getShareholdingSlices(table: FinancialTable): { period: string; slices: Slice[] } {
   const period = table.periods.at(-1) ?? "";
   if (!period) {
@@ -55,6 +74,7 @@ function getShareholdingSlices(table: FinancialTable): { period: string; slices:
       const colorKey = Object.keys(holderColors).find((candidate) => key.includes(candidate));
 
       return {
+        key,
         label: shortHolderLabel(row.label),
         value,
         color: colorKey ? holderColors[colorKey] : "var(--holder-other)"
@@ -67,7 +87,10 @@ function getShareholdingSlices(table: FinancialTable): { period: string; slices:
 }
 
 export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
-  const { period, slices } = getShareholdingSlices(table);
+  const { period, slices } = useMemo(() => getShareholdingSlices(table), [table]);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [tooltip, setTooltip] = useState<TooltipPosition>({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
   const total = slices.reduce((sum, slice) => sum + slice.value, 0);
 
   if (!period || !slices.length || total <= 0) {
@@ -76,9 +99,9 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
 
   const radius = 42;
   const circumference = 2 * Math.PI * radius;
-  const gap = slices.length > 1 ? 1.4 : 0;
+  const gap = slices.length > 1 ? 1.8 : 0;
   const usable = circumference - gap * slices.length;
-  const chartSlices = slices.map((slice, index) => {
+  const chartSlices: ChartSlice[] = slices.map((slice, index) => {
     const dash = (slice.value / total) * usable;
     const previous = slices
       .slice(0, index)
@@ -90,41 +113,112 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
       offset: -previous
     };
   });
+  const activeSlice = activeIndex === null ? null : chartSlices[activeIndex] ?? null;
+
+  function activate(index: number, nextShowTooltip = false) {
+    setActiveIndex(index);
+    setShowTooltip(nextShowTooltip);
+  }
+
+  function focusSlice(index: number) {
+    activate(index, true);
+    setTooltip({ x: 120, y: 34 });
+  }
+
+  function clearActive() {
+    setActiveIndex(null);
+    setShowTooltip(false);
+  }
+
+  function moveTooltip(event: React.PointerEvent<SVGCircleElement | HTMLButtonElement>) {
+    const bounds = event.currentTarget.closest(".shareholding-donut-wrap")?.getBoundingClientRect();
+    if (!bounds) {
+      return;
+    }
+
+    setTooltip({
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top
+    });
+    setShowTooltip(true);
+  }
 
   return (
     <div className="shareholding-chart" aria-label={`Shareholding pattern for ${period}`}>
-      <div className="shareholding-donut-wrap">
-        <svg className="shareholding-donut" viewBox="0 0 120 120" role="img">
-          <title>Shareholding pattern for {period}</title>
-          <circle className="shareholding-donut-track" cx="60" cy="60" r={radius} />
-          {chartSlices.map((slice) => (
-            <circle
-              className="shareholding-donut-slice"
-              cx="60"
-              cy="60"
-              key={slice.label}
-              r={radius}
+      <div className="shareholding-visual">
+        <div className="shareholding-donut-wrap" onPointerLeave={clearActive}>
+          <svg className="shareholding-donut" viewBox="0 0 120 120" role="img">
+            <title>{`Shareholding pattern for ${period}`}</title>
+            <circle className="shareholding-donut-track" cx="60" cy="60" r={radius} />
+            {chartSlices.map((slice, index) => {
+              const isActive = activeIndex === index;
+              const isMuted = activeIndex !== null && !isActive;
+
+              return (
+                <circle
+                  aria-label={`${slice.label} ${formatPercent(slice.value)}`}
+                  className={`shareholding-donut-slice${isActive ? " is-active" : ""}${isMuted ? " is-muted" : ""}`}
+                  cx="60"
+                  cy="60"
+                  key={slice.label}
+                  r={radius}
+                  role="listitem"
+                  tabIndex={0}
+                  onBlur={clearActive}
+                  onFocus={() => focusSlice(index)}
+                  onPointerEnter={(event) => {
+                    activate(index, true);
+                    moveTooltip(event);
+                  }}
+                  onPointerMove={moveTooltip}
+                  style={{
+                    animationDelay: `${index * 70}ms`,
+                    stroke: slice.color,
+                    strokeDasharray: `${slice.dash} ${circumference - slice.dash}`,
+                    strokeDashoffset: slice.offset
+                  }}
+                />
+              );
+            })}
+          </svg>
+          {activeSlice && showTooltip ? (
+            <div
+              className="shareholding-tooltip"
               style={{
-                stroke: slice.color,
-                strokeDasharray: `${slice.dash} ${circumference - slice.dash}`,
-                strokeDashoffset: slice.offset
+                left: tooltip.x,
+                top: tooltip.y
               }}
-            />
-          ))}
-        </svg>
-        <div className="shareholding-donut-center">
-          <span>{period}</span>
-          <strong>100%</strong>
+            >
+              <span>{activeSlice.label}</span>
+              <strong className="numeric">{formatPercent(activeSlice.value)}</strong>
+              <small>{period}</small>
+            </div>
+          ) : null}
         </div>
       </div>
 
-      <div className="shareholding-legend">
-        {slices.map((slice) => (
-          <div className="shareholding-legend-row" key={slice.label}>
+      <div className="shareholding-legend" role="list">
+        {chartSlices.map((slice, index) => (
+          <button
+            className="shareholding-legend-row"
+            data-active={activeIndex === index ? "true" : undefined}
+            key={slice.label}
+            role="listitem"
+            type="button"
+            onBlur={clearActive}
+            onFocus={() => activate(index)}
+            onPointerEnter={() => activate(index)}
+            onPointerLeave={clearActive}
+          >
             <span className="shareholding-swatch" style={{ background: slice.color }} />
-            <span>{slice.label}</span>
-            <strong className="numeric">{slice.value.toFixed(2)}%</strong>
-          </div>
+            <span className="shareholding-legend-main">
+              <span className="shareholding-legend-name">{slice.label}</span>
+              <span className="shareholding-legend-meter" aria-hidden="true">
+                <span style={{ background: slice.color, width: `${slice.value}%` }} />
+              </span>
+            </span>
+            <strong className="numeric">{formatPercent(slice.value)}</strong>
+          </button>
         ))}
       </div>
     </div>
