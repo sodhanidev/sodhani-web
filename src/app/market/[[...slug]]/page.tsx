@@ -3,9 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { MarketTable } from "@/components/MarketTable";
+import { LazyMarketTable } from "@/components/LazyMarketTable";
 import { SectorCard } from "@/components/SectorCard";
-import { getCompanies, getCompaniesForNode, topCompanies } from "@/lib/data/companies";
+import { getCompanies, getCompaniesForNode, getTopCompaniesForNode } from "@/lib/data/companies";
 import { formatIndianNumber, marketHref } from "@/lib/data/format";
 import { getIndustryData, getNodeByPath } from "@/lib/data/industry";
 
@@ -85,7 +85,7 @@ export default async function MarketPage({ params }: PageProps) {
           {roots.map((node) => (
             <SectorCard
               key={node.code}
-              leaders={topCompanies(getCompaniesForNode(node), "marketCapCr", 3)}
+              leaders={getTopCompaniesForNode(node.code, "marketCapCr", 3)}
               node={node}
             />
           ))}
@@ -128,7 +128,7 @@ export default async function MarketPage({ params }: PageProps) {
         ) : null}
       </section>
       {companies.length ? (
-        <MarketTable
+        <LazyMarketTable
           companies={companies}
           initialPage={parsed.page}
           pageSize={PAGE_SIZE}

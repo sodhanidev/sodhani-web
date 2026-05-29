@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Search, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { SearchItem } from "@/lib/data/search-index";
 
@@ -10,14 +10,24 @@ export function CommandSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<SearchItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingRef = useRef(false);
+
+  const openSearch = useCallback(() => {
+    if (!items.length && !loadingRef.current) {
+      setLoading(true);
+    }
+    setOpen(true);
+  }, [items.length]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        setOpen(true);
+        openSearch();
+        window.setTimeout(() => inputRef.current?.focus(), 0);
       }
 
       if (event.key === "Escape") {
@@ -27,13 +37,18 @@ export function CommandSearch() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [openSearch]);
 
   useEffect(() => {
-    if (open) {
-      window.setTimeout(() => inputRef.current?.focus(), 0);
+    function onPointerDown(event: PointerEvent) {
+      if (!boxRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
     }
-  }, [open]);
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, []);
 
   useEffect(() => {
     if (!open || items.length || loadingRef.current) {
@@ -42,6 +57,7 @@ export function CommandSearch() {
 
     let cancelled = false;
     loadingRef.current = true;
+    setLoading(true);
     fetch("/search-index.json")
       .then((response) => (response.ok ? response.json() : []))
       .then((nextItems: SearchItem[]) => {
@@ -51,6 +67,9 @@ export function CommandSearch() {
       })
       .finally(() => {
         loadingRef.current = false;
+        if (!cancelled) {
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -77,30 +96,53 @@ export function CommandSearch() {
   }, [items, query]);
 
   return (
-    <div className="search-box">
-      <button className="search-trigger" type="button" onClick={() => setOpen(true)}>
+    <div className="search-box" ref={boxRef}>
+      <div className={`search-trigger${open ? " active" : ""}`}>
         <Search size={16} aria-hidden="true" />
-        <span>Search companies and industries</span>
-      </button>
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            openSearch();
+          }}
+          onFocus={openSearch}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && results[0]) {
+              window.location.href = results[0].href;
+            }
+          }}
+          placeholder="Search companies and industries"
+          aria-label="Search companies and industries"
+        />
+        {query ? (
+          <button
+            className="search-clear"
+            type="button"
+            onClick={() => {
+              setQuery("");
+              inputRef.current?.focus();
+            }}
+          >
+            <X size={15} aria-hidden="true" />
+            <span className="sr-only">Clear search</span>
+          </button>
+        ) : null}
+      </div>
 
       {open ? (
         <div className="search-popover">
-          <div className="search-input-wrap">
-            <Search size={16} aria-hidden="true" />
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Reliance, pharma, utilities..."
-              aria-label="Search"
-            />
-            <button className="icon-button" type="button" onClick={() => setOpen(false)}>
-              <X size={16} aria-hidden="true" />
-              <span className="sr-only">Close search</span>
-            </button>
-          </div>
           <div className="search-results">
-            {results.length ? (
+            {loading ? (
+              <div className="search-loading" role="status" aria-label="Loading search results">
+                <span className="search-loading-spinner" aria-hidden="true" />
+                <span className="search-loading-lines" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </div>
+            ) : results.length ? (
               results.map((result) => (
                 <Link
                   className="search-result"

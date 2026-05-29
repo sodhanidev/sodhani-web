@@ -26,10 +26,16 @@ function hasInvestorData(investors: Stock["investors"]) {
   );
 }
 
+const keyMetricLabels = ["Market Cap", "Stock P/E", "ROCE", "ROE"];
+
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const { prices, stock } = model;
   const hasChart = prices.length > 0;
-  const hasKeyMetrics = Object.keys(stock.keyMetrics).length > 0;
+  const keyMetrics = keyMetricLabels.flatMap((label) => {
+    const value = stock.keyMetrics[label];
+    return value ? [{ label, value }] : [];
+  });
+  const hasKeyMetrics = keyMetrics.length > 0;
   const hasPros = stock.prosCons.pros.length > 0;
   const hasCons = stock.prosCons.cons.length > 0;
   const hasProsCons = hasPros || hasCons;
@@ -47,8 +53,6 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const hasDocs = hasDocuments(stock.documents);
   const sectionLinks = [
     { id: "overview", label: "Overview" },
-    hasChart ? { id: "chart", label: "Chart" } : null,
-    hasKeyMetrics ? { id: "key-metrics", label: "Key metrics" } : null,
     hasAnalysis ? { id: "analysis", label: "Analysis" } : null,
     hasQuarterly ? { id: "quarters", label: "Quarters" } : null,
     hasProfitLoss ? { id: "profit-loss", label: "Profit & Loss" } : null,
@@ -74,10 +78,10 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             {hasKeyMetrics ? (
               <section className="panel section-anchor" id="key-metrics">
                 <div className="section-title-row">
-                  <h2>Key metrics</h2>
+                  <h2>Key Metrics</h2>
                 </div>
                 <div className="grid metric-grid panel-pad">
-                  {Object.entries(stock.keyMetrics).map(([label, value]) => (
+                  {keyMetrics.map(({ label, value }) => (
                     <div className="metric-card" key={label}>
                       <div className="metric-label">{label}</div>
                       <div className="metric-value">{value}</div>
@@ -159,6 +163,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
           </div>
         </section>
       </main>
+      <SiteFooter className="company-footer" />
     </>
   );
 }

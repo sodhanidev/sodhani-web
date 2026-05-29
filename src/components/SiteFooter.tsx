@@ -74,15 +74,21 @@ export function SiteFooter({ className }: { className?: string }) {
         </div>
         <div>
           <h2>Theme</h2>
-          <button aria-pressed="false" data-theme-option="light" type="button">
+          <button
+            aria-pressed="true"
+            data-active="true"
+            data-theme-option="light"
+            suppressHydrationWarning
+            type="button"
+          >
             <Sun size={14} aria-hidden="true" />
             Light
           </button>
-          <button aria-pressed="false" data-theme-option="dark" type="button">
+          <button aria-pressed="false" data-theme-option="dark" suppressHydrationWarning type="button">
             <Moon size={14} aria-hidden="true" />
             Dark
           </button>
-          <button aria-pressed="false" data-theme-option="system" type="button">
+          <button aria-pressed="false" data-theme-option="system" suppressHydrationWarning type="button">
             <Laptop size={14} aria-hidden="true" />
             Auto
           </button>

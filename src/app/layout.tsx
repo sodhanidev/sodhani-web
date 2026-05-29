@@ -117,8 +117,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={inter.variable}>
+    <html className={inter.variable} lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body>
         <Script
           dangerouslySetInnerHTML={{ __html: themeScript }}
           id="theme-preference"

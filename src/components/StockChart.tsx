@@ -58,6 +58,7 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [range, setRange] = useState<RangeKey>("1Y");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [hoverPointerY, setHoverPointerY] = useState<number | null>(null);
   const [chartSize, setChartSize] = useState({ width: 1280, height: 320 });
 
   useEffect(() => {
@@ -121,8 +122,9 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
     const y = height - bottomPad - ((point.close - min) / span) * (height - topPad - bottomPad);
     return { x, y, point };
   });
-  const yTicks = Array.from({ length: 6 }, (_, index) => {
-    const value = min + (span / 5) * index;
+  const yTickCount = 4;
+  const yTicks = Array.from({ length: yTickCount }, (_, index) => {
+    const value = min + (span / (yTickCount - 1)) * index;
     const y = height - bottomPad - ((value - min) / span) * (height - topPad - bottomPad);
     return { value, y };
   }).reverse();
@@ -137,13 +139,8 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
       ? ""
       : `${linePath} L ${coords[coords.length - 1].x} ${height - bottomPad} L ${coords[0].x} ${height - bottomPad} Z`;
   const hover = hoverIndex === null ? null : coords[hoverIndex];
-  const hoverSide = hover
-    ? hover.x > width - rightPad - 130
-      ? "left"
-      : hover.x < leftPad + 130
-        ? "right"
-        : "center"
-    : "center";
+  const tooltipY = hover ? Math.min(height - bottomPad - 34, Math.max(topPad + 34, hoverPointerY ?? hover.y)) : 0;
+  const hoverSide = hover && hover.x > width - rightPad - 150 ? "left" : "right";
 
   return (
     <section className={`chart-surface${id ? " section-anchor" : ""}`} id={id}>
@@ -175,6 +172,7 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
                 onClick={() => {
                   setRange(candidate.key);
                   setHoverIndex(null);
+                  setHoverPointerY(null);
                 }}
               >
                 {candidate.label}
@@ -187,20 +185,26 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
         <div
           ref={frameRef}
           className="chart-frame"
-          onMouseLeave={() => setHoverIndex(null)}
+          onMouseLeave={() => {
+            setHoverIndex(null);
+            setHoverPointerY(null);
+          }}
           onMouseMove={(event) => {
             const rect = event.currentTarget.getBoundingClientRect();
             const chartX = ((event.clientX - rect.left) / rect.width) * width;
+            const chartY = ((event.clientY - rect.top) / rect.height) * height;
             const plotRight = width - rightPad;
 
             if (chartX < leftPad || chartX > plotRight) {
               setHoverIndex(null);
+              setHoverPointerY(null);
               return;
             }
 
             const ratio = (chartX - leftPad) / (width - leftPad - rightPad);
             const nextIndex = Math.round(ratio * (visible.length - 1));
             setHoverIndex(Math.max(0, Math.min(visible.length - 1, nextIndex)));
+            setHoverPointerY(Math.min(height - bottomPad, Math.max(topPad, chartY)));
           }}
         >
           {coords.length <= 1 && visible[0] ? (
@@ -218,9 +222,11 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
                     <stop offset="100%" stopColor={stroke} stopOpacity="0" />
                   </linearGradient>
                 </defs>
-                {yTicks.map((tick) => (
+                {yTicks.map((tick, index) => (
                   <g key={tick.value}>
-                    <line x1={leftPad} x2={width - rightPad} y1={tick.y} y2={tick.y} stroke={chartColors.gridLine} />
+                    {index > 0 && index < yTicks.length - 1 ? (
+                      <line x1={leftPad} x2={width - rightPad} y1={tick.y} y2={tick.y} stroke={chartColors.gridLine} />
+                    ) : null}
                     <text x={width - rightPad + 14} y={tick.y + 4} fill={chartColors.axisText} fontSize="11">
                       {formatIndianNumber(tick.value, { dp: 2 })}
                     </text>
@@ -277,7 +283,7 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
                 <div
                   className="chart-tooltip"
                   data-side={hoverSide}
-                  style={{ left: `${(hover.x / width) * 100}%`, top: `${(hover.y / height) * 100}%` }}
+                  style={{ left: `${(hover.x / width) * 100}%`, top: `${(tooltipY / height) * 100}%` }}
                 >
                   <div className="chart-tooltip-price">₹{formatIndianNumber(hover.point.close, { dp: 2 })}</div>
                   <div className="chart-tooltip-meta">{formatTooltipDate(hover.point.date)}</div>
