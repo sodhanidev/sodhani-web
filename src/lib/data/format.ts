@@ -91,3 +91,7 @@ export function companyHref(code: string): string {
 export function companyShareholdingHref(code: string): string {
   return `${companyHref(code)}shareholding/`;
 }
+
+export function companyFinancialsHref(code: string): string {
+  return `${companyHref(code)}financials/`;
+}

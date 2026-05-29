@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react";
 
-import { AccordionSection } from "@/components/AccordionSection";
 import { CompanySectionNav, type CompanySectionLink } from "@/components/CompanySectionNav";
 import { DocumentsTabs } from "@/components/DocumentsTabs";
 import { ShareholdingPieChart } from "@/components/ShareholdingPieChart";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
+import { FinancialPerformance } from "@/components/company/FinancialPerformance";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyShareholdingHref } from "@/lib/data/format";
 import type { FinancialTable as FinancialTableModel, Stock } from "@/lib/data/types";
@@ -47,6 +47,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const hasBalanceSheet = hasTable(stock.balanceSheet);
   const hasCashFlows = hasTable(stock.cashFlows);
   const hasRatios = hasTable(stock.ratios);
+  const hasFinancials = hasQuarterly || hasProfitLoss || hasBalanceSheet || hasCashFlows || hasRatios;
   const hasQuarterlyShareholding = hasTable(stock.shareholding.quarterly);
   const hasYearlyShareholding = hasTable(stock.shareholding.yearly);
   const hasShareholding = hasQuarterlyShareholding || hasYearlyShareholding;
@@ -54,11 +55,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const sectionLinks = [
     { id: "overview", label: "Overview" },
     hasAnalysis ? { id: "analysis", label: "Analysis" } : null,
-    hasQuarterly ? { id: "quarters", label: "Quarters" } : null,
-    hasProfitLoss ? { id: "profit-loss", label: "Profit & Loss" } : null,
-    hasBalanceSheet ? { id: "balance-sheet", label: "Balance Sheet" } : null,
-    hasCashFlows ? { id: "cash-flow", label: "Cash Flow" } : null,
-    hasRatios ? { id: "ratios", label: "Ratios" } : null,
+    hasFinancials ? { id: "financials", label: "Financials" } : null,
     hasShareholding ? { id: "shareholding", label: "Shareholding" } : null,
     hasDocs ? { id: "documents", label: "Documents" } : null
   ].filter((link): link is CompanySectionLink => Boolean(link));
@@ -129,11 +126,14 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
               </section>
             ) : null}
 
-            {hasQuarterly ? <AccordionSection defaultOpen id="quarters" table={stock.quarterly} title="Quarterly Results" /> : null}
-            {hasProfitLoss ? <AccordionSection id="profit-loss" table={stock.profitLoss} title="Profit & Loss" /> : null}
-            {hasBalanceSheet ? <AccordionSection id="balance-sheet" table={stock.balanceSheet} title="Balance Sheet" /> : null}
-            {hasCashFlows ? <AccordionSection id="cash-flow" table={stock.cashFlows} title="Cash Flows" /> : null}
-            {hasRatios ? <AccordionSection id="ratios" table={stock.ratios} title="Ratios" /> : null}
+            {hasFinancials ? (
+              <FinancialPerformance
+                id="financials"
+                quarterly={stock.quarterly}
+                ticker={stock.ticker}
+                yearly={stock.profitLoss}
+              />
+            ) : null}
 
             {hasShareholding ? (
               <section className="panel section-anchor" id="shareholding">
