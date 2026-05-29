@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./LandingSearch.module.css";
 
 import type { SearchItem } from "@/lib/data/search-index";
 
@@ -60,8 +62,8 @@ export function LandingSearch() {
   }
 
   return (
-    <form className="landing-search" onSubmit={submit}>
-      <div className="landing-search-input">
+    <form className={css(styles, "landing-search")} onSubmit={submit}>
+      <div className={css(styles, "landing-search-input")}>
         <Search size={28} aria-hidden="true" />
         <input
           aria-label="Search for a company"
@@ -72,10 +74,10 @@ export function LandingSearch() {
         />
       </div>
       {results.length ? (
-        <div className="landing-results">
+        <div className={css(styles, "landing-results")}>
           {results.map((item) => (
             <Link
-              className="landing-result"
+              className={css(styles, "landing-result")}
               href={item.href}
               key={item.href}
             >

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { css } from "@/lib/css-module";
+import styles from "./market.module.css";
 
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
@@ -19,14 +21,14 @@ export function MetricRail({
   const kind = metric === "marketCapCr" ? "crore" : "percent";
 
   return (
-    <section className="rail">
+    <section className={css(styles, "rail")}>
       <h2>{labels[metric]}</h2>
-      <ol className="rail-list">
+      <ol className={css(styles, "rail-list")}>
         {companies.map((company) => (
           <li key={`${metric}-${company.code}`}>
-            <Link className="rail-row" href={companyHref(company.code)}>
-              <span className="rail-name">{company.name}</span>
-              <span className="numeric">{formatMetric(company[metric], kind)}</span>
+            <Link className={css(styles, "rail-row")} href={companyHref(company.code)}>
+              <span className={css(styles, "rail-name")}>{company.name}</span>
+              <span className={css(styles, "numeric")}>{formatMetric(company[metric], kind)}</span>
             </Link>
           </li>
         ))}

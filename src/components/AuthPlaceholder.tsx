@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { css } from "@/lib/css-module";
+import styles from "./AuthPlaceholder.module.css";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -30,19 +32,19 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
   const copy = modeCopy[mode];
 
   return (
-    <main className="auth-page">
-      <div className="auth-shell">
-        <Link className="auth-brand" href="/">
+    <main className={css(styles, "auth-page")}>
+      <div className={css(styles, "auth-shell")}>
+        <Link className={css(styles, "auth-brand")} href="/">
           <Image src="/logo-transparent.png" alt="" width={28} height={28} priority />
           <span>sodhani</span>
         </Link>
 
-        <h1 className="auth-title">{copy.title}</h1>
+        <h1 className={css(styles, "auth-title")}>{copy.title}</h1>
 
-        <div className="auth-switch" role="tablist" aria-label="Authentication mode">
+        <div className={css(styles, "auth-switch")} role="tablist" aria-label="Authentication mode">
           <Link
             aria-selected={mode === "sign-in"}
-            className={mode === "sign-in" ? "active" : undefined}
+            className={css(styles, mode === "sign-in" ? "active" : undefined)}
             href="/sign-in/"
             role="tab"
           >
@@ -50,7 +52,7 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
           </Link>
           <Link
             aria-selected={mode === "sign-up"}
-            className={mode === "sign-up" ? "active" : undefined}
+            className={css(styles, mode === "sign-up" ? "active" : undefined)}
             href="/sign-up/"
             role="tab"
           >
@@ -58,18 +60,18 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
           </Link>
         </div>
 
-        <button className="auth-google" type="button">
+        <button className={css(styles, "auth-google")} type="button">
           <Image src="/icons/google.svg" alt="" width={16} height={16} aria-hidden="true" />
           {copy.google}
         </button>
 
-        <div className="auth-divider" aria-hidden="true">
+        <div className={css(styles, "auth-divider")} aria-hidden="true">
           <span />
           <p>or with email</p>
           <span />
         </div>
 
-        <form className="auth-form" noValidate>
+        <form className={css(styles, "auth-form")} noValidate>
           {mode === "sign-up" ? (
             <label>
               <span>Name</span>
@@ -81,10 +83,10 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
             <input autoComplete="email" name="email" placeholder="you@example.com" type="email" />
           </label>
           <label>
-            <span className="auth-label-row">
+            <span className={css(styles, "auth-label-row")}>
               Password
               {mode === "sign-in" ? (
-                <Link className="auth-inline-link" href="/sign-in/">
+                <Link className={css(styles, "auth-inline-link")} href="/sign-in/">
                   Forgot?
                 </Link>
               ) : null}
@@ -96,17 +98,17 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
               type="password"
             />
           </label>
-          <button className="auth-primary" type="submit">
+          <button className={css(styles, "auth-primary")} type="submit">
             {copy.primary}
           </button>
         </form>
 
-        <p className="auth-alt">
+        <p className={css(styles, "auth-alt")}>
           {copy.alternateLabel}{" "}
           <Link href={copy.alternateHref}>{copy.alternateCta}</Link>
         </p>
 
-        <p className="auth-fineprint">
+        <p className={css(styles, "auth-fineprint")}>
           By continuing you agree to our <Link href="/terms/">Terms</Link> and{" "}
           <Link href="/privacy/">Privacy Policy</Link>.
         </p>

@@ -1,25 +1,28 @@
+import { css } from "@/lib/css-module";
+import styles from "@/components/market.module.css";
+
 export default function MarketLoading() {
   return (
-    <main className="shell page-stack market-page-shell" aria-label="Loading market">
-      <section className="node-head market-loading-head">
+    <main className={css(styles, "shell page-stack market-page-shell")} aria-label="Loading market">
+      <section className={css(styles, "node-head market-loading-head")}>
         <div>
-          <div className="skeleton-line skeleton-eyebrow" />
-          <div className="skeleton-line skeleton-title" />
-          <div className="skeleton-line skeleton-lede" />
+          <div className={css(styles, "skeleton-line skeleton-eyebrow")} />
+          <div className={css(styles, "skeleton-line skeleton-title")} />
+          <div className={css(styles, "skeleton-line skeleton-lede")} />
         </div>
       </section>
-      <div className="grid sector-grid" aria-hidden="true">
+      <div className={css(styles, "grid sector-grid")} aria-hidden="true">
         {Array.from({ length: 8 }, (_, index) => (
-          <section className="sector-card market-loading-card" key={index}>
-            <div className="sector-title-row">
-              <span className="skeleton-line skeleton-card-title" />
-              <span className="skeleton-dot" />
+          <section className={css(styles, "sector-card market-loading-card")} key={index}>
+            <div className={css(styles, "sector-title-row")}>
+              <span className={css(styles, "skeleton-line skeleton-card-title")} />
+              <span className={css(styles, "skeleton-dot")} />
             </div>
-            <span className="skeleton-line skeleton-badge" />
-            <div className="market-loading-list">
-              <span className="skeleton-line" />
-              <span className="skeleton-line" />
-              <span className="skeleton-line" />
+            <span className={css(styles, "skeleton-line skeleton-badge")} />
+            <div className={css(styles, "market-loading-list")}>
+              <span className={css(styles, "skeleton-line")} />
+              <span className={css(styles, "skeleton-line")} />
+              <span className={css(styles, "skeleton-line")} />
             </div>
           </section>
         ))}

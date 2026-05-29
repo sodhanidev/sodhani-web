@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { css } from "@/lib/css-module";
+import styles from "../legal.module.css";
 
 export const metadata: Metadata = {
   title: "Terms of Service · Sodhani",
@@ -11,19 +13,19 @@ const LAST_UPDATED = "May 26, 2026";
 
 export default function TermsPage() {
   return (
-    <main className="shell page-stack legal-page">
-      <header className="legal-head">
-        <p className="eyebrow">Legal</p>
+    <main className={css(styles, "shell page-stack legal-page")}>
+      <header className={css(styles, "legal-head")}>
+        <p className={css(styles, "eyebrow")}>Legal</p>
         <h1>Terms of Service</h1>
-        <p className="lede">
+        <p className={css(styles, "lede")}>
           These terms govern your access to and use of Sodhani — our research,
           screening, and analytics interfaces. By using the site you agree to
           everything below.
         </p>
-        <p className="legal-meta">Last updated {LAST_UPDATED}</p>
+        <p className={css(styles, "legal-meta")}>Last updated {LAST_UPDATED}</p>
       </header>
 
-      <section className="panel panel-pad legal-section">
+      <section className={css(styles, "panel panel-pad legal-section")}>
         <h2>1. Who we are</h2>
         <p>
           Sodhani is operated by Sodhani Capital (&ldquo;Sodhani&rdquo;,
@@ -119,7 +121,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <p className="legal-footnote">
+      <p className={css(styles, "legal-footnote")}>
         See also our <Link href="/privacy/">Privacy Policy</Link>.
       </p>
     </main>

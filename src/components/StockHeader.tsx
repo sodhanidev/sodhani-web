@@ -1,5 +1,7 @@
 import { formatIndianNumber, marketHref, parseNumericCell } from "@/lib/data/format";
 import type { Company, Stock } from "@/lib/data/types";
+import { css } from "@/lib/css-module";
+import styles from "./company/company.module.css";
 
 export function StockHeader({
   stock,
@@ -22,22 +24,22 @@ export function StockHeader({
   ] : []) : "/market/";
 
   return (
-    <section className={`stock-head${id ? " section-anchor" : ""}`} id={id}>
-      <div className="stock-logo" aria-hidden="true">
+    <section className={css(styles, `stock-head${id ? " section-anchor" : ""}`)} id={id}>
+      <div className={css(styles, "stock-logo")} aria-hidden="true">
         <span>{stock.ticker.slice(0, 1)}</span>
       </div>
-      <div className="stock-quote">
+      <div className={css(styles, "stock-quote")}>
         {company ? (
-          <div className="quote-controls">
-            <a className="industry-chip" href={industryHref}>
+          <div className={css(styles, "quote-controls")}>
+            <a className={css(styles, "industry-chip")} href={industryHref}>
               {company.leaf.name}
             </a>
           </div>
         ) : null}
         <h1>{stock.overview.companyName}</h1>
         {displayPrice ? (
-          <div className="price-line">
-            <span className="price-value">{displayPrice}</span>
+          <div className={css(styles, "price-line")}>
+            <span className={css(styles, "price-value")}>{displayPrice}</span>
           </div>
         ) : null}
       </div>

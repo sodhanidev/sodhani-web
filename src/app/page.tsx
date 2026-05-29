@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { css } from "@/lib/css-module";
+import styles from "./page.module.css";
 
 import { LandingSearch } from "@/components/LandingSearch";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -103,41 +105,41 @@ function sparklinePath(points: number[]): string {
 
 function MarketSparkline({ snapshot }: { snapshot: MarketSnapshot }) {
   return (
-    <svg className="landing-market-sparkline" viewBox="0 0 112 34" aria-hidden="true">
-      <line className="landing-market-sparkline-base" x1="0" x2="112" y1="18" y2="18" />
-      <path className={`landing-market-sparkline-line ${snapshot.direction}`} d={sparklinePath(snapshot.points)} />
+    <svg className={css(styles, "landing-market-sparkline")} viewBox="0 0 112 34" aria-hidden="true">
+      <line className={css(styles, "landing-market-sparkline-base")} x1="0" x2="112" y1="18" y2="18" />
+      <path className={css(styles, `landing-market-sparkline-line ${snapshot.direction}`)} d={sparklinePath(snapshot.points)} />
     </svg>
   );
 }
 
 export default function HomePage() {
   return (
-    <main className="landing-page">
-      <section className="landing-hero">
-        <nav className="landing-nav" aria-label="Landing navigation">
-          <div className="landing-links">
+    <main className={css(styles, "landing-page")}>
+      <section className={css(styles, "landing-hero")}>
+        <nav className={css(styles, "landing-nav")} aria-label="Landing navigation">
+          <div className={css(styles, "landing-links")}>
             <Link href="/">Home</Link>
             <Link href="/market/">Screens</Link>
             <Link href="/market/">
               Tools <ChevronDown size={14} aria-hidden="true" />
             </Link>
           </div>
-          <div className="landing-actions">
-            <Link className="landing-login" href="/sign-in/">
-              <span className="landing-action-icon" data-icon="user-round" aria-hidden="true" />
+          <div className={css(styles, "landing-actions")}>
+            <Link className={css(styles, "landing-login")} href="/sign-in/">
+              <span className={css(styles, "landing-action-icon")} data-icon="user-round" aria-hidden="true" />
               Login
             </Link>
-            <Link className="landing-account" href="/sign-up/">
-              <span className="landing-action-icon" data-icon="user-plus" aria-hidden="true" />
+            <Link className={css(styles, "landing-account")} href="/sign-up/">
+              <span className={css(styles, "landing-action-icon")} data-icon="user-plus" aria-hidden="true" />
               Sign up
             </Link>
           </div>
         </nav>
 
-        <div className="landing-center">
-          <h1 className="landing-logo">
+        <div className={css(styles, "landing-center")}>
+          <h1 className={css(styles, "landing-logo")}>
             <Image
-              className="landing-logo-img"
+              className={css(styles, "landing-logo-img")}
               src="/logo-transparent.png"
               alt=""
               width={88}
@@ -149,8 +151,8 @@ export default function HomePage() {
           <p>Stock analysis and screening tool for investors in India.</p>
           <LandingSearch />
 
-          <section className="landing-market" aria-labelledby="landing-market-title">
-            <div className="landing-market-head">
+          <section className={css(styles, "landing-market")} aria-labelledby="landing-market-title">
+            <div className={css(styles, "landing-market-head")}>
               <h2 id="landing-market-title">Market and sectors</h2>
               <Link href="/market/">
                 See All
@@ -158,20 +160,20 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="landing-market-grid">
+            <div className={css(styles, "landing-market-grid")}>
               {marketSnapshots.map((column, columnIndex) => (
-                <div className="landing-market-column" key={`market-column-${columnIndex}`}>
+                <div className={css(styles, "landing-market-column")} key={`market-column-${columnIndex}`}>
                   {column.map((snapshot) => (
-                    <div className="landing-market-row" key={snapshot.label}>
-                      <span className="landing-market-name">
+                    <div className={css(styles, "landing-market-row")} key={snapshot.label}>
+                      <span className={css(styles, "landing-market-name")}>
                         {snapshot.label.split("\n").map((line) => (
                           <span key={line}>{line}</span>
                         ))}
                       </span>
                       <MarketSparkline snapshot={snapshot} />
-                      <span className="landing-market-quote">
-                        <span className="numeric landing-market-value">{snapshot.value}</span>
-                        <span className={`landing-market-change ${snapshot.direction}`}>
+                      <span className={css(styles, "landing-market-quote")}>
+                        <span className={css(styles, "numeric landing-market-value")}>{snapshot.value}</span>
+                        <span className={css(styles, `landing-market-change ${snapshot.direction}`)}>
                           <span aria-hidden="true">{snapshot.direction === "up" ? "▲" : "▼"}</span>
                           {snapshot.change}
                         </span>

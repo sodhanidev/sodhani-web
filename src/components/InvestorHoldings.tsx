@@ -1,4 +1,6 @@
 import type { Stock } from "@/lib/data/types";
+import { css } from "@/lib/css-module";
+import styles from "./company/company.module.css";
 
 type InvestorGroups = Stock["investors"]["quarterly"];
 
@@ -50,13 +52,13 @@ function InvestorCategoryTable({
   const periods = getPeriods(holders);
 
   return (
-    <details className="investor-group" open={defaultOpen}>
+    <details className={css(styles, "investor-group")} open={defaultOpen}>
       <summary>
         <span>{getCategoryLabel(category)}</span>
-        <span className="investor-count">{holderRows.length} holders</span>
+        <span className={css(styles, "investor-count")}>{holderRows.length} holders</span>
       </summary>
-      <div className="table-wrap investor-table-wrap">
-        <table className="fin-table investor-table">
+      <div className={css(styles, "table-wrap investor-table-wrap")}>
+        <table className={css(styles, "fin-table investor-table")}>
           <thead>
             <tr>
               <th>Holder</th>
@@ -70,7 +72,7 @@ function InvestorCategoryTable({
               <tr key={holder}>
                 <td>{holder}</td>
                 {periods.map((period) => (
-                  <td className="numeric" key={`${holder}-${period}`}>
+                  <td className={css(styles, "numeric")} key={`${holder}-${period}`}>
                     {values[period] ?? ""}
                   </td>
                 ))}
@@ -97,9 +99,9 @@ function InvestorPeriodBlock({
   }
 
   return (
-    <div className="investor-period-block">
+    <div className={css(styles, "investor-period-block")}>
       <h3>{title}</h3>
-      <div className="investor-groups">
+      <div className={css(styles, "investor-groups")}>
         {categories.map(([category, holders], index) => (
           <InvestorCategoryTable
             category={category}
@@ -122,11 +124,11 @@ export function InvestorHoldings({ id, investors }: { id?: string; investors: St
   }
 
   return (
-    <section className={`panel${id ? " section-anchor" : ""}`} id={id}>
-      <div className="section-title-row">
+    <section className={css(styles, `panel${id ? " section-anchor" : ""}`)} id={id}>
+      <div className={css(styles, "section-title-row")}>
         <h2>Investor Holdings</h2>
       </div>
-      <div className="investor-holdings">
+      <div className={css(styles, "investor-holdings")}>
         {hasQuarterly ? <InvestorPeriodBlock groups={investors.quarterly} title="Quarterly" /> : null}
         {hasYearly ? <InvestorPeriodBlock groups={investors.yearly} title="Yearly" /> : null}
       </div>

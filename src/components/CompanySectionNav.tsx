@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { css } from "@/lib/css-module";
+
+import styles from "./company/company.module.css";
+
 export type CompanySectionLink = {
   id: string;
   label: string;
@@ -10,6 +14,7 @@ export type CompanySectionLink = {
 export function CompanySectionNav({ links }: { links: CompanySectionLink[] }) {
   const [activeId, setActiveId] = useState(links[0]?.id ?? "");
   const navRef = useRef<HTMLElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const targets = links
@@ -57,7 +62,7 @@ export function CompanySectionNav({ links }: { links: CompanySectionLink[] }) {
 
   useEffect(() => {
     const activeLink = navRef.current?.querySelector<HTMLAnchorElement>('[aria-current="location"]');
-    const scroller = navRef.current?.querySelector<HTMLElement>(".company-section-scroll");
+    const scroller = scrollerRef.current;
 
     if (!activeLink || !scroller) {
       return;
@@ -76,12 +81,12 @@ export function CompanySectionNav({ links }: { links: CompanySectionLink[] }) {
   }
 
   return (
-    <nav className="company-section-nav" ref={navRef} aria-label="Company page sections">
-      <div className="company-section-scroll">
+    <nav className={css(styles, "company-section-nav")} ref={navRef} aria-label="Company page sections">
+      <div className={css(styles, "company-section-scroll")} ref={scrollerRef}>
         {links.map((link) => (
           <a
             aria-current={activeId === link.id ? "location" : undefined}
-            className="company-section-link"
+            className={css(styles, "company-section-link")}
             href={`#${link.id}`}
             key={link.id}
             onClick={() => setActiveId(link.id)}

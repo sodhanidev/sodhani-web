@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./layout.module.css";
 
 import type { SearchItem } from "@/lib/data/search-index";
 
@@ -96,8 +98,8 @@ export function CommandSearch() {
   }, [items, query]);
 
   return (
-    <div className="search-box" ref={boxRef}>
-      <div className={`search-trigger${open ? " active" : ""}`}>
+    <div className={css(styles, "search-box")} ref={boxRef}>
+      <div className={css(styles, `search-trigger${open ? " active" : ""}`)}>
         <Search size={16} aria-hidden="true" />
         <input
           ref={inputRef}
@@ -117,7 +119,7 @@ export function CommandSearch() {
         />
         {query ? (
           <button
-            className="search-clear"
+            className={css(styles, "search-clear")}
             type="button"
             onClick={() => {
               setQuery("");
@@ -125,18 +127,18 @@ export function CommandSearch() {
             }}
           >
             <X size={15} aria-hidden="true" />
-            <span className="sr-only">Clear search</span>
+            <span className={css(styles, "sr-only")}>Clear search</span>
           </button>
         ) : null}
       </div>
 
       {open ? (
-        <div className="search-popover">
-          <div className="search-results">
+        <div className={css(styles, "search-popover")}>
+          <div className={css(styles, "search-results")}>
             {loading ? (
-              <div className="search-loading" role="status" aria-label="Loading search results">
-                <span className="search-loading-spinner" aria-hidden="true" />
-                <span className="search-loading-lines" aria-hidden="true">
+              <div className={css(styles, "search-loading")} role="status" aria-label="Loading search results">
+                <span className={css(styles, "search-loading-spinner")} aria-hidden="true" />
+                <span className={css(styles, "search-loading-lines")} aria-hidden="true">
                   <span />
                   <span />
                   <span />
@@ -145,20 +147,20 @@ export function CommandSearch() {
             ) : results.length ? (
               results.map((result) => (
                 <Link
-                  className="search-result"
+                  className={css(styles, "search-result")}
                   href={result.href}
                   key={`${result.kind}-${result.href}`}
                   onClick={() => setOpen(false)}
                 >
                   <span>
-                    <span className="result-label">{result.label}</span>
-                    <span className="result-meta"> {result.meta}</span>
+                    <span className={css(styles, "result-label")}>{result.label}</span>
+                    <span className={css(styles, "result-meta")}> {result.meta}</span>
                   </span>
-                  <span className="count-badge">{result.kind}</span>
+                  <span className={css(styles, "count-badge")}>{result.kind}</span>
                 </Link>
               ))
             ) : (
-              <div className="empty-state">No matches</div>
+              <div className={css(styles, "empty-state")}>No matches</div>
             )}
           </div>
         </div>

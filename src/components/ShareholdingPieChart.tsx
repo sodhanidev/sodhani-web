@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./company/company.module.css";
 
 import type { FinancialTable } from "@/lib/data/types";
 
@@ -113,6 +115,7 @@ function getShareholdingSlices(table: FinancialTable, activePeriod: string): { p
 
 export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
   const recentPeriods = useMemo(() => getRecentPeriods(table.periods), [table.periods]);
+  const donutWrapRef = useRef<HTMLDivElement>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
   const period = selectedPeriod && recentPeriods.includes(selectedPeriod) ? selectedPeriod : recentPeriods.at(-1) || "";
   const { slices } = useMemo(() => getShareholdingSlices(table, period), [period, table]);
@@ -122,7 +125,7 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
   const total = slices.reduce((sum, slice) => sum + slice.value, 0);
 
   if (!period || !slices.length || total <= 0) {
-    return <div className="empty-state">No shareholding chart data available</div>;
+    return <div className={css(styles, "empty-state")}>No shareholding chart data available</div>;
   }
 
   const radius = 42;
@@ -165,7 +168,7 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
   }
 
   function moveTooltip(event: React.PointerEvent<SVGCircleElement>) {
-    const bounds = event.currentTarget.closest(".shareholding-donut-wrap")?.getBoundingClientRect();
+    const bounds = donutWrapRef.current?.getBoundingClientRect();
     if (!bounds) {
       return;
     }
@@ -178,12 +181,12 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
   }
 
   return (
-    <div className="shareholding-chart" aria-label={`Shareholding pattern for ${period}`}>
-      <div className="shareholding-visual">
-        <div className="shareholding-donut-wrap" onPointerLeave={clearActive}>
-          <svg className="shareholding-donut" viewBox="0 0 120 120" role="img">
+    <div className={css(styles, "shareholding-chart")} aria-label={`Shareholding pattern for ${period}`}>
+      <div className={css(styles, "shareholding-visual")}>
+        <div className={css(styles, "shareholding-donut-wrap")} ref={donutWrapRef} onPointerLeave={clearActive}>
+          <svg className={css(styles, "shareholding-donut")} viewBox="0 0 120 120" role="img">
             <title>{`Shareholding pattern for ${period}`}</title>
-            <circle className="shareholding-donut-track" cx="60" cy="60" r={radius} />
+            <circle className={css(styles, "shareholding-donut-track")} cx="60" cy="60" r={radius} />
             {chartSlices.map((slice, index) => {
               const isActive = activeIndex === index;
               const isMuted = activeIndex !== null && !isActive;
@@ -191,7 +194,7 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
               return (
                 <circle
                   aria-label={`${slice.label} ${formatPercent(slice.value)}`}
-                  className={`shareholding-donut-slice${isActive ? " is-active" : ""}${isMuted ? " is-muted" : ""}`}
+                  className={css(styles, `shareholding-donut-slice${isActive ? " is-active" : ""}${isMuted ? " is-muted" : ""}`)}
                   cx="60"
                   cy="60"
                   key={slice.label}
@@ -217,30 +220,30 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
           </svg>
           {activeSlice && showTooltip ? (
             <div
-              className="chart-tooltip shareholding-tooltip"
+              className={css(styles, "chart-tooltip shareholding-tooltip")}
               data-side={tooltipSide}
               style={{
                 left: tooltip.x,
                 top: tooltip.y
               }}
             >
-              <div className="chart-tooltip-price numeric">{formatPercent(activeSlice.value)}</div>
-              <div className="chart-tooltip-meta">
+              <div className={css(styles, "chart-tooltip-price numeric")}>{formatPercent(activeSlice.value)}</div>
+              <div className={css(styles, "chart-tooltip-meta")}>
                 {activeSlice.label} · {period}
               </div>
             </div>
           ) : null}
         </div>
       </div>
-      <div className="shareholding-breakdown">
-        <div className="shareholding-period-tabs" role="tablist" aria-label="Shareholding periods">
+      <div className={css(styles, "shareholding-breakdown")}>
+        <div className={css(styles, "shareholding-period-tabs")} role="tablist" aria-label="Shareholding periods">
           {recentPeriods.map((availablePeriod) => {
             const isActive = availablePeriod === period;
 
             return (
               <button
                 aria-selected={isActive}
-                className={isActive ? "active" : ""}
+                className={css(styles, isActive ? "active" : "")}
                 key={availablePeriod}
                 role="tab"
                 type="button"
@@ -251,7 +254,7 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
             );
           })}
         </div>
-        <div className="shareholding-bars">
+        <div className={css(styles, "shareholding-bars")}>
           {slices.map((slice) => {
             const barStyle = {
               "--shareholding-color": slice.color,
@@ -261,15 +264,15 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
             return (
               <div
                 aria-label={`${longHolderLabel(slice.label)} ${formatPercent(slice.value)} in ${period}`}
-                className="shareholding-bar-row"
+                className={css(styles, "shareholding-bar-row")}
                 key={slice.key}
               >
-                <span className="shareholding-bar-label">{longHolderLabel(slice.label)}</span>
-                <div className="shareholding-bar-line">
-                  <div className="shareholding-bar-track" aria-hidden="true">
-                    <span className="shareholding-bar-fill" style={barStyle} />
+                <span className={css(styles, "shareholding-bar-label")}>{longHolderLabel(slice.label)}</span>
+                <div className={css(styles, "shareholding-bar-line")}>
+                  <div className={css(styles, "shareholding-bar-track")} aria-hidden="true">
+                    <span className={css(styles, "shareholding-bar-fill")} style={barStyle} />
                   </div>
-                  <strong className="numeric">{formatPercent(slice.value)}</strong>
+                  <strong className={css(styles, "numeric")}>{formatPercent(slice.value)}</strong>
                 </div>
               </div>
             );

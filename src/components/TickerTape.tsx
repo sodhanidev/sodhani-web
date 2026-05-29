@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { css } from "@/lib/css-module";
+import styles from "./layout.module.css";
 
 import { getCompanies } from "@/lib/data/companies";
 import { companyHref, formatIndianNumber } from "@/lib/data/format";
@@ -55,16 +57,16 @@ function TickerTapeItem({ company }: { company: Company }) {
 
   return (
     <Link
-      className="market-ticker-item"
+      className={css(styles, "market-ticker-item")}
       href={companyHref(company.code)}
       title={`${company.name} · Quarter profit variation`}
     >
-      <span className="ticker-name">{tickerLabel(company)}</span>
-      <span className="ticker-price numeric">
+      <span className={css(styles, "ticker-name")}>{tickerLabel(company)}</span>
+      <span className={css(styles, "ticker-price numeric")}>
         {formatIndianNumber(company.cmp, { dp: 2 })}
       </span>
-      <span className={`ticker-change numeric ${trend}`}>
-        <span className="ticker-change-icon" aria-hidden="true" />
+      <span className={css(styles, `ticker-change numeric ${trend}`)}>
+        <span className={css(styles, "ticker-change-icon")} aria-hidden="true" />
         {formatIndianNumber(Math.abs(change), { dp: 1 })}%
       </span>
     </Link>
@@ -81,11 +83,11 @@ export function TickerTape() {
 
   return (
     <section
-      className="market-ticker"
+      className={css(styles, "market-ticker")}
       aria-label="Market ticker showing company prices and quarterly profit variation"
     >
-      <div className="market-ticker-window">
-        <div className="market-ticker-loop">
+      <div className={css(styles, "market-ticker-window")}>
+        <div className={css(styles, "market-ticker-loop")}>
           {loop.map((company, index) => (
             <TickerTapeItem company={company} key={`${company.code}-${index}`} />
           ))}

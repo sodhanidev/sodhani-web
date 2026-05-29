@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { css } from "@/lib/css-module";
+import styles from "./company.module.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import type { CompanyPageModel } from "@/lib/data/company-template";
@@ -84,15 +86,15 @@ function ShareholdingRows({
     const hasChildren = row.children.length > 0;
 
     return [
-      <tr className={`${child ? "is-child" : ""}${!child && index === 0 ? " is-highlighted" : ""}`} key={rowKey}>
+      <tr className={css(styles, `${child ? "is-child" : ""}${!child && index === 0 ? " is-highlighted" : ""}`)} key={rowKey}>
         <td>
-          <span className="ownership-particular">
-            {hasChildren ? <span className="ownership-row-mark">+</span> : null}
+          <span className={css(styles, "ownership-particular")}>
+            {hasChildren ? <span className={css(styles, "ownership-row-mark")}>+</span> : null}
             {row.label}
           </span>
         </td>
         {periods.map((period) => (
-          <td className="numeric" key={`${rowKey}-${period}`}>
+          <td className={css(styles, "numeric")} key={`${rowKey}-${period}`}>
             {row.values[period] || "-"}
           </td>
         ))}
@@ -118,17 +120,17 @@ function ShareholdingTable({
   }
 
   return (
-    <section className="ownership-section" id={id}>
-      <div className="ownership-section-heading">
+    <section className={css(styles, "ownership-section")} id={id}>
+      <div className={css(styles, "ownership-section-heading")}>
         <div>
           <span>{kicker}</span>
           <h2>{title}</h2>
         </div>
         <p>{table.periods.length} periods</p>
       </div>
-      <div className="ownership-table-card">
-        <div className="ownership-table-wrap">
-          <table className="ownership-table">
+      <div className={css(styles, "ownership-table-card")}>
+        <div className={css(styles, "ownership-table-wrap")}>
+          <table className={css(styles, "ownership-table")}>
             <thead>
               <tr>
                 <th>Particulars</th>
@@ -163,14 +165,14 @@ function InvestorCategoryCard({
   }
 
   return (
-    <article className="ownership-investor-card">
-      <div className="ownership-investor-card-head">
+    <article className={css(styles, "ownership-investor-card")}>
+      <div className={css(styles, "ownership-investor-card-head")}>
         <h3>{getCategoryLabel(category)}</h3>
         <span>{holderRows.length} holders</span>
       </div>
-      <div className="ownership-table-card">
-        <div className="ownership-table-wrap">
-          <table className="ownership-table ownership-investor-table">
+      <div className={css(styles, "ownership-table-card")}>
+        <div className={css(styles, "ownership-table-wrap")}>
+          <table className={css(styles, "ownership-table ownership-investor-table")}>
             <thead>
               <tr>
                 <th>Holder</th>
@@ -181,10 +183,10 @@ function InvestorCategoryCard({
             </thead>
             <tbody>
               {holderRows.map(([holder, values], index) => (
-                <tr className={index === 0 ? "is-highlighted" : ""} key={holder}>
+                <tr className={css(styles, index === 0 ? "is-highlighted" : "")} key={holder}>
                   <td>{holder}</td>
                   {periods.map((period) => (
-                    <td className="numeric" key={`${holder}-${period}`}>
+                    <td className={css(styles, "numeric")} key={`${holder}-${period}`}>
                       {formatInvestorValue(values[period])}
                     </td>
                   ))}
@@ -218,15 +220,15 @@ function InvestorDetailsSection({
   const periods = getInvestorPeriods(groups, preferredPeriods);
 
   return (
-    <section className="ownership-section" id={id}>
-      <div className="ownership-section-heading">
+    <section className={css(styles, "ownership-section")} id={id}>
+      <div className={css(styles, "ownership-section-heading")}>
         <div>
           <span>Investor Holding</span>
           <h2>{title}</h2>
         </div>
         <p>{periods.length} periods</p>
       </div>
-      <div className="ownership-investor-list">
+      <div className={css(styles, "ownership-investor-list")}>
         {categories.map(([category, holders]) => (
           <InvestorCategoryCard category={category} holders={holders} key={category} periods={periods} />
         ))}
@@ -245,34 +247,34 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
 
   return (
     <>
-      <main className="shell page-stack ownership-detail-page">
-        <header className="ownership-hero">
+      <main className={css(styles, "shell page-stack ownership-detail-page")}>
+        <header className={css(styles, "ownership-hero")}>
           <div>
-            <Link className="ownership-back-link" href={companyHref(stock.ticker)}>
+            <Link className={css(styles, "ownership-back-link")} href={companyHref(stock.ticker)}>
               <ArrowLeft size={15} aria-hidden="true" />
               Back to company
             </Link>
-            <p className="ownership-eyebrow">{stock.ticker}</p>
+            <p className={css(styles, "ownership-eyebrow")}>{stock.ticker}</p>
             <h1>{stock.overview.companyName}</h1>
             <p>Shareholding pattern, category ownership, and named investor holdings from the static company filings data.</p>
           </div>
-          <div className="ownership-summary-grid">
+          <div className={css(styles, "ownership-summary-grid")}>
             <div>
               <span>Promoters</span>
-              <strong className="numeric">{getLatestTableValue(stock.shareholding.quarterly, "Promoters")}</strong>
+              <strong className={css(styles, "numeric")}>{getLatestTableValue(stock.shareholding.quarterly, "Promoters")}</strong>
             </div>
             <div>
               <span>Public</span>
-              <strong className="numeric">{getLatestTableValue(stock.shareholding.quarterly, "Public")}</strong>
+              <strong className={css(styles, "numeric")}>{getLatestTableValue(stock.shareholding.quarterly, "Public")}</strong>
             </div>
             <div>
               <span>Named Holders</span>
-              <strong className="numeric">{investorHolderCount}</strong>
+              <strong className={css(styles, "numeric")}>{investorHolderCount}</strong>
             </div>
           </div>
         </header>
 
-        <nav className="ownership-jump-nav" aria-label="Shareholding detail sections">
+        <nav className={css(styles, "ownership-jump-nav")} aria-label="Shareholding detail sections">
           {hasQuarterlyShareholding ? (
             <a href="#quarterly-shareholding">
               Quarterly Pattern <ChevronRight size={14} aria-hidden="true" />
@@ -295,7 +297,7 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
           ) : null}
         </nav>
 
-        <div className="ownership-detail-stack">
+        <div className={css(styles, "ownership-detail-stack")}>
           <ShareholdingTable
             id="quarterly-shareholding"
             kicker="Shareholding Pattern"
@@ -322,7 +324,7 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
           />
         </div>
       </main>
-      <SiteFooter className="company-footer" />
+      <SiteFooter className={css(styles, "company-footer")} />
     </>
   );
 }

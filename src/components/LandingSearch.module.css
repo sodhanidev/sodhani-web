@@ -1,0 +1,84 @@
+/* Extracted from page.module.css. Local CSS Module styles for LandingSearch. */
+
+.landing-search {
+  position: relative;
+  width: min(660px, 100%);
+}
+
+.landing-search-input {
+  display: flex;
+  height: 58px;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--landing-search-bg);
+  corner-shape: squircle;
+  padding: 0 18px;
+  text-align: left;
+}
+
+.landing-search-input svg {
+  flex: 0 0 auto;
+  color: var(--landing-placeholder);
+}
+
+.landing-search-input input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  outline: 0;
+  color: var(--landing-ink);
+  font-family: var(--search-font);
+  font-size: 20px;
+  font-weight: 450;
+  letter-spacing: 0;
+}
+
+.landing-search-input input::placeholder {
+  color: var(--landing-placeholder);
+}
+
+.landing-results {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  left: 0;
+  z-index: 5;
+  overflow: hidden;
+  border: 1px solid var(--landing-line);
+  border-radius: 5px;
+  background: var(--landing-surface);
+  box-shadow: 0 16px 35px rgba(30, 40, 56, 0.12);
+  text-align: left;
+}
+
+.landing-result {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 15px;
+  color: var(--landing-ink);
+  font-size: 15px;
+}
+
+.landing-result + .landing-result {
+  border-top: 1px solid var(--landing-result-border);
+}
+
+.landing-result:hover {
+  background: var(--landing-surface-soft);
+}
+
+.landing-result span:last-child {
+  color: var(--landing-muted-2);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+  .landing-search-input input {
+    font-size: 18px;
+  }
+}

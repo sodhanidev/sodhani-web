@@ -2,6 +2,8 @@
 
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./company/company.module.css";
 
 import type { FinRow, FinancialTable as FinancialTableType } from "@/lib/data/types";
 
@@ -21,7 +23,7 @@ function FinTableRow({
       <tr className={child ? "child-row" : ""}>
         <td>
           {row.expandable ? (
-            <button className="sort-button" type="button" onClick={() => setOpen(!open)}>
+            <button className={css(styles, "sort-button")} type="button" onClick={() => setOpen(!open)}>
               {open ? <ChevronDown size={14} aria-hidden="true" /> : <ChevronRight size={14} aria-hidden="true" />}
               {row.label}
             </button>
@@ -30,7 +32,7 @@ function FinTableRow({
           )}
         </td>
         {periods.map((period) => (
-          <td className="numeric" key={`${row.label}-${period}`}>
+          <td className={css(styles, "numeric")} key={`${row.label}-${period}`}>
             {row.values[period] ?? ""}
           </td>
         ))}
@@ -50,8 +52,8 @@ export function FinancialTable({ table }: { table: FinancialTableType }) {
   }
 
   return (
-    <div className="table-wrap">
-      <table className="fin-table">
+    <div className={css(styles, "table-wrap")}>
+      <table className={css(styles, "fin-table")}>
         <thead>
           <tr>
             <th>Metric</th>

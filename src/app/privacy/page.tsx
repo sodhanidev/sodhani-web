@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { css } from "@/lib/css-module";
+import styles from "../legal.module.css";
 
 export const metadata: Metadata = {
   title: "Privacy Policy · Sodhani",
@@ -11,18 +13,18 @@ const LAST_UPDATED = "May 26, 2026";
 
 export default function PrivacyPage() {
   return (
-    <main className="shell page-stack legal-page">
-      <header className="legal-head">
-        <p className="eyebrow">Legal</p>
+    <main className={css(styles, "shell page-stack legal-page")}>
+      <header className={css(styles, "legal-head")}>
+        <p className={css(styles, "eyebrow")}>Legal</p>
         <h1>Privacy Policy</h1>
-        <p className="lede">
+        <p className={css(styles, "lede")}>
           This policy explains what information Sodhani collects when you use
           the site, how we use it, and the choices you have.
         </p>
-        <p className="legal-meta">Last updated {LAST_UPDATED}</p>
+        <p className={css(styles, "legal-meta")}>Last updated {LAST_UPDATED}</p>
       </header>
 
-      <section className="panel panel-pad legal-section">
+      <section className={css(styles, "panel panel-pad legal-section")}>
         <h2>1. Information we collect</h2>
         <p>
           We aim to collect as little personal data as possible. The categories
@@ -140,7 +142,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <p className="legal-footnote">
+      <p className={css(styles, "legal-footnote")}>
         See also our <Link href="/terms/">Terms of Service</Link>.
       </p>
     </main>

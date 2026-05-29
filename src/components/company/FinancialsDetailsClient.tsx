@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { css } from "@/lib/css-module";
+import styles from "./company.module.css";
 
 import { companyHref, formatIndianNumber, parseNumericCell } from "@/lib/data/format";
 import type { FinRow, FinancialTable, Stock } from "@/lib/data/types";
@@ -104,15 +106,15 @@ function FinancialRows({
     const isHighlighted = !child && highlightedRows.has(normalizedLabel(row.label));
 
     return [
-      <tr className={`${child ? "is-child" : ""}${isHighlighted ? " is-highlighted" : ""}`} key={rowKey}>
+      <tr className={css(styles, `${child ? "is-child" : ""}${isHighlighted ? " is-highlighted" : ""}`)} key={rowKey}>
         <td>
-          <span className="financials-particular">
-            {row.children.length ? <span className="financials-row-mark">+</span> : null}
+          <span className={css(styles, "financials-particular")}>
+            {row.children.length ? <span className={css(styles, "financials-row-mark")}>+</span> : null}
             {row.label}
           </span>
         </td>
         {periods.map((period) => (
-          <td className="numeric" key={`${rowKey}-${period}`}>
+          <td className={css(styles, "numeric")} key={`${rowKey}-${period}`}>
             {row.values[period] || "-"}
           </td>
         ))}
@@ -142,47 +144,47 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
   const activeTable = getTableForTab(stock, activeTab.key, activeMode);
 
   return (
-    <main className="page-stack financials-detail-page">
-      <header className="financials-detail-hero">
+    <main className={css(styles, "page-stack financials-detail-page")}>
+      <header className={css(styles, "financials-detail-hero")}>
         <div>
-          <Link className="ownership-back-link" href={companyHref(stock.ticker)}>
+          <Link className={css(styles, "ownership-back-link")} href={companyHref(stock.ticker)}>
             <ArrowLeft size={15} aria-hidden="true" />
             Back to company
           </Link>
-          <p className="ownership-eyebrow">{stock.ticker}</p>
+          <p className={css(styles, "ownership-eyebrow")}>{stock.ticker}</p>
           <h1>{stock.overview.companyName}</h1>
           <p>Full financial statements from the static company filing data, with quarterly income and yearly statements.</p>
         </div>
-        <div className="financials-summary-grid">
+        <div className={css(styles, "financials-summary-grid")}>
           <div>
             <span>Revenue</span>
-            <strong className="numeric">{getLatestValue(stock.profitLoss, ["Sales", "Revenue"], { prefix: "₹" })}</strong>
+            <strong className={css(styles, "numeric")}>{getLatestValue(stock.profitLoss, ["Sales", "Revenue"], { prefix: "₹" })}</strong>
             <small>{getLatestPeriod(stock.profitLoss)}</small>
           </div>
           <div>
             <span>Net Profit</span>
-            <strong className="numeric">{getLatestValue(stock.profitLoss, ["Net Profit"], { prefix: "₹" })}</strong>
+            <strong className={css(styles, "numeric")}>{getLatestValue(stock.profitLoss, ["Net Profit"], { prefix: "₹" })}</strong>
             <small>{getLatestPeriod(stock.profitLoss)}</small>
           </div>
           <div>
             <span>Total Assets</span>
-            <strong className="numeric">{getLatestValue(stock.balanceSheet, ["Total Assets"], { prefix: "₹" })}</strong>
+            <strong className={css(styles, "numeric")}>{getLatestValue(stock.balanceSheet, ["Total Assets"], { prefix: "₹" })}</strong>
             <small>{getLatestPeriod(stock.balanceSheet)}</small>
           </div>
           <div>
             <span>ROCE</span>
-            <strong className="numeric">{getLatestValue(stock.ratios, ["ROCE %"], { suffix: "%" })}</strong>
+            <strong className={css(styles, "numeric")}>{getLatestValue(stock.ratios, ["ROCE %"], { suffix: "%" })}</strong>
             <small>{getLatestPeriod(stock.ratios)}</small>
           </div>
         </div>
       </header>
 
-      <section className="financials-detail-panel">
-        <div className="financials-tabs-row">
-          <nav className="financials-tabs" aria-label="Financial statement sections">
+      <section className={css(styles, "financials-detail-panel")}>
+        <div className={css(styles, "financials-tabs-row")}>
+          <nav className={css(styles, "financials-tabs")} aria-label="Financial statement sections">
             {availableTabs.map((item) => (
               <button
-                className={item.key === activeTab.key ? "active" : ""}
+                className={css(styles, item.key === activeTab.key ? "active" : "")}
                 key={item.key}
                 type="button"
                 onClick={() => setTab(item.key)}
@@ -191,10 +193,10 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
               </button>
             ))}
           </nav>
-          <div className="financials-period-toggle" aria-label="Statement period">
+          <div className={css(styles, "financials-period-toggle")} aria-label="Statement period">
             {availableModes.map((item) => (
               <button
-                className={item.key === activeMode ? "active" : ""}
+                className={css(styles, item.key === activeMode ? "active" : "")}
                 key={item.key}
                 type="button"
                 onClick={() => setMode(item.key)}
@@ -205,7 +207,7 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           </div>
         </div>
 
-        <div className="financials-detail-heading">
+        <div className={css(styles, "financials-detail-heading")}>
           <div>
             <span>{activeTab.kicker}</span>
             <h2>{activeTab.label}</h2>
@@ -213,9 +215,9 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           <p>{activeTable.periods.length} periods</p>
         </div>
 
-        <div className="financials-table-card">
-          <div className="financials-table-wrap">
-            <table className="financials-table">
+        <div className={css(styles, "financials-table-card")}>
+          <div className={css(styles, "financials-table-wrap")}>
+            <table className={css(styles, "financials-table")}>
               <thead>
                 <tr>
                   <th>Particulars</th>

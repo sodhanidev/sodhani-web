@@ -1,15 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { css } from "@/lib/css-module";
+import styles from "./layout.module.css";
 
 import { CommandSearch } from "./CommandSearch";
 
 export function TopNav() {
   return (
-    <header className="topbar">
-      <div className="shell topbar-inner">
-        <Link className="brand" href="/">
+    <header className={css(styles, "topbar")}>
+      <div className={css(styles, "shell topbar-inner")}>
+        <Link className={css(styles, "brand")} href="/">
           <Image
-            className="brand-mark"
+            className={css(styles, "brand-mark")}
             src="/logo-transparent.png"
             alt="Sodhani"
             width={38}

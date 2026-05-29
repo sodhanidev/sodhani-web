@@ -2,6 +2,8 @@
 
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./company/company.module.css";
 
 import { FinancialTable } from "./FinancialTable";
 import type { FinancialTable as FinancialTableType } from "@/lib/data/types";
@@ -42,8 +44,8 @@ export function AccordionSection({
   }
 
   return (
-    <section className={`panel${id ? " section-anchor" : ""}`} id={id}>
-      <button className="accordion-button section-title-row" type="button" onClick={() => setOpen(!open)}>
+    <section className={css(styles, `panel${id ? " section-anchor" : ""}`)} id={id}>
+      <button className={css(styles, "accordion-button section-title-row")} type="button" onClick={() => setOpen(!open)}>
         <h2>{title}</h2>
         {open ? <ChevronDown size={18} aria-hidden="true" /> : <ChevronRight size={18} aria-hidden="true" />}
       </button>

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react";
+import { css } from "@/lib/css-module";
+import styles from "./company.module.css";
 
 import { CompanySectionNav, type CompanySectionLink } from "@/components/CompanySectionNav";
 import { DocumentsTabs } from "@/components/DocumentsTabs";
@@ -62,25 +64,25 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
 
   return (
     <>
-      <main className="shell page-stack company-page-shell">
+      <main className={css(styles, "shell page-stack company-page-shell")}>
         <CompanySectionNav links={sectionLinks} />
-        <section className="stock-hero">
+        <section className={css(styles, "stock-hero")}>
           <StockHeader id="overview" stock={stock} />
           {hasChart ? <StockChart id="chart" points={prices} /> : null}
         </section>
 
-        <section className="stock-layout">
-          <div className="stock-main">
+        <section className={css(styles, "stock-layout")}>
+          <div className={css(styles, "stock-main")}>
             {hasKeyMetrics ? (
-              <section className="panel section-anchor" id="key-metrics">
-                <div className="section-title-row">
+              <section className={css(styles, "panel section-anchor")} id="key-metrics">
+                <div className={css(styles, "section-title-row")}>
                   <h2>Key Metrics</h2>
                 </div>
-                <div className="grid metric-grid panel-pad">
+                <div className={css(styles, "grid metric-grid panel-pad")}>
                   {keyMetrics.map(({ label, value }) => (
-                    <div className="metric-card" key={label}>
-                      <div className="metric-label">{label}</div>
-                      <div className="metric-value">{value}</div>
+                    <div className={css(styles, "metric-card")} key={label}>
+                      <div className={css(styles, "metric-label")}>{label}</div>
+                      <div className={css(styles, "metric-value")}>{value}</div>
                     </div>
                   ))}
                 </div>
@@ -88,13 +90,13 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             ) : null}
 
             {hasProsCons ? (
-              <section className="grid pros-cons section-anchor" id="analysis">
+              <section className={css(styles, "grid pros-cons section-anchor")} id="analysis">
                 {hasPros ? (
-                  <div className="panel panel-pad">
+                  <div className={css(styles, "panel panel-pad")}>
                     <h2>Pros</h2>
-                    <ul className="note-list">
+                    <ul className={css(styles, "note-list")}>
                       {stock.prosCons.pros.map((item) => (
-                        <li className="positive" key={item}>
+                        <li className={css(styles, "positive")} key={item}>
                           <CheckCircle2 size={16} aria-hidden="true" /> {item}
                         </li>
                       ))}
@@ -102,11 +104,11 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                   </div>
                 ) : null}
                 {hasCons ? (
-                  <div className="panel panel-pad">
+                  <div className={css(styles, "panel panel-pad")}>
                     <h2>Cons</h2>
-                    <ul className="note-list">
+                    <ul className={css(styles, "note-list")}>
                       {stock.prosCons.cons.map((item) => (
-                        <li className="negative" key={item}>
+                        <li className={css(styles, "negative")} key={item}>
                           <AlertTriangle size={16} aria-hidden="true" /> {item}
                         </li>
                       ))}
@@ -118,7 +120,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
 
             {hasAbout ? (
               <section
-                className={`panel panel-pad${hasProsCons ? "" : " section-anchor"}`}
+                className={css(styles, `panel panel-pad${hasProsCons ? "" : " section-anchor"}`)}
                 id={hasProsCons ? undefined : "analysis"}
               >
                 <h2>About</h2>
@@ -136,10 +138,10 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             ) : null}
 
             {hasShareholding ? (
-              <section className="panel section-anchor" id="shareholding">
-                <div className="section-title-row">
+              <section className={css(styles, "panel section-anchor")} id="shareholding">
+                <div className={css(styles, "section-title-row")}>
                   <h2>Shareholding Pattern</h2>
-                  <Link className="shareholding-detail-link" href={companyShareholdingHref(stock.ticker)}>
+                  <Link className={css(styles, "shareholding-detail-link")} href={companyShareholdingHref(stock.ticker)}>
                     Show Detailed Information
                     <ChevronRight size={15} aria-hidden="true" />
                   </Link>
@@ -154,7 +156,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
           </div>
         </section>
       </main>
-      <SiteFooter className="company-footer" />
+      <SiteFooter className={css(styles, "company-footer")} />
     </>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { css } from "@/lib/css-module";
+import styles from "./market.module.css";
 
 import type { Company } from "@/lib/data/types";
 
@@ -12,18 +14,18 @@ type MarketTableProps = {
 
 function MarketTableSkeleton() {
   return (
-    <section className="panel market-table-loading" aria-label="Loading companies">
-      <div className="table-toolbar">
-        <div className="skeleton-line skeleton-input" />
-        <div className="skeleton-line skeleton-count" />
+    <section className={css(styles, "panel market-table-loading")} aria-label="Loading companies">
+      <div className={css(styles, "table-toolbar")}>
+        <div className={css(styles, "skeleton-line skeleton-input")} />
+        <div className={css(styles, "skeleton-line skeleton-count")} />
       </div>
-      <div className="market-table-loading-rows">
+      <div className={css(styles, "market-table-loading-rows")}>
         {Array.from({ length: 8 }, (_, index) => (
-          <div className="market-table-loading-row" key={index}>
-            <span className="skeleton-line" />
-            <span className="skeleton-line" />
-            <span className="skeleton-line" />
-            <span className="skeleton-line" />
+          <div className={css(styles, "market-table-loading-row")} key={index}>
+            <span className={css(styles, "skeleton-line")} />
+            <span className={css(styles, "skeleton-line")} />
+            <span className={css(styles, "skeleton-line")} />
+            <span className={css(styles, "skeleton-line")} />
           </div>
         ))}
       </div>

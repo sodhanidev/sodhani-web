@@ -1,17 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Laptop, Moon, Sun } from "lucide-react";
+import { css } from "@/lib/css-module";
+import styles from "./SiteFooter.module.css";
 
 const googlePlayHref = "https://play.google.com/store/search?q=Sodhani&c=apps";
 const appStoreHref = "https://apps.apple.com/in/search?term=Sodhani";
 
 export function SiteFooter({ className }: { className?: string }) {
   return (
-    <footer className={`landing-footer${className ? ` ${className}` : ""}`}>
-      <div className="landing-footer-brand">
-        <div className="footer-logo">
+    <footer className={css(styles, "landing-footer", className)}>
+      <div className={css(styles, "landing-footer-brand")}>
+        <div className={css(styles, "footer-logo")}>
           <Image
-            className="footer-logo-img"
+            className={css(styles, "footer-logo-img")}
             src="/logo-transparent.png"
             alt=""
             width={34}
@@ -19,27 +21,27 @@ export function SiteFooter({ className }: { className?: string }) {
           />
           <span>sodhani</span>
         </div>
-        <p className="footer-tagline">Stock analysis and screening tool</p>
-        <p className="footer-copy">
+        <p className={css(styles, "footer-tagline")}>Stock analysis and screening tool</p>
+        <p className={css(styles, "footer-copy")}>
           Sodhani Capital &copy; 2009-2025
           <br />
           Made with <Heart size={14} fill="currentColor" aria-hidden="true" /> in India.
         </p>
-        <p className="footer-copy">Data provided by C-MOTS Internet Technologies Pvt Ltd</p>
-        <p className="footer-legal">
+        <p className={css(styles, "footer-copy")}>Data provided by C-MOTS Internet Technologies Pvt Ltd</p>
+        <p className={css(styles, "footer-legal")}>
           <Link href="/terms/">Terms</Link> &amp; <Link href="/privacy/">Privacy</Link>.
         </p>
       </div>
-      <div className="landing-footer-cols">
+      <div className={css(styles, "landing-footer-cols")}>
         <div>
           <h2>Product</h2>
           <Link href="/market/">Premium</Link>
           <Link href="/market/">What&apos;s new?</Link>
           <Link href="/market/">Learn</Link>
-          <div className="store-badges" aria-label="App downloads">
-            <a className="store-badge" href={appStoreHref} rel="noopener noreferrer" target="_blank">
+          <div className={css(styles, "store-badges")} aria-label="App downloads">
+            <a className={css(styles, "store-badge")} href={appStoreHref} rel="noopener noreferrer" target="_blank">
               <Image
-                className="store-badge-icon store-badge-apple"
+                className={css(styles, "store-badge-icon store-badge-apple")}
                 src="/icons/apple.svg"
                 alt=""
                 width={30}
@@ -51,9 +53,9 @@ export function SiteFooter({ className }: { className?: string }) {
                 <strong>App Store</strong>
               </span>
             </a>
-            <a className="store-badge" href={googlePlayHref} rel="noopener noreferrer" target="_blank">
+            <a className={css(styles, "store-badge")} href={googlePlayHref} rel="noopener noreferrer" target="_blank">
               <Image
-                className="store-badge-icon"
+                className={css(styles, "store-badge-icon")}
                 src="/icons/google-play.svg"
                 alt=""
                 width={28}

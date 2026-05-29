@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { css } from "@/lib/css-module";
+import styles from "@/components/market.module.css";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LazyMarketTable } from "@/components/LazyMarketTable";
@@ -70,18 +72,18 @@ export default async function MarketPage({ params }: PageProps) {
 
   if (parsed.pathParts.length === 0) {
     return (
-      <main className="shell page-stack market-page-shell">
-        <section className="node-head">
+      <main className={css(styles, "shell page-stack market-page-shell")}>
+        <section className={css(styles, "node-head")}>
           <div>
-            <div className="eyebrow">Market</div>
+            <div className={css(styles, "eyebrow")}>Market</div>
             <h1>Industries</h1>
-            <p className="lede">
+            <p className={css(styles, "lede")}>
               {formatIndianNumber(roots.reduce((sum, node) => sum + node.companyCount, 0))} companies
               across {formatIndianNumber(roots.length)} sectors.
             </p>
           </div>
         </section>
-        <div className="grid sector-grid">
+        <div className={css(styles, "grid sector-grid")}>
           {roots.map((node) => (
             <SectorCard
               key={node.code}
@@ -103,24 +105,24 @@ export default async function MarketPage({ params }: PageProps) {
   const children = node.children.map((code) => nodes.get(code)).filter(Boolean);
 
   return (
-    <main className="shell page-stack market-page-shell">
+    <main className={css(styles, "shell page-stack market-page-shell")}>
       <Breadcrumbs node={node} />
-      <section className="node-head market-node-head">
+      <section className={css(styles, "node-head market-node-head")}>
         <div>
-          <div className="eyebrow">Industry browser</div>
+          <div className={css(styles, "eyebrow")}>Industry browser</div>
           <h1>{node.name} Companies</h1>
-          <p className="lede">
+          <p className={css(styles, "lede")}>
             {formatIndianNumber(companies.length)} companies
             {node.description ? ` · ${node.description}` : ""}
           </p>
         </div>
         {children.length ? (
-          <div className="child-strip">
+          <div className={css(styles, "child-strip")}>
             {children.map((child) =>
               child ? (
-                <Link className="pill-button" href={marketHref(child.path)} key={child.code}>
+                <Link className={css(styles, "pill-button")} href={marketHref(child.path)} key={child.code}>
                   {child.name}
-                  <span className="count-badge">{formatIndianNumber(child.companyCount)}</span>
+                  <span className={css(styles, "count-badge")}>{formatIndianNumber(child.companyCount)}</span>
                 </Link>
               ) : null
             )}
@@ -134,7 +136,7 @@ export default async function MarketPage({ params }: PageProps) {
           pageSize={PAGE_SIZE}
         />
       ) : (
-        <section className="empty-state">
+        <section className={css(styles, "empty-state")}>
           <h2>No companies available</h2>
           <p>No companies found for this category.</p>
         </section>

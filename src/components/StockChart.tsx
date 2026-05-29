@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./company/company.module.css";
 
 import { formatIndianNumber } from "@/lib/data/format";
 import type { PricePoint } from "@/lib/data/types";
@@ -93,8 +95,8 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
   const visible = useMemo(() => filterRange(points, range), [points, range]);
   if (!visible.length) {
     return (
-      <section className={`chart-surface${id ? " section-anchor" : ""}`} id={id}>
-        <div className="empty-state">No price data available</div>
+      <section className={css(styles, `chart-surface${id ? " section-anchor" : ""}`)} id={id}>
+        <div className={css(styles, "empty-state")}>No price data available</div>
       </section>
     );
   }
@@ -143,27 +145,27 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
   const hoverSide = hover && hover.x > width - rightPad - 150 ? "left" : "right";
 
   return (
-    <section className={`chart-surface${id ? " section-anchor" : ""}`} id={id}>
-      <div className="chart-meta-row">
-        <div className="chart-stats" aria-label="Chart summary">
+    <section className={css(styles, `chart-surface${id ? " section-anchor" : ""}`)} id={id}>
+      <div className={css(styles, "chart-meta-row")}>
+        <div className={css(styles, "chart-stats")} aria-label="Chart summary">
           <div>
             <span>High</span>
-            <strong className="numeric">₹{formatIndianNumber(high, { dp: 2 })}</strong>
+            <strong className={css(styles, "numeric")}>₹{formatIndianNumber(high, { dp: 2 })}</strong>
           </div>
           <div>
             <span>Low</span>
-            <strong className="numeric">₹{formatIndianNumber(low, { dp: 2 })}</strong>
+            <strong className={css(styles, "numeric")}>₹{formatIndianNumber(low, { dp: 2 })}</strong>
           </div>
           <div>
             <span>Returns</span>
-            <strong className={`numeric ${rangePct >= 0 ? "up" : "down"}`}>
+            <strong className={css(styles, `numeric ${rangePct >= 0 ? "up" : "down"}`)}>
               {rangePct >= 0 ? "+" : ""}
               {formatIndianNumber(rangePct, { dp: 2 })}%
             </strong>
           </div>
         </div>
-        <div className="chart-actions">
-          <div className="range-toggle chart-ranges" aria-label="Chart range">
+        <div className={css(styles, "chart-actions")}>
+          <div className={css(styles, "range-toggle chart-ranges")} aria-label="Chart range">
             {ranges.map((candidate) => (
               <button
                 className={candidate.key === range ? "active" : ""}
@@ -181,10 +183,10 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
           </div>
         </div>
       </div>
-      <div className="chart-body">
+      <div className={css(styles, "chart-body")}>
         <div
           ref={frameRef}
-          className="chart-frame"
+          className={css(styles, "chart-frame")}
           onMouseLeave={() => {
             setHoverIndex(null);
             setHoverPointerY(null);
@@ -208,10 +210,10 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
           }}
         >
           {coords.length <= 1 && visible[0] ? (
-            <div className="panel-pad">
-              <div className="eyebrow">{visible[0].date}</div>
-              <div className="price-value">{formatIndianNumber(visible[0].close, { dp: 2 })}</div>
-              <p className="muted numeric">Vol {formatIndianNumber(visible[0].volume)}</p>
+            <div className={css(styles, "panel-pad")}>
+              <div className={css(styles, "eyebrow")}>{visible[0].date}</div>
+              <div className={css(styles, "price-value")}>{formatIndianNumber(visible[0].close, { dp: 2 })}</div>
+              <p className={css(styles, "muted numeric")}>Vol {formatIndianNumber(visible[0].volume)}</p>
             </div>
           ) : (
             <>
@@ -281,19 +283,19 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
               </svg>
               {hover ? (
                 <div
-                  className="chart-tooltip"
+                  className={css(styles, "chart-tooltip")}
                   data-side={hoverSide}
                   style={{ left: `${(hover.x / width) * 100}%`, top: `${(tooltipY / height) * 100}%` }}
                 >
-                  <div className="chart-tooltip-price">₹{formatIndianNumber(hover.point.close, { dp: 2 })}</div>
-                  <div className="chart-tooltip-meta">{formatTooltipDate(hover.point.date)}</div>
+                  <div className={css(styles, "chart-tooltip-price")}>₹{formatIndianNumber(hover.point.close, { dp: 2 })}</div>
+                  <div className={css(styles, "chart-tooltip-meta")}>{formatTooltipDate(hover.point.date)}</div>
                 </div>
               ) : null}
             </>
           )}
         </div>
       </div>
-      <div className="sr-only">
+      <div className={css(styles, "sr-only")}>
         <table>
           <caption>Close prices</caption>
           <tbody>

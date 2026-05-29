@@ -2,6 +2,8 @@
 
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./market.module.css";
 
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
@@ -105,10 +107,10 @@ export function MarketTable({
   }
 
   return (
-    <section className="panel">
-      <div className="table-toolbar">
+    <section className={css(styles, "panel")}>
+      <div className={css(styles, "table-toolbar")}>
         <input
-          className="text-input"
+          className={css(styles, "text-input")}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -117,20 +119,20 @@ export function MarketTable({
           placeholder="Filter company or code"
           aria-label="Filter companies"
         />
-        <span className="muted numeric">
+        <span className={css(styles, "muted numeric")}>
           {filtered.length.toLocaleString("en-IN")} rows · showing {start + 1}-
           {Math.min(start + pageSize, filtered.length)}
         </span>
       </div>
 
-      <div className="table-wrap">
+      <div className={css(styles, "table-wrap")}>
         <table>
           <thead>
             <tr>
               <th>S.No.</th>
               {columns.map((column) => (
                 <th className={column.className} key={column.key}>
-                  <button className="sort-button" type="button" onClick={() => cycleSort(column.key)}>
+                  <button className={css(styles, "sort-button")} type="button" onClick={() => cycleSort(column.key)}>
                     {column.label}
                     {sortKey === column.key ? (
                       direction === "asc" ? (
@@ -160,10 +162,10 @@ export function MarketTable({
                   }
                 }}
               >
-                <td className="numeric">{start + index + 1}.</td>
+                <td className={css(styles, "numeric")}>{start + index + 1}.</td>
                 {columns.map((column) => (
                   <td
-                    className={`${column.className ?? ""} ${valueClass(column.key, company)}`}
+                    className={css(styles, `${column.className ?? ""} ${valueClass(column.key, company)}`)}
                     key={column.key}
                   >
                     {column.kind === "text" ? (
@@ -171,7 +173,7 @@ export function MarketTable({
                         {company.name}
                       </a>
                     ) : (
-                      <span className="numeric">
+                      <span className={css(styles, "numeric")}>
                         {formatMetric(company[column.key] as number | null, column.kind)}
                       </span>
                     )}
@@ -183,11 +185,11 @@ export function MarketTable({
         </table>
       </div>
 
-      <div className="pagination">
-        <span className="muted numeric">
+      <div className={css(styles, "pagination")}>
+        <span className={css(styles, "muted numeric")}>
           {companies.length.toLocaleString("en-IN")} in category
         </span>
-        <div className="pagination-pages" aria-label="Pagination">
+        <div className={css(styles, "pagination-pages")} aria-label="Pagination">
           {Array.from({ length: totalPages }, (_, index) => index + 1)
             .filter((pageNumber) => {
               return (
@@ -198,7 +200,7 @@ export function MarketTable({
             })
             .map((pageNumber) => (
               <button
-                className={pageNumber === currentPage ? "active" : ""}
+                className={css(styles, pageNumber === currentPage ? "active" : "")}
                 key={pageNumber}
                 type="button"
                 onClick={() => setPage(pageNumber)}

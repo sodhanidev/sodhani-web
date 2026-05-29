@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { css } from "@/lib/css-module";
+import styles from "./market.module.css";
 
 import type { SearchItem } from "@/lib/data/search-index";
 
@@ -56,28 +58,28 @@ export function SearchResultsClient() {
   );
 
   return (
-    <section className="grid rails-grid">
-      <div className="panel panel-pad">
+    <section className={css(styles, "grid rails-grid")}>
+      <div className={css(styles, "panel panel-pad")}>
         <h2>Companies</h2>
-        <ul className="rail-list">
+        <ul className={css(styles, "rail-list")}>
           {companyResults.map((item) => (
             <li key={item.href}>
-              <Link className="rail-row" href={item.href}>
-                <span className="rail-name">{item.label}</span>
-                <span className="count-badge">{item.code}</span>
+              <Link className={css(styles, "rail-row")} href={item.href}>
+                <span className={css(styles, "rail-name")}>{item.label}</span>
+                <span className={css(styles, "count-badge")}>{item.code}</span>
               </Link>
             </li>
           ))}
         </ul>
       </div>
-      <div className="panel panel-pad">
+      <div className={css(styles, "panel panel-pad")}>
         <h2>Industries</h2>
-        <ul className="rail-list">
+        <ul className={css(styles, "rail-list")}>
           {industryResults.map((item) => (
             <li key={item.href}>
-              <Link className="rail-row" href={item.href}>
-                <span className="rail-name">{item.label}</span>
-                <span className="count-badge">{item.count ?? 0}</span>
+              <Link className={css(styles, "rail-row")} href={item.href}>
+                <span className={css(styles, "rail-name")}>{item.label}</span>
+                <span className={css(styles, "count-badge")}>{item.count ?? 0}</span>
               </Link>
             </li>
           ))}

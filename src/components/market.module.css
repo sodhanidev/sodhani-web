@@ -1,0 +1,320 @@
+/* Extracted from globals.css. Local CSS Module styles for this surface. */
+
+.market-page-shell {
+  width: min(1800px, calc(100% - 32px));
+
+}
+
+.market-node-head {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+
+}
+
+.market-node-head > div:first-child {
+  min-width: 0;
+
+}
+
+.market-node-head h1 {
+  max-width: 960px;
+  margin-bottom: 10px;
+
+}
+
+.market-node-head .lede {
+  max-width: 720px;
+
+}
+
+.sector-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+}
+
+.stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+}
+
+.sector-card {
+  display: grid;
+  min-height: 184px;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  padding: 16px;
+  box-shadow: var(--panel-hairline-shadow);
+
+}
+
+.sector-card:hover {
+  border-color: var(--line-strong);
+  background: var(--panel-bg-solid);
+  box-shadow: var(--shadow);
+
+}
+
+.skeleton-line,
+.skeleton-dot {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--surface-2), var(--line), var(--surface-2));
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 1.35s ease-in-out infinite;
+
+}
+
+.skeleton-line {
+  display: block;
+  height: 12px;
+
+}
+
+.skeleton-dot {
+  width: 18px;
+  height: 18px;
+
+}
+
+.skeleton-eyebrow {
+  width: 74px;
+  height: 10px;
+  margin-bottom: 14px;
+
+}
+
+.skeleton-title {
+  width: min(360px, 70vw);
+  height: 38px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+
+}
+
+.skeleton-lede {
+  width: min(520px, 78vw);
+  height: 16px;
+
+}
+
+.skeleton-card-title {
+  width: 58%;
+  height: 17px;
+
+}
+
+.skeleton-badge {
+  width: 112px;
+  height: 24px;
+  border-radius: 7px;
+
+}
+
+.market-loading-card {
+  pointer-events: none;
+
+}
+
+.market-loading-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 2px;
+
+}
+
+.market-loading-list .skeleton-line:nth-child(1) {
+  width: 86%;
+
+}
+
+.market-loading-list .skeleton-line:nth-child(2) {
+  width: 72%;
+
+}
+
+.market-loading-list .skeleton-line:nth-child(3) {
+  width: 80%;
+
+}
+
+.market-table-loading {
+  overflow: hidden;
+
+}
+
+.market-table-loading-rows {
+  display: grid;
+
+}
+
+.market-table-loading-row {
+  display: grid;
+  min-height: 45px;
+  grid-template-columns: 70px minmax(160px, 1fr) repeat(2, minmax(96px, 0.24fr));
+  align-items: center;
+  gap: 18px;
+  border-top: 1px solid var(--line);
+  padding: 0 12px;
+
+}
+
+.market-table-loading-row .skeleton-line:nth-child(1) {
+  width: 34px;
+
+}
+
+.market-table-loading-row .skeleton-line:nth-child(2) {
+  width: min(260px, 80%);
+
+}
+
+.market-table-loading-row .skeleton-line:nth-child(3),
+.market-table-loading-row .skeleton-line:nth-child(4) {
+  width: 86px;
+  justify-self: end;
+
+}
+
+.skeleton-input {
+  width: min(280px, 48vw);
+  height: 38px;
+  border-radius: 6px;
+
+}
+
+.skeleton-count {
+  width: 150px;
+  justify-self: end;
+
+}
+
+.sector-title-row,
+.rail-row,
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+
+}
+
+.mini-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+}
+
+.mini-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 7px;
+  color: var(--muted);
+  font-size: 13px;
+
+}
+
+.rails-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+}
+
+.rail {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  padding: 16px;
+  box-shadow: var(--panel-hairline-shadow);
+
+}
+
+.rail-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+
+}
+
+.rail-row {
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+
+}
+
+.rail-name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+.breadcrumb-block {
+  display: grid;
+  gap: 12px;
+
+}
+
+.breadcrumb-title {
+  margin: 0;
+  color: var(--heading-strong);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 17px;
+
+}
+
+.breadcrumb a {
+  color: var(--link-blue);
+
+}
+
+.breadcrumb-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+}
+
+.breadcrumb-icon,
+.breadcrumb-chevron {
+  flex: 0 0 auto;
+  color: var(--icon-muted);
+
+}
+
+.breadcrumb-peer {
+  background: var(--panel-bg-solid);
+  padding: 8px 0;
+
+}
+
+.child-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+
+}

@@ -1,0 +1,266 @@
+/* Extracted from globals.css. Local CSS Module styles for this surface. */
+
+.company-footer {
+  border-top: 1px solid var(--line);
+
+}
+
+.landing-page .landing-footer {
+  flex: 0 0 auto;
+
+}
+
+.landing-logo,
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--landing-logo);
+  font-family: var(--font-sans);
+  font-weight: 650;
+  letter-spacing: 0;
+
+}
+
+.landing-footer {
+  display: grid;
+  grid-template-columns: minmax(520px, 1fr) minmax(560px, 0.9fr);
+  gap: 90px;
+  background: var(--landing-footer-bg);
+  padding: 34px min(5vw, 90px) 30px;
+
+}
+
+:root[data-theme="dark"] .landing-footer {
+  border-top: 1px solid rgba(82, 148, 132, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    inset 0 34px 70px rgba(54, 132, 111, 0.05);
+
+}
+
+.footer-logo {
+  margin-bottom: 12px;
+  font-size: 31px;
+  line-height: 1;
+
+}
+
+.footer-logo-img {
+  width: 34px;
+  height: auto;
+
+}
+
+.footer-logo .logo-bars {
+  gap: 2px;
+  margin-bottom: 4px;
+
+}
+
+.footer-logo .logo-bars i {
+  width: 3px;
+
+}
+
+.footer-logo .logo-bars i:nth-child(1) {
+  height: 12px;
+
+}
+
+.footer-logo .logo-bars i:nth-child(2) {
+  height: 18px;
+
+}
+
+.footer-logo .logo-bars i:nth-child(3) {
+  height: 24px;
+
+}
+
+.footer-tagline {
+  margin: 0 0 24px;
+  color: var(--landing-ink);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+
+}
+
+.footer-copy,
+.footer-legal {
+  margin: 0 0 16px;
+  color: var(--landing-muted);
+  font-size: 15px;
+  line-height: 1.5;
+
+}
+
+.footer-copy svg {
+  display: inline-block;
+  margin: 0 2px;
+  color: var(--landing-heart);
+  vertical-align: -2px;
+
+}
+
+.footer-legal a {
+  border-bottom: 1px dotted currentColor;
+
+}
+
+.landing-footer-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 54px;
+  padding-top: 6px;
+
+}
+
+.landing-footer-cols > div {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+
+}
+
+.landing-footer-cols h2 {
+  margin: 0 0 5px;
+  color: var(--landing-ink);
+  font-size: 16px;
+  font-weight: 800;
+
+}
+
+.landing-footer-cols a,
+.landing-footer-cols > div > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  border: 0;
+  background: transparent;
+  color: var(--landing-muted);
+  font-size: 15px;
+  line-height: 1.2;
+  padding: 0;
+  text-align: left;
+
+}
+
+.landing-footer-cols svg {
+  color: currentColor;
+
+}
+
+.landing-footer-cols button[data-theme-option][data-active="true"] {
+  color: var(--landing-ink);
+  font-weight: 800;
+
+}
+
+.landing-footer-cols .store-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+
+}
+
+.landing-footer-cols .store-badge {
+  display: inline-flex;
+  width: 144px;
+  min-height: 42px;
+  align-items: center;
+  gap: 9px;
+  justify-self: start;
+  border: 1px solid #74777d;
+  border-radius: 7px;
+  background: #030303;
+  color: white;
+  font-family: var(--font-sans);
+  line-height: 1;
+  padding: 4px 11px;
+  text-align: left;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 8px 20px rgba(3, 3, 3, 0.12);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+
+}
+
+.landing-footer-cols .store-badge:hover {
+  background: #030303;
+  border-color: #9aa0a8;
+  color: white;
+  transform: translateY(-1px);
+
+}
+
+.landing-footer-cols .store-badge-icon {
+  display: block;
+  flex: 0 0 auto;
+
+}
+
+.landing-footer-cols .store-badge-apple {
+  filter: brightness(0) invert(1);
+
+}
+
+.landing-footer-cols .store-badge span {
+  display: grid;
+  gap: 1px;
+  line-height: 1;
+
+}
+
+.landing-footer-cols .store-badge small {
+  color: white;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+
+}
+
+.landing-footer-cols .store-badge strong {
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+
+}
+
+.landing-footer-cols .store-badge-icon {
+  width: 20px;
+  height: 20px;
+
+}
+
+@media (max-width: 1000px) {
+.landing-footer {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  
+}
+}
+
+@media (max-width: 760px) {
+.landing-footer {
+    padding: 30px 22px 26px;
+  
+}
+
+.landing-footer-cols {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  
+}
+
+.col-optional,
+  .col-extended {
+    display: none;
+  
+}
+}

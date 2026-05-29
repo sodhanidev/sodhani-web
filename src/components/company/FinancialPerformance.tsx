@@ -4,6 +4,8 @@ import type { CSSProperties } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { css } from "@/lib/css-module";
+import styles from "./company.module.css";
 
 import { companyFinancialsHref, formatIndianNumber, parseNumericCell } from "@/lib/data/format";
 import type { FinRow, FinancialTable } from "@/lib/data/types";
@@ -188,16 +190,16 @@ export function FinancialPerformance({
   const axisValues = [maxValue, maxValue * 0.75, maxValue * 0.5, maxValue * 0.25, 0];
 
   return (
-    <section className={`financial-performance${id ? " section-anchor" : ""}`} id={id}>
-      <div className="section-title-row financial-performance-head">
+    <section className={css(styles, `financial-performance${id ? " section-anchor" : ""}`)} id={id}>
+      <div className={css(styles, "section-title-row financial-performance-head")}>
         <h2>Financial Performance</h2>
-        <Link className="shareholding-detail-link financial-detail-link" href={companyFinancialsHref(ticker)}>
+        <Link className={css(styles, "shareholding-detail-link financial-detail-link")} href={companyFinancialsHref(ticker)}>
           All Financials
           <ChevronRight size={15} aria-hidden="true" />
         </Link>
       </div>
 
-      <div className="financial-performance-controls" aria-label="Financial performance period">
+      <div className={css(styles, "financial-performance-controls")} aria-label="Financial performance period">
         {availableModes.map((candidate) => (
           <button
             className={candidate.key === activeMode ? "active" : ""}
@@ -213,39 +215,39 @@ export function FinancialPerformance({
         ))}
       </div>
 
-      <div className="financial-chart-card">
-        <div className="financial-chart-summary">
+      <div className={css(styles, "financial-chart-card")}>
+        <div className={css(styles, "financial-chart-summary")}>
           <div>
             <span>{summaryPoint?.period ?? "Latest"}</span>
-            <div className="financial-legend-row">
-              <span className="financial-legend-dot revenue" aria-hidden="true" />
+            <div className={css(styles, "financial-legend-row")}>
+              <span className={css(styles, "financial-legend-dot revenue")} aria-hidden="true" />
               <small>Revenue (Cr)</small>
-              <strong className="numeric">{formatCurrency(summaryPoint?.revenue ?? null)}</strong>
-              <em className={`numeric ${toneClass(summaryRevenueChange.value)}`}>
+              <strong className={css(styles, "numeric")}>{formatCurrency(summaryPoint?.revenue ?? null)}</strong>
+              <em className={css(styles, `numeric ${toneClass(summaryRevenueChange.value)}`)}>
                 {formatPercent(summaryRevenueChange.value)}
               </em>
             </div>
           </div>
           <div>
             <span>{summaryRevenueChange.label}</span>
-            <div className="financial-legend-row">
-              <span className="financial-legend-dot profit" aria-hidden="true" />
+            <div className={css(styles, "financial-legend-row")}>
+              <span className={css(styles, "financial-legend-dot profit")} aria-hidden="true" />
               <small>Profit (Cr)</small>
-              <strong className="numeric">{formatCurrency(summaryPoint?.profit ?? null)}</strong>
-              <em className={`numeric ${toneClass(summaryProfitChange.value)}`}>
+              <strong className={css(styles, "numeric")}>{formatCurrency(summaryPoint?.profit ?? null)}</strong>
+              <em className={css(styles, `numeric ${toneClass(summaryProfitChange.value)}`)}>
                 {formatPercent(summaryProfitChange.value)}
               </em>
             </div>
           </div>
         </div>
 
-        <div className="financial-plot" aria-label={`${activeMode} revenue and profit chart`}>
-          <div className="financial-axis-labels" aria-hidden="true">
+        <div className={css(styles, "financial-plot")} aria-label={`${activeMode} revenue and profit chart`}>
+          <div className={css(styles, "financial-axis-labels")} aria-hidden="true">
             {axisValues.map((value) => (
               <span key={value}>{formatAxis(value)}</span>
             ))}
           </div>
-          <div className="financial-bars">
+          <div className={css(styles, "financial-bars")}>
             {recentPointEntries.map(({ point, index }) => {
               const revenueHeight = `${Math.max(1, ((point.revenue ?? 0) / maxValue) * 100)}%`;
               const profitHeight = `${Math.max(1, (Math.abs(point.profit ?? 0) / maxValue) * 100)}%`;
@@ -264,7 +266,7 @@ export function FinancialPerformance({
                   )} ${pointRevenueChange.label}; profit ${formatCurrencyForLabel(point.profit)}, ${formatPercent(
                     pointProfitChange.value
                   )} ${pointProfitChange.label}`}
-                  className={`financial-bar-group${isActive ? " is-active" : ""}`}
+                  className={css(styles, `financial-bar-group${isActive ? " is-active" : ""}`)}
                   key={point.period}
                   style={style}
                   type="button"
@@ -273,12 +275,12 @@ export function FinancialPerformance({
                   onMouseEnter={() => setActiveBarIndex(index)}
                   onMouseLeave={() => setActiveBarIndex(null)}
                 >
-                  <span aria-hidden="true" className="financial-bar revenue" />
+                  <span aria-hidden="true" className={css(styles, "financial-bar revenue")} />
                   <span
                     aria-hidden="true"
-                    className={`financial-bar profit${(point.profit ?? 0) < 0 ? " is-negative" : ""}`}
+                    className={css(styles, `financial-bar profit${(point.profit ?? 0) < 0 ? " is-negative" : ""}`)}
                   />
-                  <span className="financial-bar-label">{point.period}</span>
+                  <span className={css(styles, "financial-bar-label")}>{point.period}</span>
                 </button>
               );
             })}
@@ -286,17 +288,17 @@ export function FinancialPerformance({
         </div>
       </div>
 
-      <div className="financial-growth-grid">
+      <div className={css(styles, "financial-growth-grid")}>
         <div>
           <span>Revenue Growth</span>
           <dl>
             <div>
               <dt>{activeMode === "quarterly" ? "YoY" : "1Y"}</dt>
-              <dd className={`numeric ${toneClass(revenueChange)}`}>{formatPercent(revenueChange)}</dd>
+              <dd className={css(styles, `numeric ${toneClass(revenueChange)}`)}>{formatPercent(revenueChange)}</dd>
             </div>
             <div>
               <dt>3Y CAGR</dt>
-              <dd className={`numeric ${toneClass(revenueCagr)}`}>{formatPercent(revenueCagr)}</dd>
+              <dd className={css(styles, `numeric ${toneClass(revenueCagr)}`)}>{formatPercent(revenueCagr)}</dd>
             </div>
           </dl>
         </div>
@@ -305,11 +307,11 @@ export function FinancialPerformance({
           <dl>
             <div>
               <dt>{activeMode === "quarterly" ? "YoY" : "1Y"}</dt>
-              <dd className={`numeric ${toneClass(profitChange)}`}>{formatPercent(profitChange)}</dd>
+              <dd className={css(styles, `numeric ${toneClass(profitChange)}`)}>{formatPercent(profitChange)}</dd>
             </div>
             <div>
               <dt>3Y CAGR</dt>
-              <dd className={`numeric ${toneClass(profitCagr)}`}>{formatPercent(profitCagr)}</dd>
+              <dd className={css(styles, `numeric ${toneClass(profitCagr)}`)}>{formatPercent(profitCagr)}</dd>
             </div>
           </dl>
         </div>
