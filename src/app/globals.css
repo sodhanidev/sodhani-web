@@ -2301,24 +2301,29 @@ th:nth-child(2) .sort-button {
   inset: 0 auto 0 0;
   width: var(--shareholding-value);
   min-width: 2px;
-  background: var(--holder-bar);
+  background: var(--shareholding-color, var(--holder-bar));
 }
 
-.shareholding-more-button {
+.shareholding-detail-link {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 3px;
   justify-self: start;
   border: 0;
   background: transparent;
-  color: var(--holder-bar);
+  color: var(--ink);
   padding: 0;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
 }
 
-.shareholding-more-button:hover,
-.shareholding-more-button:focus-visible {
-  color: color-mix(in srgb, var(--holder-bar) 72%, var(--ink));
+.shareholding-detail-link:hover,
+.shareholding-detail-link:focus-visible {
+  color: var(--ink);
   outline: none;
 }
 
@@ -2385,6 +2390,323 @@ th:nth-child(2) .sort-button {
   max-width: 460px;
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+.ownership-detail-page {
+  --ownership-accent: var(--ink);
+  --ownership-accent-strong: var(--ink);
+  --ownership-accent-soft: #f3f4f6;
+  --ownership-row-alt: #f7f6f4;
+  --ownership-card-bg: #ffffff;
+  --ownership-muted-bg: #faf8f5;
+  gap: 30px;
+  padding-top: clamp(28px, 5vw, 58px);
+  padding-bottom: 54px;
+}
+
+:root[data-theme="dark"] .ownership-detail-page {
+  --ownership-accent: var(--ink);
+  --ownership-accent-strong: var(--ink);
+  --ownership-accent-soft: rgba(255, 255, 255, 0.06);
+  --ownership-row-alt: rgba(255, 255, 255, 0.035);
+  --ownership-card-bg: #101114;
+  --ownership-muted-bg: rgba(255, 255, 255, 0.025);
+}
+
+.ownership-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 390px);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: end;
+}
+
+.ownership-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 24px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ownership-back-link:hover,
+.ownership-back-link:focus-visible {
+  color: var(--ink);
+  outline: none;
+}
+
+.ownership-eyebrow {
+  margin: 0 0 8px;
+  color: var(--ownership-accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ownership-hero h1 {
+  max-width: 820px;
+  margin: 0;
+  color: var(--stock-title);
+  font-size: clamp(34px, 5.6vw, 76px);
+  letter-spacing: 0;
+  line-height: 0.96;
+}
+
+.ownership-hero p:not(.ownership-eyebrow) {
+  max-width: 640px;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.ownership-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
+  background: var(--ownership-card-bg);
+}
+
+.ownership-summary-grid div {
+  display: grid;
+  gap: 8px;
+  min-height: 92px;
+  align-content: center;
+  padding: 18px;
+}
+
+.ownership-summary-grid div + div {
+  border-left: 1px solid var(--line);
+}
+
+.ownership-summary-grid span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ownership-summary-grid strong {
+  color: var(--ink);
+  font-size: clamp(18px, 2vw, 25px);
+  line-height: 1;
+}
+
+.ownership-jump-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+.ownership-jump-nav a {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ownership-jump-nav a:hover,
+.ownership-jump-nav a:focus-visible {
+  color: var(--ownership-accent-strong);
+  outline: none;
+}
+
+.ownership-detail-stack,
+.ownership-section,
+.ownership-investor-list {
+  display: grid;
+}
+
+.ownership-detail-stack {
+  gap: 42px;
+}
+
+.ownership-section {
+  gap: 14px;
+  scroll-margin-top: 130px;
+}
+
+.ownership-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: end;
+}
+
+.ownership-section-heading span {
+  color: var(--ownership-accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ownership-section-heading h2 {
+  margin: 5px 0 0;
+  color: var(--ink);
+  font-size: clamp(22px, 3vw, 34px);
+}
+
+.ownership-section-heading p {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ownership-table-card {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--ink));
+  border-radius: 4px;
+  background: var(--ownership-card-bg);
+}
+
+.ownership-table-wrap {
+  overflow-x: auto;
+  scrollbar-color: color-mix(in srgb, var(--ink) 42%, var(--muted)) var(--table-scroll-track);
+  scrollbar-width: thin;
+}
+
+.ownership-table-wrap::-webkit-scrollbar {
+  height: 10px;
+}
+
+.ownership-table-wrap::-webkit-scrollbar-track {
+  background: var(--table-scroll-track);
+}
+
+.ownership-table-wrap::-webkit-scrollbar-thumb {
+  border: 2px solid var(--table-scroll-track);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 42%, var(--muted));
+}
+
+.ownership-table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.ownership-table th,
+.ownership-table td {
+  min-width: 104px;
+  padding: 16px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.ownership-table th:first-child,
+.ownership-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 250px;
+  max-width: 360px;
+  background: inherit;
+  color: var(--muted);
+  text-align: left;
+  white-space: normal;
+}
+
+.ownership-table th {
+  background: var(--ownership-card-bg);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ownership-table th:first-child {
+  z-index: 3;
+  background: var(--ownership-card-bg);
+}
+
+.ownership-table tbody tr {
+  background: var(--ownership-card-bg);
+}
+
+.ownership-table tbody tr:nth-child(even) {
+  background: var(--ownership-row-alt);
+}
+
+.ownership-table tbody tr.is-highlighted {
+  background: var(--ownership-accent-soft);
+}
+
+.ownership-table tbody tr.is-child {
+  background: var(--ownership-muted-bg);
+}
+
+.ownership-table tbody td {
+  border-top: 1px solid color-mix(in srgb, var(--line) 38%, transparent);
+}
+
+.ownership-particular {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.ownership-row-mark {
+  color: var(--ownership-accent);
+  font-weight: 900;
+}
+
+.ownership-table tr.is-child .ownership-particular {
+  padding-left: 18px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.ownership-investor-list {
+  gap: 18px;
+}
+
+.ownership-investor-card {
+  display: grid;
+  gap: 10px;
+}
+
+.ownership-investor-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.ownership-investor-card-head h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.ownership-investor-card-head span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ownership-investor-table th:first-child,
+.ownership-investor-table td:first-child {
+  min-width: 330px;
+  max-width: 500px;
+  overflow-wrap: anywhere;
 }
 
 @keyframes shareholding-ring-in {
@@ -3183,6 +3505,11 @@ th:nth-child(2) .sort-button {
     grid-template-columns: 1fr;
   }
 
+  .ownership-hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
   .documents-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 24px;
@@ -3336,6 +3663,42 @@ th:nth-child(2) .sort-button {
     min-height: 31px;
     padding: 0 10px;
     font-size: 12px;
+  }
+
+  .ownership-detail-page {
+    gap: 22px;
+    padding-top: 28px;
+  }
+
+  .ownership-hero h1 {
+    font-size: clamp(32px, 13vw, 48px);
+    line-height: 1;
+  }
+
+  .ownership-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ownership-summary-grid div + div {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .ownership-section-heading {
+    display: grid;
+    gap: 6px;
+    align-items: start;
+  }
+
+  .ownership-table th,
+  .ownership-table td {
+    min-width: 92px;
+    padding: 14px 12px;
+  }
+
+  .ownership-table th:first-child,
+  .ownership-table td:first-child {
+    min-width: 210px;
   }
 
   .peer-list {

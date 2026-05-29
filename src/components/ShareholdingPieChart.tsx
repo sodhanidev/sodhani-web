@@ -58,9 +58,6 @@ function longHolderLabel(label: string) {
   if (key.includes("dii") || key.includes("domestic")) {
     return "Domestic Institutions";
   }
-  if (key.includes("public")) {
-    return "Retail And Others";
-  }
   return label;
 }
 
@@ -80,20 +77,6 @@ function formatPeriodTab(period: string) {
 function getRecentPeriods(periods: string[]) {
   const looksQuarterly = periods.some((period) => !period.startsWith("Mar "));
   return periods.slice(looksQuarterly ? -12 : -3);
-}
-
-function featuredHolderRank(slice: Slice) {
-  const key = holderKey(slice.label);
-  if (key.includes("promoters")) {
-    return 0;
-  }
-  if (key.includes("fii") || key.includes("foreign")) {
-    return 1;
-  }
-  if (key.includes("public")) {
-    return 2;
-  }
-  return 3;
 }
 
 function getShareholdingSlices(table: FinancialTable, activePeriod: string): { period: string; slices: Slice[] } {
@@ -136,7 +119,6 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipPosition>({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
-  const [showAllHolders, setShowAllHolders] = useState(false);
   const total = slices.reduce((sum, slice) => sum + slice.value, 0);
 
   if (!period || !slices.length || total <= 0) {
@@ -161,11 +143,6 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
   });
   const activeSlice = activeIndex === null ? null : chartSlices[activeIndex] ?? null;
   const tooltipSide = tooltip.x > 110 ? "left" : "right";
-  const featuredSlices = slices
-    .filter((slice) => featuredHolderRank(slice) < 3)
-    .sort((first, second) => featuredHolderRank(first) - featuredHolderRank(second));
-  const visibleSlices = showAllHolders ? slices : featuredSlices;
-  const canShowMore = slices.length > featuredSlices.length;
 
   function activate(index: number, nextShowTooltip = false) {
     setActiveIndex(index);
@@ -275,8 +252,9 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
           })}
         </div>
         <div className="shareholding-bars">
-          {visibleSlices.map((slice) => {
+          {slices.map((slice) => {
             const barStyle = {
+              "--shareholding-color": slice.color,
               "--shareholding-value": `${Math.min(Math.max(slice.value, 0), 100)}%`
             } as CSSProperties;
 
@@ -297,11 +275,6 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
             );
           })}
         </div>
-        {canShowMore ? (
-          <button className="shareholding-more-button" type="button" onClick={() => setShowAllHolders(!showAllHolders)}>
-            {showAllHolders ? "See Less" : "See More"}
-          </button>
-        ) : null}
       </div>
     </div>
   );

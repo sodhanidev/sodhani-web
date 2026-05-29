@@ -1,14 +1,15 @@
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react";
 
 import { AccordionSection } from "@/components/AccordionSection";
 import { CompanySectionNav, type CompanySectionLink } from "@/components/CompanySectionNav";
 import { DocumentsTabs } from "@/components/DocumentsTabs";
-import { InvestorHoldings } from "@/components/InvestorHoldings";
 import { ShareholdingPieChart } from "@/components/ShareholdingPieChart";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
 import type { CompanyPageModel } from "@/lib/data/company-template";
+import { companyShareholdingHref } from "@/lib/data/format";
 import type { FinancialTable as FinancialTableModel, Stock } from "@/lib/data/types";
 
 function hasTable(table: FinancialTableModel) {
@@ -17,12 +18,6 @@ function hasTable(table: FinancialTableModel) {
 
 function hasDocuments(documents: Stock["documents"]) {
   return Object.values(documents).some((items) => items.length > 0);
-}
-
-function hasInvestorData(investors: Stock["investors"]) {
-  return [investors.quarterly, investors.yearly].some((groups) =>
-    Object.values(groups).some((holders) => Object.keys(holders).length > 0)
-  );
 }
 
 const keyMetricLabels = [
@@ -55,7 +50,6 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const hasQuarterlyShareholding = hasTable(stock.shareholding.quarterly);
   const hasYearlyShareholding = hasTable(stock.shareholding.yearly);
   const hasShareholding = hasQuarterlyShareholding || hasYearlyShareholding;
-  const hasInvestors = hasInvestorData(stock.investors);
   const hasDocs = hasDocuments(stock.documents);
   const sectionLinks = [
     { id: "overview", label: "Overview" },
@@ -66,7 +60,6 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
     hasCashFlows ? { id: "cash-flow", label: "Cash Flow" } : null,
     hasRatios ? { id: "ratios", label: "Ratios" } : null,
     hasShareholding ? { id: "shareholding", label: "Shareholding" } : null,
-    hasInvestors ? { id: "investors", label: "Investor Holdings" } : null,
     hasDocs ? { id: "documents", label: "Documents" } : null
   ].filter((link): link is CompanySectionLink => Boolean(link));
 
@@ -146,12 +139,17 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
               <section className="panel section-anchor" id="shareholding">
                 <div className="section-title-row">
                   <h2>Shareholding Pattern</h2>
+                  <Link className="shareholding-detail-link" href={companyShareholdingHref(stock.ticker)}>
+                    Show Detailed Information
+                    <ChevronRight size={15} aria-hidden="true" />
+                  </Link>
                 </div>
-                <ShareholdingPieChart table={hasQuarterlyShareholding ? stock.shareholding.quarterly : stock.shareholding.yearly} />
+                <ShareholdingPieChart
+                  table={hasQuarterlyShareholding ? stock.shareholding.quarterly : stock.shareholding.yearly}
+                />
               </section>
             ) : null}
 
-            {hasInvestors ? <InvestorHoldings id="investors" investors={stock.investors} /> : null}
             {hasDocs ? <DocumentsTabs documents={stock.documents} id="documents" /> : null}
           </div>
         </section>

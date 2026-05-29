@@ -87,3 +87,7 @@ export function marketHref(path: string[], page?: number): string {
 export function companyHref(code: string): string {
   return `/company/${encodeURIComponent(code)}/`;
 }
+
+export function companyShareholdingHref(code: string): string {
+  return `${companyHref(code)}shareholding/`;
+}
