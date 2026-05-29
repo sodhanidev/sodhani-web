@@ -26,7 +26,14 @@ function hasInvestorData(investors: Stock["investors"]) {
   );
 }
 
-const keyMetricLabels = ["Market Cap", "Stock P/E", "ROCE", "ROE"];
+const keyMetricLabels = [
+  "Market Cap",
+  "Stock P/E",
+  "ROCE",
+  "ROE",
+  "Dividend Yield",
+  "High / Low"
+];
 
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const { prices, stock } = model;

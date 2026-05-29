@@ -201,7 +201,10 @@
   --landing-line-strong: #556372;
   --landing-surface: #101114;
   --landing-surface-soft: #17191d;
-  --landing-footer-bg: #050505;
+  --landing-footer-bg:
+    radial-gradient(circle at 15% 10%, rgba(27, 115, 91, 0.24), transparent 34%),
+    radial-gradient(circle at 82% 0%, rgba(36, 86, 116, 0.2), transparent 32%),
+    linear-gradient(135deg, #020b15 0%, #031723 48%, #031412 100%);
   --landing-logo: #eef3f4;
   --landing-nav-hover: #c8d2d7;
   --landing-action-border: #3a4652;
@@ -315,7 +318,10 @@
     --landing-line-strong: #556372;
     --landing-surface: #101114;
     --landing-surface-soft: #17191d;
-    --landing-footer-bg: #050505;
+    --landing-footer-bg:
+      radial-gradient(circle at 15% 10%, rgba(27, 115, 91, 0.24), transparent 34%),
+      radial-gradient(circle at 82% 0%, rgba(36, 86, 116, 0.2), transparent 32%),
+      linear-gradient(135deg, #020b15 0%, #031723 48%, #031412 100%);
     --landing-logo: #eef3f4;
     --landing-nav-hover: #c8d2d7;
     --landing-action-border: #3a4652;
@@ -1455,7 +1461,11 @@ th:nth-child(2) .sort-button {
   scroll-margin-top: var(--company-anchor-offset, 132px);
 }
 
-.stock-main,
+.stock-main {
+  display: grid;
+  gap: 52px;
+}
+
 .stock-side {
   display: grid;
   gap: 40px;
@@ -1680,8 +1690,9 @@ th:nth-child(2) .sort-button {
 }
 
 .metric-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(26px, 6vw, 96px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 26px;
+  column-gap: clamp(28px, 5vw, 88px);
 }
 
 .metric-card {
@@ -1690,11 +1701,14 @@ th:nth-child(2) .sort-button {
 }
 
 .metric-label {
-  margin-bottom: 5px;
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 650;
+  margin-bottom: 7px;
+  color: color-mix(in srgb, var(--muted) 84%, var(--ink));
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .metric-value {
@@ -2955,6 +2969,13 @@ th:nth-child(2) .sort-button {
   gap: 90px;
   background: var(--landing-footer-bg);
   padding: 34px min(5vw, 90px) 30px;
+}
+
+:root[data-theme="dark"] .landing-footer {
+  border-top: 1px solid rgba(82, 148, 132, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    inset 0 34px 70px rgba(54, 132, 111, 0.05);
 }
 
 .footer-logo {
