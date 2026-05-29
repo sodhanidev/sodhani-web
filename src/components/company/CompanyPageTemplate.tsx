@@ -3,7 +3,6 @@ import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { AccordionSection } from "@/components/AccordionSection";
 import { CompanySectionNav, type CompanySectionLink } from "@/components/CompanySectionNav";
 import { DocumentsTabs } from "@/components/DocumentsTabs";
-import { FinancialTable } from "@/components/FinancialTable";
 import { InvestorHoldings } from "@/components/InvestorHoldings";
 import { ShareholdingPieChart } from "@/components/ShareholdingPieChart";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -145,23 +144,10 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
 
             {hasShareholding ? (
               <section className="panel section-anchor" id="shareholding">
-                {hasQuarterlyShareholding ? (
-                  <>
-                    <div className="section-title-row">
-                      <h2>Shareholding Pattern</h2>
-                    </div>
-                    <ShareholdingPieChart table={stock.shareholding.quarterly} />
-                    <FinancialTable table={stock.shareholding.quarterly} />
-                  </>
-                ) : null}
-                {hasYearlyShareholding ? (
-                  <>
-                    <div className="section-title-row">
-                      <h2>Yearly Shareholding</h2>
-                    </div>
-                    <FinancialTable table={stock.shareholding.yearly} />
-                  </>
-                ) : null}
+                <div className="section-title-row">
+                  <h2>Shareholding Pattern</h2>
+                </div>
+                <ShareholdingPieChart table={hasQuarterlyShareholding ? stock.shareholding.quarterly : stock.shareholding.yearly} />
               </section>
             ) : null}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 
 import type { FinancialTable } from "@/lib/data/types";
 
@@ -49,12 +50,54 @@ function shortHolderLabel(label: string) {
   return label;
 }
 
+function longHolderLabel(label: string) {
+  const key = holderKey(label);
+  if (key.includes("fii") || key.includes("foreign")) {
+    return "Foreign Institutions";
+  }
+  if (key.includes("dii") || key.includes("domestic")) {
+    return "Domestic Institutions";
+  }
+  if (key.includes("public")) {
+    return "Retail And Others";
+  }
+  return label;
+}
+
 function formatPercent(value: number) {
   return `${value.toFixed(2)}%`;
 }
 
-function getShareholdingSlices(table: FinancialTable): { period: string; slices: Slice[] } {
-  const period = table.periods.at(-1) ?? "";
+function formatPeriodTab(period: string) {
+  const match = /^([A-Za-z]{3})\s+(\d{4})$/u.exec(period);
+  if (!match) {
+    return period;
+  }
+
+  return `${match[1]} '${match[2].slice(-2)}`;
+}
+
+function getRecentPeriods(periods: string[]) {
+  const looksQuarterly = periods.some((period) => !period.startsWith("Mar "));
+  return periods.slice(looksQuarterly ? -12 : -3);
+}
+
+function featuredHolderRank(slice: Slice) {
+  const key = holderKey(slice.label);
+  if (key.includes("promoters")) {
+    return 0;
+  }
+  if (key.includes("fii") || key.includes("foreign")) {
+    return 1;
+  }
+  if (key.includes("public")) {
+    return 2;
+  }
+  return 3;
+}
+
+function getShareholdingSlices(table: FinancialTable, activePeriod: string): { period: string; slices: Slice[] } {
+  const period = activePeriod || table.periods.at(-1) || "";
   if (!period) {
     return { period, slices: [] };
   }
@@ -80,17 +123,20 @@ function getShareholdingSlices(table: FinancialTable): { period: string; slices:
         color: colorKey ? holderColors[colorKey] : "var(--holder-other)"
       };
     })
-    .filter((slice): slice is Slice => Boolean(slice))
-    .sort((a, b) => b.value - a.value);
+    .filter((slice): slice is Slice => Boolean(slice));
 
   return { period, slices };
 }
 
 export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
-  const { period, slices } = useMemo(() => getShareholdingSlices(table), [table]);
+  const recentPeriods = useMemo(() => getRecentPeriods(table.periods), [table.periods]);
+  const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
+  const period = selectedPeriod && recentPeriods.includes(selectedPeriod) ? selectedPeriod : recentPeriods.at(-1) || "";
+  const { slices } = useMemo(() => getShareholdingSlices(table, period), [period, table]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipPosition>({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showAllHolders, setShowAllHolders] = useState(false);
   const total = slices.reduce((sum, slice) => sum + slice.value, 0);
 
   if (!period || !slices.length || total <= 0) {
@@ -114,6 +160,12 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
     };
   });
   const activeSlice = activeIndex === null ? null : chartSlices[activeIndex] ?? null;
+  const tooltipSide = tooltip.x > 110 ? "left" : "right";
+  const featuredSlices = slices
+    .filter((slice) => featuredHolderRank(slice) < 3)
+    .sort((first, second) => featuredHolderRank(first) - featuredHolderRank(second));
+  const visibleSlices = showAllHolders ? slices : featuredSlices;
+  const canShowMore = slices.length > featuredSlices.length;
 
   function activate(index: number, nextShowTooltip = false) {
     setActiveIndex(index);
@@ -130,7 +182,12 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
     setShowTooltip(false);
   }
 
-  function moveTooltip(event: React.PointerEvent<SVGCircleElement | HTMLButtonElement>) {
+  function choosePeriod(nextPeriod: string) {
+    setSelectedPeriod(nextPeriod);
+    clearActive();
+  }
+
+  function moveTooltip(event: React.PointerEvent<SVGCircleElement>) {
     const bounds = event.currentTarget.closest(".shareholding-donut-wrap")?.getBoundingClientRect();
     if (!bounds) {
       return;
@@ -183,43 +240,68 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
           </svg>
           {activeSlice && showTooltip ? (
             <div
-              className="shareholding-tooltip"
+              className="chart-tooltip shareholding-tooltip"
+              data-side={tooltipSide}
               style={{
                 left: tooltip.x,
                 top: tooltip.y
               }}
             >
-              <span>{activeSlice.label}</span>
-              <strong className="numeric">{formatPercent(activeSlice.value)}</strong>
-              <small>{period}</small>
+              <div className="chart-tooltip-price numeric">{formatPercent(activeSlice.value)}</div>
+              <div className="chart-tooltip-meta">
+                {activeSlice.label} · {period}
+              </div>
             </div>
           ) : null}
         </div>
       </div>
+      <div className="shareholding-breakdown">
+        <div className="shareholding-period-tabs" role="tablist" aria-label="Shareholding periods">
+          {recentPeriods.map((availablePeriod) => {
+            const isActive = availablePeriod === period;
 
-      <div className="shareholding-legend" role="list">
-        {chartSlices.map((slice, index) => (
-          <button
-            className="shareholding-legend-row"
-            data-active={activeIndex === index ? "true" : undefined}
-            key={slice.label}
-            role="listitem"
-            type="button"
-            onBlur={clearActive}
-            onFocus={() => activate(index)}
-            onPointerEnter={() => activate(index)}
-            onPointerLeave={clearActive}
-          >
-            <span className="shareholding-swatch" style={{ background: slice.color }} />
-            <span className="shareholding-legend-main">
-              <span className="shareholding-legend-name">{slice.label}</span>
-              <span className="shareholding-legend-meter" aria-hidden="true">
-                <span style={{ background: slice.color, width: `${slice.value}%` }} />
-              </span>
-            </span>
-            <strong className="numeric">{formatPercent(slice.value)}</strong>
+            return (
+              <button
+                aria-selected={isActive}
+                className={isActive ? "active" : ""}
+                key={availablePeriod}
+                role="tab"
+                type="button"
+                onClick={() => choosePeriod(availablePeriod)}
+              >
+                {formatPeriodTab(availablePeriod)}
+              </button>
+            );
+          })}
+        </div>
+        <div className="shareholding-bars">
+          {visibleSlices.map((slice) => {
+            const barStyle = {
+              "--shareholding-value": `${Math.min(Math.max(slice.value, 0), 100)}%`
+            } as CSSProperties;
+
+            return (
+              <div
+                aria-label={`${longHolderLabel(slice.label)} ${formatPercent(slice.value)} in ${period}`}
+                className="shareholding-bar-row"
+                key={slice.key}
+              >
+                <span className="shareholding-bar-label">{longHolderLabel(slice.label)}</span>
+                <div className="shareholding-bar-line">
+                  <div className="shareholding-bar-track" aria-hidden="true">
+                    <span className="shareholding-bar-fill" style={barStyle} />
+                  </div>
+                  <strong className="numeric">{formatPercent(slice.value)}</strong>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {canShowMore ? (
+          <button className="shareholding-more-button" type="button" onClick={() => setShowAllHolders(!showAllHolders)}>
+            {showAllHolders ? "See Less" : "See More"}
           </button>
-        ))}
+        ) : null}
       </div>
     </div>
   );
