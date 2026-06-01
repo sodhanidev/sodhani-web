@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
@@ -40,10 +40,18 @@ function getLatestTableValue(table: FinancialTable, label: string) {
   return row?.values[period] || "-";
 }
 
+function getLatestPeriod(table: FinancialTable) {
+  return table.periods.at(-1) ?? "-";
+}
+
 function countInvestorHolders(investors: Stock["investors"]) {
   return [investors.quarterly, investors.yearly].reduce((total, groups) => {
     return total + Object.values(groups).reduce((sum, holders) => sum + Object.keys(holders).length, 0);
   }, 0);
+}
+
+function countInvestorGroupHolders(groups: InvestorGroups) {
+  return Object.values(groups).reduce((sum, holders) => sum + Object.keys(holders).length, 0);
 }
 
 function getInvestorPeriods(groups: InvestorGroups, preferredPeriods: string[]) {
@@ -126,7 +134,9 @@ function ShareholdingTable({
           <span>{kicker}</span>
           <h2>{title}</h2>
         </div>
-        <p>{table.periods.length} periods</p>
+        <p>
+          {table.periods.length} periods · latest {getLatestPeriod(table)}
+        </p>
       </div>
       <div className={css(styles, "ownership-table-card")}>
         <div className={css(styles, "ownership-table-wrap")}>
@@ -244,6 +254,48 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
   const hasQuarterlyInvestors = hasInvestorGroups(stock.investors.quarterly);
   const hasYearlyInvestors = hasInvestorGroups(stock.investors.yearly);
   const investorHolderCount = countInvestorHolders(stock.investors);
+  const summaryItems = [
+    {
+      label: "Promoters",
+      period: getLatestPeriod(stock.shareholding.quarterly),
+      value: getLatestTableValue(stock.shareholding.quarterly, "Promoters")
+    },
+    {
+      label: "FIIs",
+      period: getLatestPeriod(stock.shareholding.quarterly),
+      value: getLatestTableValue(stock.shareholding.quarterly, "FIIs")
+    },
+    {
+      label: "DIIs",
+      period: getLatestPeriod(stock.shareholding.quarterly),
+      value: getLatestTableValue(stock.shareholding.quarterly, "DIIs")
+    },
+    {
+      label: "Public",
+      period: getLatestPeriod(stock.shareholding.quarterly),
+      value: getLatestTableValue(stock.shareholding.quarterly, "Public")
+    },
+    {
+      label: "Government",
+      period: getLatestPeriod(stock.shareholding.quarterly),
+      value: getLatestTableValue(stock.shareholding.quarterly, "Government")
+    },
+    {
+      label: "Named Holders",
+      period: "quarterly + yearly",
+      value: String(investorHolderCount)
+    },
+    {
+      label: "Latest Quarter",
+      period: `${stock.shareholding.quarterly.periods.length} periods`,
+      value: getLatestPeriod(stock.shareholding.quarterly)
+    },
+    {
+      label: "Latest Year",
+      period: `${stock.shareholding.yearly.periods.length} periods`,
+      value: getLatestPeriod(stock.shareholding.yearly)
+    }
+  ];
 
   return (
     <>
@@ -255,47 +307,50 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
               Back to company
             </Link>
             <p className={css(styles, "ownership-eyebrow")}>{stock.ticker}</p>
-            <h1>{stock.overview.companyName}</h1>
-            <p>Shareholding pattern, category ownership, and named investor holdings from the static company filings data.</p>
+            <h1>Shareholding</h1>
+            <p className={css(styles, "ownership-company-name")}>{stock.overview.companyName}</p>
           </div>
-          <div className={css(styles, "ownership-summary-grid")}>
-            <div>
-              <span>Promoters</span>
-              <strong className={css(styles, "numeric")}>{getLatestTableValue(stock.shareholding.quarterly, "Promoters")}</strong>
-            </div>
-            <div>
-              <span>Public</span>
-              <strong className={css(styles, "numeric")}>{getLatestTableValue(stock.shareholding.quarterly, "Public")}</strong>
-            </div>
-            <div>
-              <span>Named Holders</span>
-              <strong className={css(styles, "numeric")}>{investorHolderCount}</strong>
-            </div>
-          </div>
+          <p className={css(styles, "ownership-unit-note")}>Pattern values in %</p>
         </header>
 
-        <nav className={css(styles, "ownership-jump-nav")} aria-label="Shareholding detail sections">
-          {hasQuarterlyShareholding ? (
-            <a href="#quarterly-shareholding">
-              Quarterly Pattern <ChevronRight size={14} aria-hidden="true" />
-            </a>
-          ) : null}
-          {hasYearlyShareholding ? (
-            <a href="#yearly-shareholding">
-              Yearly Pattern <ChevronRight size={14} aria-hidden="true" />
-            </a>
-          ) : null}
-          {hasQuarterlyInvestors ? (
-            <a href="#quarterly-investors">
-              Quarterly Investors <ChevronRight size={14} aria-hidden="true" />
-            </a>
-          ) : null}
-          {hasYearlyInvestors ? (
-            <a href="#yearly-investors">
-              Yearly Investors <ChevronRight size={14} aria-hidden="true" />
-            </a>
-          ) : null}
-        </nav>
+        <section className={css(styles, "ownership-summary-grid")} aria-label="Latest shareholding snapshot">
+          {summaryItems.map((item) => (
+            <div key={item.label}>
+              <span>{item.label}</span>
+              <strong className={css(styles, "numeric")}>{item.value}</strong>
+              <small>{item.period}</small>
+            </div>
+          ))}
+        </section>
+
+        <div className={css(styles, "ownership-control-row")}>
+          <nav className={css(styles, "ownership-jump-nav")} aria-label="Shareholding detail sections">
+            {hasQuarterlyShareholding ? (
+              <a href="#quarterly-shareholding">
+                <span>Quarterly Pattern</span>
+                <small>{stock.shareholding.quarterly.periods.length} periods</small>
+              </a>
+            ) : null}
+            {hasYearlyShareholding ? (
+              <a href="#yearly-shareholding">
+                <span>Yearly Pattern</span>
+                <small>{stock.shareholding.yearly.periods.length} periods</small>
+              </a>
+            ) : null}
+            {hasQuarterlyInvestors ? (
+              <a href="#quarterly-investors">
+                <span>Quarterly Investors</span>
+                <small>{countInvestorGroupHolders(stock.investors.quarterly)} holders</small>
+              </a>
+            ) : null}
+            {hasYearlyInvestors ? (
+              <a href="#yearly-investors">
+                <span>Yearly Investors</span>
+                <small>{countInvestorGroupHolders(stock.investors.yearly)} holders</small>
+              </a>
+            ) : null}
+          </nav>
+        </div>
 
         <div className={css(styles, "ownership-detail-stack")}>
           <ShareholdingTable

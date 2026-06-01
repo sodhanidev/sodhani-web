@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ChartCandlestick, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
@@ -137,11 +137,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </button>
               <div className={css(styles, "landing-tools-popover")}>
                 <Link href={candlestickToolHref()}>
-                  <ChartCandlestick size={16} aria-hidden="true" />
-                  <span>
-                    <strong>Candlestick Chart</strong>
-                    <small>Open advanced OHLC graph</small>
-                  </span>
+                  <span className={css(styles, "landing-tool-title")}>Candlestick chart</span>
+                  <span className={css(styles, "landing-tool-detail")}>OHLC + volume</span>
+                  <ArrowRight size={13} aria-hidden="true" />
                 </Link>
               </div>
             </div>

@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
 import { FinancialPerformance } from "@/components/company/FinancialPerformance";
+import { RelatedStocks } from "@/components/company/RelatedStocks";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyCandlestickHref, companyShareholdingHref } from "@/lib/data/format";
 import type { FinancialTable as FinancialTableModel, Stock } from "@/lib/data/types";
@@ -151,6 +152,8 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                 />
               </section>
             ) : null}
+
+            <RelatedStocks peers={model.peers} source={model.peerSource} ticker={stock.ticker} />
 
             {hasDocs ? <DocumentsTabs documents={stock.documents} id="documents" /> : null}
           </div>

@@ -20,10 +20,10 @@ type FinancialTab = {
 };
 
 const financialTabs: FinancialTab[] = [
-  { key: "income", label: "Income Statement", kicker: "Quarters and Profit & Loss" },
-  { key: "balance", label: "Balance Sheet", kicker: "Assets and liabilities", yearlyOnly: true },
-  { key: "cash", label: "Cash Flow", kicker: "Operating, investing, financing", yearlyOnly: true },
-  { key: "ratios", label: "Ratios", kicker: "Efficiency and return metrics", yearlyOnly: true }
+  { key: "income", label: "Income", kicker: "Statement" },
+  { key: "balance", label: "Balance Sheet", kicker: "Position", yearlyOnly: true },
+  { key: "cash", label: "Cash Flow", kicker: "Cash", yearlyOnly: true },
+  { key: "ratios", label: "Ratios", kicker: "Efficiency", yearlyOnly: true }
 ];
 
 const highlightedRows = new Set([
@@ -88,6 +88,43 @@ function rowHasValues(row: FinRow, periods: string[]) {
   return periods.some((period) => row.values[period]);
 }
 
+function getCellTone(label: string, value: string) {
+  const normalized = normalizedLabel(label);
+  const numericValue = parseNumericCell(value);
+  const directionalRow =
+    normalized.includes("%") ||
+    normalized.includes("growth") ||
+    normalized.includes("margin") ||
+    normalized.includes("profit") ||
+    normalized.includes("cash flow") ||
+    normalized.includes("opm") ||
+    normalized.includes("roce") ||
+    normalized.includes("roe") ||
+    normalized.includes("cfo");
+
+  if (numericValue === null || numericValue === 0) {
+    return "";
+  }
+
+  if (numericValue < 0) {
+    return "financials-negative";
+  }
+
+  return directionalRow ? "financials-positive" : "";
+}
+
+function getPeriodLabel(table: FinancialTable, mode?: PeriodMode) {
+  if (mode === "quarterly") {
+    return `${table.periods.length} quarters`;
+  }
+
+  if (mode === "yearly") {
+    return `${table.periods.length} years`;
+  }
+
+  return `${table.periods.length} periods`;
+}
+
 function FinancialRows({
   child = false,
   periods,
@@ -114,7 +151,7 @@ function FinancialRows({
           </span>
         </td>
         {periods.map((period) => (
-          <td className={css(styles, "numeric")} key={`${rowKey}-${period}`}>
+          <td className={css(styles, `numeric ${getCellTone(row.label, row.values[period] || "")}`)} key={`${rowKey}-${period}`}>
             {row.values[period] || "-"}
           </td>
         ))}
@@ -127,21 +164,101 @@ function FinancialRows({
 }
 
 export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
-  const [tab, setTab] = useState<FinancialTabKey>("income");
-  const [mode, setMode] = useState<PeriodMode>(hasTable(stock.quarterly) ? "quarterly" : "yearly");
+  const [incomeMode, setIncomeMode] = useState<PeriodMode>(hasTable(stock.quarterly) ? "quarterly" : "yearly");
   const hasIncome = hasTable(stock.quarterly) || hasTable(stock.profitLoss);
-  const availableTabs = financialTabs.filter((item) =>
-    item.key === "income" ? hasIncome : hasTable(getTableForTab(stock, item.key, "yearly"))
+  const incomeModes = [
+    hasTable(stock.quarterly) ? { key: "quarterly" as const, label: "Quarterly" } : null,
+    hasTable(stock.profitLoss) ? { key: "yearly" as const, label: "Annual" } : null
+  ].filter((item): item is { key: PeriodMode; label: string } => Boolean(item));
+  const activeIncomeMode = incomeModes.some((item) => item.key === incomeMode) ? incomeMode : incomeModes[0]?.key ?? "yearly";
+  const incomeTable = getTableForTab(stock, "income", activeIncomeMode);
+  const statementSections = [
+    hasIncome
+      ? {
+          id: "income-statement",
+          mode: activeIncomeMode,
+          table: incomeTable,
+          tab: financialTabs[0],
+          title: activeIncomeMode === "quarterly" ? "Quarterly Results" : "Profit & Loss"
+        }
+      : null,
+    hasTable(stock.balanceSheet)
+      ? {
+          id: "balance-sheet",
+          table: stock.balanceSheet,
+          tab: financialTabs[1],
+          title: "Balance Sheet"
+        }
+      : null,
+    hasTable(stock.cashFlows)
+      ? {
+          id: "cash-flow",
+          table: stock.cashFlows,
+          tab: financialTabs[2],
+          title: "Cash Flow"
+        }
+      : null,
+    hasTable(stock.ratios)
+      ? {
+          id: "ratios",
+          table: stock.ratios,
+          tab: financialTabs[3],
+          title: "Ratios"
+        }
+      : null
+  ].filter(
+    (
+      item
+    ): item is {
+      id: string;
+      mode?: PeriodMode;
+      table: FinancialTable;
+      tab: FinancialTab;
+      title: string;
+    } => Boolean(item)
   );
-  const activeTab = availableTabs.find((item) => item.key === tab) ?? availableTabs[0] ?? financialTabs[0];
-  const availableModes = activeTab.yearlyOnly
-    ? [{ key: "yearly" as const, label: "Yearly" }]
-    : [
-        hasTable(stock.quarterly) ? { key: "quarterly" as const, label: "Quarterly" } : null,
-        hasTable(stock.profitLoss) ? { key: "yearly" as const, label: "Yearly" } : null
-      ].filter((item): item is { key: PeriodMode; label: string } => Boolean(item));
-  const activeMode = availableModes.some((item) => item.key === mode) ? mode : availableModes[0]?.key ?? "yearly";
-  const activeTable = getTableForTab(stock, activeTab.key, activeMode);
+  const summaryItems = [
+    {
+      label: "Sales (Cr)",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["Sales", "Revenue"])
+    },
+    {
+      label: "Net Profit (Cr)",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["Net Profit", "Profit After Tax"])
+    },
+    {
+      label: "OPM",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["OPM %"], { suffix: "%" })
+    },
+    {
+      label: "Assets (Cr)",
+      period: getLatestPeriod(stock.balanceSheet),
+      value: getLatestValue(stock.balanceSheet, ["Total Assets"])
+    },
+    {
+      label: "Borrowings (Cr)",
+      period: getLatestPeriod(stock.balanceSheet),
+      value: getLatestValue(stock.balanceSheet, ["Borrowings"])
+    },
+    {
+      label: "Free Cash Flow (Cr)",
+      period: getLatestPeriod(stock.cashFlows),
+      value: getLatestValue(stock.cashFlows, ["Free Cash Flow"])
+    },
+    {
+      label: "Net Cash Flow (Cr)",
+      period: getLatestPeriod(stock.cashFlows),
+      value: getLatestValue(stock.cashFlows, ["Net Cash Flow"])
+    },
+    {
+      label: "ROCE",
+      period: getLatestPeriod(stock.ratios),
+      value: getLatestValue(stock.ratios, ["ROCE %"], { suffix: "%" })
+    }
+  ];
 
   return (
     <main className={css(styles, "page-stack financials-detail-page")}>
@@ -152,86 +269,78 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
             Back to company
           </Link>
           <p className={css(styles, "ownership-eyebrow")}>{stock.ticker}</p>
-          <h1>{stock.overview.companyName}</h1>
-          <p>Full financial statements from the static company filing data, with quarterly income and yearly statements.</p>
+          <h1>Financials</h1>
+          <p className={css(styles, "financials-company-name")}>{stock.overview.companyName}</p>
         </div>
-        <div className={css(styles, "financials-summary-grid")}>
-          <div>
-            <span>Revenue</span>
-            <strong className={css(styles, "numeric")}>{getLatestValue(stock.profitLoss, ["Sales", "Revenue"], { prefix: "₹" })}</strong>
-            <small>{getLatestPeriod(stock.profitLoss)}</small>
-          </div>
-          <div>
-            <span>Net Profit</span>
-            <strong className={css(styles, "numeric")}>{getLatestValue(stock.profitLoss, ["Net Profit"], { prefix: "₹" })}</strong>
-            <small>{getLatestPeriod(stock.profitLoss)}</small>
-          </div>
-          <div>
-            <span>Total Assets</span>
-            <strong className={css(styles, "numeric")}>{getLatestValue(stock.balanceSheet, ["Total Assets"], { prefix: "₹" })}</strong>
-            <small>{getLatestPeriod(stock.balanceSheet)}</small>
-          </div>
-          <div>
-            <span>ROCE</span>
-            <strong className={css(styles, "numeric")}>{getLatestValue(stock.ratios, ["ROCE %"], { suffix: "%" })}</strong>
-            <small>{getLatestPeriod(stock.ratios)}</small>
-          </div>
-        </div>
+        <p className={css(styles, "financials-unit-note")}>Values in ₹ Cr unless stated</p>
       </header>
 
+      <section className={css(styles, "financials-summary-grid")} aria-label="Latest financial snapshot">
+        {summaryItems.map((item) => (
+          <div key={item.label}>
+            <span>{item.label}</span>
+            <strong className={css(styles, `numeric ${getCellTone(item.label, item.value)}`)}>{item.value}</strong>
+            <small>{item.period}</small>
+          </div>
+        ))}
+      </section>
+
+      <div className={css(styles, "financials-control-row")}>
+        <nav className={css(styles, "financials-jump-nav")} aria-label="Financial statement sections">
+          {statementSections.map((item) => (
+            <a href={`#${item.id}`} key={item.id}>
+              <span>{item.tab.label}</span>
+              <small>{getPeriodLabel(item.table, item.mode)}</small>
+            </a>
+          ))}
+        </nav>
+        {incomeModes.length > 1 ? (
+          <div className={css(styles, "financials-period-toggle")} aria-label="Income statement period">
+            {incomeModes.map((item) => (
+              <button
+                className={css(styles, item.key === activeIncomeMode ? "active" : "")}
+                key={item.key}
+                type="button"
+                onClick={() => setIncomeMode(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
       <section className={css(styles, "financials-detail-panel")}>
-        <div className={css(styles, "financials-tabs-row")}>
-          <nav className={css(styles, "financials-tabs")} aria-label="Financial statement sections">
-            {availableTabs.map((item) => (
-              <button
-                className={css(styles, item.key === activeTab.key ? "active" : "")}
-                key={item.key}
-                type="button"
-                onClick={() => setTab(item.key)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-          <div className={css(styles, "financials-period-toggle")} aria-label="Statement period">
-            {availableModes.map((item) => (
-              <button
-                className={css(styles, item.key === activeMode ? "active" : "")}
-                key={item.key}
-                type="button"
-                onClick={() => setMode(item.key)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={css(styles, "financials-detail-heading")}>
-          <div>
-            <span>{activeTab.kicker}</span>
-            <h2>{activeTab.label}</h2>
-          </div>
-          <p>{activeTable.periods.length} periods</p>
-        </div>
-
-        <div className={css(styles, "financials-table-card")}>
-          <div className={css(styles, "financials-table-wrap")}>
-            <table className={css(styles, "financials-table")}>
-              <thead>
-                <tr>
-                  <th>Particulars</th>
-                  {activeTable.periods.map((period) => (
-                    <th key={period}>{period}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <FinancialRows periods={activeTable.periods} rows={activeTable.rows} />
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {statementSections.map((item) => (
+          <section className={css(styles, "financials-statement-section")} id={item.id} key={item.id}>
+            <div className={css(styles, "financials-detail-heading")}>
+              <div>
+                <span>{item.tab.kicker}</span>
+                <h2>{item.title}</h2>
+              </div>
+              <p>
+                {getPeriodLabel(item.table, item.mode)} · latest {getLatestPeriod(item.table)}
+              </p>
+            </div>
+            <div className={css(styles, "financials-table-card")}>
+              <div className={css(styles, "financials-table-wrap")}>
+                <table className={css(styles, "financials-table")}>
+                  <thead>
+                    <tr>
+                      <th>Particulars</th>
+                      {item.table.periods.map((period) => (
+                        <th key={period}>{period}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <FinancialRows periods={item.table.periods} rows={item.table.rows} />
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        ))}
       </section>
     </main>
   );

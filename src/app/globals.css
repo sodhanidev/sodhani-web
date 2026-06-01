@@ -120,7 +120,7 @@
   --scroll-track: #050505;
   --scroll-thumb: linear-gradient(180deg, rgba(143, 180, 255, 0.6), rgba(77, 211, 130, 0.48));
   --scroll-thumb-hover: linear-gradient(180deg, #8fb4ff, #4dd382);
-  --topbar-bg: rgba(12, 15, 20, 0.86);
+  --topbar-bg: rgba(5, 5, 5, 0.86);
   --control-bg: rgba(16, 17, 20, 0.78);
   --control-bg-solid: #101114;
   --control-hover-bg: #17191d;
