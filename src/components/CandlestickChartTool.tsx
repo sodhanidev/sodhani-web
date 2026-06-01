@@ -22,6 +22,12 @@ type AxisPointerEvent = {
   }>;
 };
 
+type CloseLabel = {
+  color: string;
+  value: number;
+  y: number;
+};
+
 const ranges: { key: CandleRangeKey; label: string; days?: number }[] = [
   { key: "1M", label: "1M", days: 22 },
   { key: "3M", label: "3M", days: 66 },
@@ -147,6 +153,7 @@ export function CandlestickChartTool({
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [hoverPoint, setHoverPoint] = useState<PricePoint | null>(null);
+  const [closeLabel, setCloseLabel] = useState<CloseLabel | null>(null);
   const [themeVersion, setThemeVersion] = useState(0);
 
   useEffect(() => {
@@ -187,11 +194,13 @@ export function CandlestickChartTool({
     const axis = readCssVar("--chart-axis", "#111111");
     const muted = readCssVar("--chart-muted", "#6a7280");
     const hover = readCssVar("--chart-hover-line", "#aeb8c4");
-    const up = readCssVar("--chart-up", "#2f7d70");
-    const down = readCssVar("--chart-down", "#e44f55");
+    const up = "#049981";
+    const down = "#f23645";
     const fontFamily = readCssVar("--font-sans", "Inter, ui-sans-serif, system-ui, sans-serif");
     const dates = visible.map((point) => point.date);
     const candleData = visible.map((point) => [point.open, point.close, point.low, point.high]);
+    const latestPoint = visible.at(-1);
+    const latestColor = latestPoint && latestPoint.close >= latestPoint.open ? up : down;
     const maxVolume = Math.max(1, ...visible.map((point) => point.volume));
     const volumeData = visible.map((point, index) => ({
       value: [index, point.volume],
@@ -201,6 +210,34 @@ export function CandlestickChartTool({
     }));
 
     const chart = echarts.init(node, null, { renderer: "canvas" });
+    const syncCloseLabel = () => {
+      if (!latestPoint) {
+        setCloseLabel(null);
+        return;
+      }
+
+      const high = Math.max(...visible.map((point) => point.high));
+      const low = Math.min(...visible.map((point) => point.low));
+      const span = Math.max(1, high - low);
+      const paddedHigh = high + span * 0.06;
+      const paddedLow = low - span * 0.06;
+      const paddedSpan = Math.max(1, paddedHigh - paddedLow);
+      const plotTop = 8;
+      const plotBottom = 26;
+      const plotHeight = Math.max(1, node.clientHeight - plotTop - plotBottom);
+      const y = plotTop + ((paddedHigh - latestPoint.close) / paddedSpan) * plotHeight;
+
+      if (!Number.isFinite(y)) {
+        setCloseLabel(null);
+        return;
+      }
+
+      setCloseLabel({
+        color: latestColor,
+        value: latestPoint.close,
+        y: Math.min(Math.max(y, 12), node.clientHeight - 12)
+      });
+    };
     const option: EChartsOption = {
       animation: false,
       backgroundColor: background,
@@ -213,7 +250,7 @@ export function CandlestickChartTool({
       grid: [
         {
           top: 8,
-          right: 64,
+          right: 78,
           bottom: 26,
           left: 0,
           containLabel: false
@@ -293,7 +330,7 @@ export function CandlestickChartTool({
             color: axis,
             fontFamily,
             fontSize: 11,
-            formatter: (value: number) => formatIndianNumber(value, { dp: 2 }),
+            formatter: (value: number) => `₹${formatIndianNumber(value, { dp: 2 })}`,
             margin: 14
           },
           axisLine: { show: false },
@@ -339,8 +376,9 @@ export function CandlestickChartTool({
         {
           type: "candlestick",
           data: candleData,
-          barMaxWidth: 9,
+          barMaxWidth: 64,
           barMinWidth: 2,
+          barWidth: "62%",
           itemStyle: {
             color: up,
             color0: down,
@@ -358,8 +396,9 @@ export function CandlestickChartTool({
         {
           type: "bar",
           data: volumeData,
-          barMaxWidth: 9,
+          barMaxWidth: 64,
           barMinWidth: 2,
+          barWidth: "62%",
           itemStyle: {
             borderWidth: 0
           },
@@ -375,9 +414,14 @@ export function CandlestickChartTool({
     };
 
     chart.setOption(option, true);
+    requestAnimationFrame(syncCloseLabel);
 
-    const resizeObserver = new ResizeObserver(() => chart.resize());
+    const resizeObserver = new ResizeObserver(() => {
+      chart.resize();
+      requestAnimationFrame(syncCloseLabel);
+    });
     resizeObserver.observe(node);
+    chart.on("dataZoom", syncCloseLabel);
 
     chart.on("updateAxisPointer", (event: unknown) => {
       const pointerEvent = event as AxisPointerEvent;
@@ -388,6 +432,7 @@ export function CandlestickChartTool({
     chart.getZr().on("globalout", () => setHoverPoint(null));
 
     return () => {
+      chart.off("dataZoom", syncCloseLabel);
       resizeObserver.disconnect();
       chart.dispose();
     };
@@ -530,6 +575,14 @@ export function CandlestickChartTool({
 
         <div className={css(styles, "candlestick-chart-shell")}>
           <div ref={chartRef} className={css(styles, "candlestick-chart-frame")} />
+          {closeLabel ? (
+            <div
+              className={css(styles, "ohlc-close-label")}
+              style={{ backgroundColor: closeLabel.color, top: closeLabel.y }}
+            >
+              ₹{formatIndianNumber(closeLabel.value, { dp: 2 })}
+            </div>
+          ) : null}
         </div>
       </section>
 
