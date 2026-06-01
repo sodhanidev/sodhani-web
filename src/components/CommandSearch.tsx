@@ -4,9 +4,27 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { css } from "@/lib/css-module";
+import { rankSearchItems } from "@/lib/search-match";
 import styles from "./layout.module.css";
 
 import type { SearchItem } from "@/lib/data/search-index";
+
+function resultBadge(result: SearchItem) {
+  if (result.kind === "Company") {
+    return result.code ?? "";
+  }
+
+  return result.count ? `${result.count} stocks` : "Industry";
+}
+
+function resultMeta(result: SearchItem) {
+  if (result.kind !== "Company" || !result.code) {
+    return result.meta;
+  }
+
+  const codePrefix = `${result.code} · `;
+  return result.meta.startsWith(codePrefix) ? result.meta.slice(codePrefix.length) : result.meta;
+}
 
 export function CommandSearch() {
   const [open, setOpen] = useState(false);
@@ -85,16 +103,7 @@ export function CommandSearch() {
       return items.slice(0, 10);
     }
 
-    return items
-      .map((item) => {
-        const haystack = `${item.label} ${item.meta}`.toLowerCase();
-        const index = haystack.indexOf(needle);
-        return { item, score: index === -1 ? Number.POSITIVE_INFINITY : index };
-      })
-      .filter((entry) => Number.isFinite(entry.score))
-      .sort((a, b) => a.score - b.score || a.item.label.localeCompare(b.item.label))
-      .slice(0, 12)
-      .map((entry) => entry.item);
+    return rankSearchItems(items, needle).slice(0, 12);
   }, [items, query]);
 
   return (
@@ -154,9 +163,9 @@ export function CommandSearch() {
                 >
                   <span>
                     <span className={css(styles, "result-label")}>{result.label}</span>
-                    <span className={css(styles, "result-meta")}> {result.meta}</span>
+                    <span className={css(styles, "result-meta")}> {resultMeta(result)}</span>
                   </span>
-                  <span className={css(styles, "count-badge")}>{result.kind}</span>
+                  <span className={css(styles, "count-badge")}>{resultBadge(result)}</span>
                 </Link>
               ))
             ) : (

@@ -1,4 +1,7 @@
-import { CalendarDays, ChevronRight, FileText, Megaphone, ShieldCheck, type LucideIcon } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { CalendarDays, ChevronDown, ChevronRight, FileText, Megaphone, ShieldCheck, type LucideIcon } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./company/company.module.css";
 
@@ -16,6 +19,8 @@ const documentGroups = [
   Icon: LucideIcon;
 }[];
 
+const INITIAL_DOCUMENT_COUNT = 12;
+
 type DocumentGridItem = {
   doc: DocLink;
   Icon: LucideIcon;
@@ -24,6 +29,7 @@ type DocumentGridItem = {
 };
 
 export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]; id?: string }) {
+  const [showAll, setShowAll] = useState(false);
   const docs = documentGroups.flatMap((group) =>
     documents[group.key].map((doc): DocumentGridItem => ({ ...group, doc }))
   );
@@ -31,6 +37,9 @@ export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]
   if (!docs.length) {
     return null;
   }
+
+  const hasMoreDocuments = docs.length > INITIAL_DOCUMENT_COUNT;
+  const visibleDocs = showAll || !hasMoreDocuments ? docs : docs.slice(0, INITIAL_DOCUMENT_COUNT);
 
   return (
     <section className={css(styles, `documents-stream${id ? " section-anchor" : ""}`)} id={id}>
@@ -42,7 +51,7 @@ export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]
       </div>
 
       <div className={css(styles, "documents-grid")}>
-        {docs.map(({ doc, Icon, key, label }, index) => (
+        {visibleDocs.map(({ doc, Icon, key, label }, index) => (
           <a
             className={css(styles, "document-news-item")}
             href={doc.url}
@@ -62,6 +71,18 @@ export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]
           </a>
         ))}
       </div>
+
+      {hasMoreDocuments ? (
+        <button
+          className={css(styles, "documents-show-all")}
+          type="button"
+          aria-expanded={showAll}
+          onClick={() => setShowAll((current) => !current)}
+        >
+          <span>{showAll ? "Show less" : "Show all"}</span>
+          <ChevronDown className={css(styles, "documents-show-all-icon")} size={18} strokeWidth={2} aria-hidden="true" />
+        </button>
+      ) : null}
     </section>
   );
 }

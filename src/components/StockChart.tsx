@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { ChartCandlestick } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./company/company.module.css";
 
@@ -56,7 +58,7 @@ function formatTooltipDate(date: string) {
   return `${Number(day)} ${months[monthIndex]} '${year.slice(-2)} · 15:30 IST`;
 }
 
-export function StockChart({ id, points }: { id?: string; points: PricePoint[] }) {
+export function StockChart({ advancedHref, id, points }: { advancedHref?: string; id?: string; points: PricePoint[] }) {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [range, setRange] = useState<RangeKey>("1Y");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -168,7 +170,8 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
           <div className={css(styles, "range-toggle chart-ranges")} aria-label="Chart range">
             {ranges.map((candidate) => (
               <button
-                className={candidate.key === range ? "active" : ""}
+                aria-pressed={candidate.key === range}
+                className={css(styles, candidate.key === range ? "active" : "")}
                 key={candidate.key}
                 type="button"
                 onClick={() => {
@@ -295,6 +298,14 @@ export function StockChart({ id, points }: { id?: string; points: PricePoint[] }
           )}
         </div>
       </div>
+      {advancedHref ? (
+        <div className={css(styles, "chart-footer-actions")}>
+          <Link className={css(styles, "chart-advanced-link")} href={advancedHref}>
+            <ChartCandlestick size={15} aria-hidden="true" />
+            Advanced
+          </Link>
+        </div>
+      ) : null}
       <div className={css(styles, "sr-only")}>
         <table>
           <caption>Close prices</caption>

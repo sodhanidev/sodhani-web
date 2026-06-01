@@ -58,6 +58,117 @@
 
 }
 
+.landing-tools-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+}
+
+.landing-tools-menu > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--landing-ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  padding: 0;
+  text-transform: uppercase;
+
+}
+
+.landing-tools-menu > button:hover,
+.landing-tools-menu:focus-within > button {
+  color: var(--landing-nav-hover);
+
+}
+
+.landing-tools-popover {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  z-index: 20;
+  width: 246px;
+  border: 1px solid var(--landing-result-border);
+  border-radius: 12px;
+  background: var(--landing-surface);
+  box-shadow: 0 16px 36px rgba(10, 15, 24, 0.14);
+  opacity: 0;
+  padding: 6px;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(4px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+
+}
+
+.landing-tools-menu:hover .landing-tools-popover,
+.landing-tools-menu:focus-within .landing-tools-popover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+
+}
+
+.landing-tools-popover a {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border-radius: 8px;
+  color: var(--landing-ink);
+  font-size: 13px;
+  letter-spacing: 0;
+  padding: 10px;
+  text-transform: none;
+
+}
+
+.landing-tools-popover a:hover,
+.landing-tools-popover a:focus-visible {
+  background: var(--landing-surface-soft);
+  color: var(--landing-ink-strong);
+  outline: none;
+
+}
+
+.landing-tools-popover a > svg {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--accent);
+
+}
+
+.landing-tools-popover span {
+  display: grid;
+  gap: 2px;
+
+}
+
+.landing-tools-popover strong {
+  color: currentColor;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.15;
+
+}
+
+.landing-tools-popover small {
+  color: var(--landing-muted-2);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+
+}
+
 .landing-links a:hover {
   color: var(--landing-nav-hover);
 
@@ -198,15 +309,26 @@
 }
 
 .landing-logo {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.4vw, 16px);
   margin: 0;
-  font-size: clamp(58px, 6vw, 76px);
-  line-height: 0.9;
+  color: var(--landing-logo);
+  font-family: var(--font-sans);
+  font-size: clamp(50px, 5vw, 68px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
 
 }
 
 .landing-logo-img {
-  width: 88px;
+  display: block;
+  width: clamp(58px, 5.4vw, 76px);
   height: auto;
+  flex: 0 0 auto;
 
 }
 
@@ -477,14 +599,14 @@
 
 .landing-logo {
     max-width: 100%;
-    gap: 8px;
-    font-size: 44px;
+    gap: 9px;
+    font-size: clamp(38px, 12vw, 46px);
     letter-spacing: 0;
   
 }
 
 .landing-logo-img {
-    width: 64px;
+    width: clamp(44px, 13vw, 54px);
   
 }
 

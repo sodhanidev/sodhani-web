@@ -1,23 +1,19 @@
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-import { SearchResultsClient } from "@/components/SearchResultsClient";
+type SearchPageProps = {
+  searchParams?: Promise<{
+    q?: string | string[];
+  }>;
+};
 
 export const metadata = {
   title: "Search"
 };
 
-export default function SearchPage() {
-  return (
-    <main className="shell page-stack">
-      <section className="node-head">
-        <div>
-          <div className="eyebrow">Search</div>
-          <h1>Search</h1>
-        </div>
-      </section>
-      <Suspense fallback={<div className="empty-state">Loading search</div>}>
-        <SearchResultsClient />
-      </Suspense>
-    </main>
-  );
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const params = await searchParams;
+  const rawQuery = Array.isArray(params?.q) ? params.q[0] : params?.q;
+  const query = rawQuery?.trim();
+
+  redirect(query ? `/?q=${encodeURIComponent(query)}` : "/");
 }

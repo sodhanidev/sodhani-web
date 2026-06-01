@@ -11,7 +11,7 @@ import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
 import { FinancialPerformance } from "@/components/company/FinancialPerformance";
 import type { CompanyPageModel } from "@/lib/data/company-template";
-import { companyShareholdingHref } from "@/lib/data/format";
+import { companyCandlestickHref, companyShareholdingHref } from "@/lib/data/format";
 import type { FinancialTable as FinancialTableModel, Stock } from "@/lib/data/types";
 
 function hasTable(table: FinancialTableModel) {
@@ -68,7 +68,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
         <CompanySectionNav links={sectionLinks} />
         <section className={css(styles, "stock-hero")}>
           <StockHeader id="overview" stock={stock} />
-          {hasChart ? <StockChart id="chart" points={prices} /> : null}
+          {hasChart ? <StockChart advancedHref={companyCandlestickHref(stock.ticker)} id="chart" points={prices} /> : null}
         </section>
 
         <section className={css(styles, "stock-layout")}>

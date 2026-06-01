@@ -95,3 +95,11 @@ export function companyShareholdingHref(code: string): string {
 export function companyFinancialsHref(code: string): string {
   return `${companyHref(code)}financials/`;
 }
+
+export function companyCandlestickHref(code: string): string {
+  return `${companyHref(code)}candlestick/`;
+}
+
+export function candlestickToolHref(): string {
+  return "/tools/candlestick/";
+}

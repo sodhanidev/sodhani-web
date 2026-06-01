@@ -176,10 +176,7 @@
   --landing-line-strong: #556372;
   --landing-surface: #101114;
   --landing-surface-soft: #17191d;
-  --landing-footer-bg:
-    radial-gradient(circle at 15% 10%, rgba(27, 115, 91, 0.24), transparent 34%),
-    radial-gradient(circle at 82% 0%, rgba(36, 86, 116, 0.2), transparent 32%),
-    linear-gradient(135deg, #020b15 0%, #031723 48%, #031412 100%);
+  --landing-footer-bg: #101114;
   --landing-logo: #eef3f4;
   --landing-nav-hover: #c8d2d7;
   --landing-placeholder: #8896a1;
@@ -736,6 +733,275 @@ th:nth-child(2) .sort-button {
 
 }
 
+.tv-reference-page {
+  min-height: calc(100svh - 96px);
+  background: #050505;
+  color: #f5f7fb;
+  font-family: var(--font-sans);
+  padding: clamp(18px, 3vw, 34px) clamp(12px, 2.6vw, 42px) 48px;
+
+}
+
+.tv-reference-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 22px;
+
+}
+
+.tv-reference-header p {
+  margin: 0 0 7px;
+  color: #8fb4ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+}
+
+.tv-reference-header h1 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(30px, 4.5vw, 64px);
+  font-weight: 560;
+  letter-spacing: 0;
+  line-height: 0.98;
+
+}
+
+.tv-reference-header span {
+  display: block;
+  margin-top: 9px;
+  color: #a8b0ba;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+
+}
+
+.tv-reference-header label {
+  display: grid;
+  gap: 8px;
+  color: #a8b0ba;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
+}
+
+.tv-reference-header select {
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: #0d0f13;
+  color: #f5f7fb;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0;
+  outline: none;
+  padding: 0 12px;
+  text-transform: none;
+
+}
+
+.tv-reference-header select:focus-visible {
+  border-color: rgba(143, 180, 255, 0.72);
+
+}
+
+.tv-reference-toolbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, auto)) minmax(280px, 1fr);
+  gap: clamp(18px, 3vw, 42px);
+  align-items: center;
+  margin-bottom: 20px;
+
+}
+
+.tv-reference-toolbar > div:not(.tv-reference-ranges) {
+  display: grid;
+  gap: 4px;
+
+}
+
+.tv-reference-toolbar span {
+  color: #8b95a3;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.1;
+
+}
+
+.tv-reference-toolbar strong {
+  color: #f5f7fb;
+  font-size: 13px;
+  font-weight: 560;
+  line-height: 1.15;
+
+}
+
+.tv-reference-toolbar strong.is-up {
+  color: #4dd382;
+
+}
+
+.tv-reference-toolbar strong.is-down {
+  color: #ff7078;
+
+}
+
+.tv-reference-ranges {
+  display: inline-flex;
+  justify-self: end;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+}
+
+.tv-reference-ranges button {
+  min-width: 54px;
+  min-height: 32px;
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.13);
+  background: transparent;
+  color: #f5f7fb;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  padding: 0 12px;
+
+}
+
+.tv-reference-ranges button:first-child {
+  border-left: 0;
+
+}
+
+.tv-reference-ranges button[aria-pressed="true"] {
+  background: #ffffff;
+  color: #050505;
+
+}
+
+.tv-reference-chart-shell {
+  position: relative;
+  width: 100%;
+  height: clamp(480px, 62svh, 680px);
+  overflow: hidden;
+  background: #050505;
+
+}
+
+.tv-reference-chart {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+
+}
+
+.tv-reference-attribution {
+  position: absolute;
+  bottom: 42px;
+  left: 0;
+  z-index: 2;
+  color: rgba(245, 247, 251, 0.88);
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: 0;
+  line-height: 1;
+  text-decoration: none;
+
+}
+
+.tv-reference-attribution:hover,
+.tv-reference-attribution:focus-visible {
+  color: #ffffff;
+  outline: none;
+
+}
+
+.tv-reference-tooltip {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  width: 162px;
+  gap: 4px;
+  justify-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(28, 28, 30, 0.94);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  color: #ffffff;
+  font-size: 11px;
+  padding: 10px 11px;
+  pointer-events: none;
+  text-align: center;
+  transform: translate(12px, -50%);
+
+}
+
+.tv-reference-tooltip.left {
+  transform: translate(calc(-100% - 12px), -50%);
+
+}
+
+.tv-reference-tooltip strong {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 560;
+  line-height: 1.1;
+
+}
+
+.tv-reference-tooltip > span {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 11px;
+  font-weight: 450;
+  line-height: 1.2;
+  white-space: nowrap;
+
+}
+
+.tv-reference-tooltip dl {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 5px 0 0;
+
+}
+
+.tv-reference-tooltip dl div {
+  display: contents;
+
+}
+
+.tv-reference-tooltip dt,
+.tv-reference-tooltip dd {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.1;
+
+}
+
+.tv-reference-tooltip dt {
+  color: rgba(255, 255, 255, 0.58);
+  font-weight: 650;
+  text-align: left;
+
+}
+
+.tv-reference-tooltip dd {
+  color: #ffffff;
+  font-weight: 520;
+  text-align: right;
+
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -744,6 +1010,21 @@ th:nth-child(2) .sort-button {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 
+}
+
+@media (max-width: 900px) {
+  .tv-reference-header,
+  .tv-reference-toolbar {
+    grid-template-columns: 1fr;
+
+  }
+
+  .tv-reference-ranges {
+    justify-self: start;
+    max-width: 100%;
+    overflow-x: auto;
+
+  }
 }
 
 @media (max-width: 760px) {
@@ -756,6 +1037,22 @@ th:nth-child(2) .sort-button {
   .node-head,
   .table-toolbar {
     grid-template-columns: 1fr;
+
+  }
+
+  .tv-reference-page {
+    padding-inline: 12px;
+
+  }
+
+  .tv-reference-chart-shell {
+    height: 430px;
+
+  }
+
+  .tv-reference-attribution {
+    bottom: 38px;
+    font-size: 15px;
 
   }
 }

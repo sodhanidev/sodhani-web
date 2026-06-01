@@ -40,8 +40,10 @@ const themeScript = `
   }
 
   function syncButtons(theme) {
+    const currentTheme = theme === "light" || theme === "dark" || theme === "system" ? theme : readTheme();
+
     document.querySelectorAll("[data-theme-option]").forEach((button) => {
-      const active = button.getAttribute("data-theme-option") === theme;
+      const active = button.getAttribute("data-theme-option") === currentTheme;
       button.setAttribute("aria-pressed", String(active));
       if (active) {
         button.setAttribute("data-active", "true");
@@ -54,6 +56,10 @@ const themeScript = `
   try {
     applyTheme(readTheme());
   } catch {}
+
+  function syncCurrentButtons() {
+    syncButtons(readTheme());
+  }
 
   document.addEventListener("click", (event) => {
     const button = event.target instanceof Element ? event.target.closest("[data-theme-option]") : null;
@@ -75,16 +81,22 @@ const themeScript = `
   });
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => syncButtons(readTheme()), { once: true });
+    document.addEventListener("DOMContentLoaded", syncCurrentButtons, { once: true });
   } else {
-    syncButtons(readTheme());
+    syncCurrentButtons();
   }
+
+  try {
+    const observer = new MutationObserver(syncCurrentButtons);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  } catch {}
 
   try {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const syncSystemTheme = () => {
       if (readTheme() === "system") {
         applyTheme("system");
+        syncButtons("system");
       }
     };
 

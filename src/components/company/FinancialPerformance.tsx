@@ -202,7 +202,8 @@ export function FinancialPerformance({
       <div className={css(styles, "financial-performance-controls")} aria-label="Financial performance period">
         {availableModes.map((candidate) => (
           <button
-            className={candidate.key === activeMode ? "active" : ""}
+            aria-pressed={candidate.key === activeMode}
+            className={css(styles, candidate.key === activeMode ? "active" : "")}
             key={candidate.key}
             type="button"
             onClick={() => {

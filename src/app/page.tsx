@@ -1,11 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChartCandlestick, ChevronDown } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
 import { LandingSearch } from "@/components/LandingSearch";
 import { SiteFooter } from "@/components/SiteFooter";
+import { candlestickToolHref } from "@/lib/data/format";
+
+type HomePageProps = {
+  searchParams?: Promise<{
+    q?: string | string[];
+  }>;
+};
 
 type MarketSnapshot = {
   label: string;
@@ -112,7 +119,11 @@ function MarketSparkline({ snapshot }: { snapshot: MarketSnapshot }) {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  const rawQuery = Array.isArray(params?.q) ? params.q[0] : params?.q;
+  const initialSearchQuery = rawQuery?.trim() ?? "";
+
   return (
     <main className={css(styles, "landing-page")}>
       <section className={css(styles, "landing-hero")}>
@@ -120,9 +131,20 @@ export default function HomePage() {
           <div className={css(styles, "landing-links")}>
             <Link href="/">Home</Link>
             <Link href="/market/">Screens</Link>
-            <Link href="/market/">
-              Tools <ChevronDown size={14} aria-hidden="true" />
-            </Link>
+            <div className={css(styles, "landing-tools-menu")}>
+              <button type="button">
+                Tools <ChevronDown size={14} aria-hidden="true" />
+              </button>
+              <div className={css(styles, "landing-tools-popover")}>
+                <Link href={candlestickToolHref()}>
+                  <ChartCandlestick size={16} aria-hidden="true" />
+                  <span>
+                    <strong>Candlestick Chart</strong>
+                    <small>Open advanced OHLC graph</small>
+                  </span>
+                </Link>
+              </div>
+            </div>
           </div>
           <div className={css(styles, "landing-actions")}>
             <Link className={css(styles, "landing-login")} href="/sign-in/">
@@ -149,7 +171,7 @@ export default function HomePage() {
             <span>sodhani</span>
           </h1>
           <p>Stock analysis and screening tool for investors in India.</p>
-          <LandingSearch />
+          <LandingSearch initialQuery={initialSearchQuery} />
 
           <section className={css(styles, "landing-market")} aria-labelledby="landing-market-title">
             <div className={css(styles, "landing-market-head")}>
