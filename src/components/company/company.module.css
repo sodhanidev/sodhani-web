@@ -564,6 +564,113 @@
 
 }
 
+.chart-view-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+
+}
+
+.chart-view-trigger {
+  display: inline-flex;
+  min-width: 132px;
+  min-height: 30px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--chart-range-border);
+  border-radius: 6px;
+  background: var(--chart-range-bg);
+  color: var(--chart-range-ink);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0 10px 0 12px;
+  text-align: left;
+
+}
+
+.chart-view-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+.chart-view-trigger svg {
+  flex: 0 0 auto;
+  color: color-mix(in srgb, currentColor 72%, transparent);
+  transition: transform 140ms ease;
+
+}
+
+.chart-view-menu.open .chart-view-trigger svg {
+  transform: rotate(180deg);
+
+}
+
+.chart-view-trigger:hover,
+.chart-view-trigger:focus-visible,
+.chart-view-menu.open .chart-view-trigger {
+  border-color: var(--line-strong);
+  background: var(--chart-range-bg);
+  outline: none;
+
+}
+
+.chart-view-options {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  display: grid;
+  width: max-content;
+  min-width: 180px;
+  overflow: hidden;
+  border: 1px solid var(--chart-range-border);
+  border-radius: 6px;
+  background: var(--chart-range-bg);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+  padding: 4px;
+
+}
+
+.chart-view-options button {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--chart-muted);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 10px;
+  text-align: left;
+  white-space: nowrap;
+
+}
+
+.chart-view-options button:hover,
+.chart-view-options button:focus-visible {
+  background: var(--surface-2);
+  color: var(--chart-strong);
+  outline: none;
+
+}
+
+.chart-view-options button.active {
+  background: var(--surface-2);
+  color: var(--chart-strong);
+
+}
+
 .chart-titleline,
 .supercharts-link {
   display: inline-flex;
@@ -617,6 +724,122 @@
   display: block;
   width: 100%;
   height: 100%;
+
+}
+
+.chart-sales-bar {
+  fill: color-mix(in srgb, var(--accent-2) 34%, transparent);
+  stroke: color-mix(in srgb, var(--accent-2) 88%, transparent);
+  stroke-width: 1.25;
+
+}
+
+.chart-margin-area {
+  pointer-events: none;
+
+}
+
+.chart-margin-line {
+  stroke: var(--accent-2);
+
+}
+
+.chart-margin-dot {
+  fill: var(--chart-range-bg);
+  stroke: var(--accent-2);
+  stroke-width: 1.7;
+
+}
+
+.chart-sales-margin .chart-stats {
+  display: none;
+
+}
+
+.chart-sales-margin .chart-meta-row {
+  justify-content: flex-end;
+
+}
+
+.chart-sales-margin .chart-actions {
+  justify-content: flex-end;
+
+}
+
+.chart-sales-margin .chart-body {
+  padding-top: 16px;
+
+}
+
+.chart-sales-margin .chart-frame {
+  height: clamp(360px, 48svh, 520px);
+  min-height: 360px;
+
+}
+
+.chart-valuation-line {
+  stroke: var(--chart-line-positive, var(--up));
+
+}
+
+.chart-valuation-dot {
+  fill: var(--chart-line-positive, var(--up));
+
+}
+
+.chart-valuation-bar {
+  opacity: 0.22;
+
+}
+
+.chart-valuation-bar.market-cap-sales {
+  fill: #4c4bd2;
+  stroke: #4c4bd2;
+  stroke-width: 1.4;
+
+}
+
+.chart-valuation-line.market-cap-sales {
+  stroke: #3730b4;
+
+}
+
+.chart-valuation-dot.market-cap-sales {
+  fill: #3730b4;
+
+}
+
+.chart-valuation-bar.price-book {
+  fill: #0f8a84;
+  stroke: #0f8a84;
+  stroke-width: 1.4;
+
+}
+
+.chart-valuation-line.price-book {
+  stroke: #08726f;
+
+}
+
+.chart-valuation-dot.price-book {
+  fill: #08726f;
+
+}
+
+.chart-valuation-bar.ev-ebitda {
+  fill: #1696c7;
+  stroke: #1696c7;
+  stroke-width: 1.4;
+
+}
+
+.chart-valuation-line.ev-ebitda {
+  stroke: #087fb0;
+
+}
+
+.chart-valuation-dot.ev-ebitda {
+  fill: #087fb0;
 
 }
 
@@ -674,7 +897,7 @@
   overflow: hidden;
   gap: 0;
   border: 1px solid var(--chart-range-border);
-  border-radius: 0;
+  border-radius: 6px;
   background: var(--chart-range-bg);
   padding: 0;
   box-shadow: none;
@@ -687,7 +910,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--chart-range-ink);
+  color: color-mix(in srgb, var(--chart-range-ink) 72%, transparent);
   font-size: 12px;
   font-weight: 500;
   padding: 0 10px;
@@ -704,6 +927,14 @@
   background: var(--chart-range-active-bg);
   color: var(--chart-range-active-ink);
   box-shadow: none;
+
+}
+
+.chart-ranges button:hover,
+.chart-ranges button:focus-visible {
+  background: color-mix(in srgb, var(--chart-range-active-bg) 12%, transparent);
+  color: var(--chart-range-ink);
+  outline: none;
 
 }
 
@@ -3105,9 +3336,11 @@
   --ownership-row-alt: #f7f6f4;
   --ownership-card-bg: #ffffff;
   --ownership-muted-bg: #faf8f5;
-  gap: 30px;
-  padding-top: clamp(28px, 5vw, 58px);
-  padding-bottom: 54px;
+  width: min(var(--company-page-max, 1800px), calc(100% - 32px));
+  max-width: none;
+  gap: 18px;
+  padding-top: 18px;
+  padding-bottom: 42px;
 
 }
 
@@ -3122,10 +3355,11 @@
 }
 
 .ownership-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 390px);
-  gap: clamp(24px, 5vw, 72px);
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
   align-items: end;
+  padding-bottom: 2px;
 
 }
 
@@ -3133,7 +3367,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 600;
@@ -3162,83 +3396,137 @@
   max-width: 820px;
   margin: 0;
   color: var(--stock-title);
-  font-size: clamp(34px, 5.6vw, 76px);
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 500;
   letter-spacing: 0;
-  line-height: 0.96;
+  line-height: 1.04;
 
 }
 
-.ownership-hero p:not(.ownership-eyebrow) {
+.ownership-company-name {
   max-width: 640px;
-  margin: 16px 0 0;
+  margin: 4px 0 0;
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+
+}
+
+.ownership-unit-note {
+  margin: 0 0 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
 
 }
 
 .ownership-summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
-  background: var(--ownership-card-bg);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 10px 24px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+  background: transparent;
+  padding: 10px 0;
 
 }
 
 .ownership-summary-grid div {
   display: grid;
-  gap: 8px;
-  min-height: 92px;
-  align-content: center;
-  padding: 18px;
-
-}
-
-.ownership-summary-grid div + div {
-  border-left: 1px solid var(--line);
+  min-width: 0;
+  gap: 3px;
+  align-content: start;
 
 }
 
 .ownership-summary-grid span {
   color: var(--muted);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 500;
+  line-height: 1.25;
 
 }
 
 .ownership-summary-grid strong {
   color: var(--ink);
-  font-size: clamp(18px, 2vw, 25px);
-  line-height: 1;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+
+}
+
+.ownership-summary-grid small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+
+}
+
+.ownership-control-row {
+  position: sticky;
+  top: calc(var(--company-nav-offset, 60px) - 1px);
+  z-index: 9;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  padding: 8px 0;
+  backdrop-filter: blur(12px);
 
 }
 
 .ownership-jump-nav {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 14px;
+  min-width: 0;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+
+}
+
+.ownership-jump-nav::-webkit-scrollbar {
+  display: none;
 
 }
 
 .ownership-jump-nav a {
   display: inline-flex;
-  min-height: 34px;
+  flex: 0 0 auto;
+  min-height: 27px;
   align-items: center;
-  gap: 3px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
   text-decoration: none;
+
+}
+
+.ownership-jump-nav small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
 
 }
 
 .ownership-jump-nav a:hover,
 .ownership-jump-nav a:focus-visible {
-  color: var(--ownership-accent-strong);
+  border-color: color-mix(in srgb, var(--line-strong) 76%, var(--ink));
+  color: var(--ink);
   outline: none;
 
 }
@@ -3251,59 +3539,62 @@
 }
 
 .ownership-detail-stack {
-  gap: 42px;
+  gap: 24px;
 
 }
 
 .ownership-section {
-  gap: 14px;
-  scroll-margin-top: 130px;
+  gap: 9px;
+  scroll-margin-top: calc(var(--company-nav-offset, 60px) + 58px);
 
 }
 
 .ownership-section-heading {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  align-items: end;
+  gap: 16px;
+  align-items: center;
+  min-width: 0;
 
 }
 
 .ownership-section-heading span {
   color: var(--ownership-accent-strong);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
 
 }
 
 .ownership-section-heading h2 {
-  margin: 5px 0 0;
+  margin: 2px 0 0;
   color: var(--ink);
-  font-size: clamp(22px, 3vw, 34px);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.18;
 
 }
 
 .ownership-section-heading p {
-  margin: 0 0 4px;
+  margin: 0;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 500;
   white-space: nowrap;
 
 }
 
 .ownership-table-card {
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--ink));
-  border-radius: 4px;
-  background: var(--ownership-card-bg);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 
 }
 
 .ownership-table-wrap {
   overflow-x: auto;
+  border-top: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
   scrollbar-color: color-mix(in srgb, var(--ink) 42%, var(--muted)) var(--table-scroll-track);
   scrollbar-width: thin;
 
@@ -3332,14 +3623,15 @@
   border-collapse: separate;
   border-spacing: 0;
   color: var(--ink);
-  font-size: 14px;
+  font-size: 12px;
+  line-height: 1.25;
 
 }
 
 .ownership-table th,
 .ownership-table td {
-  min-width: 104px;
-  padding: 16px;
+  min-width: 88px;
+  padding: 7px 10px;
   text-align: right;
   vertical-align: middle;
 
@@ -3350,9 +3642,9 @@
   position: sticky;
   left: 0;
   z-index: 2;
-  min-width: 250px;
-  max-width: 360px;
-  background: inherit;
+  min-width: 224px;
+  max-width: 310px;
+  background: var(--bg);
   color: var(--muted);
   text-align: left;
   white-space: normal;
@@ -3360,64 +3652,72 @@
 }
 
 .ownership-table th {
-  background: var(--ownership-card-bg);
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--bg);
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
 
 }
 
 .ownership-table th:first-child {
-  z-index: 3;
-  background: var(--ownership-card-bg);
+  z-index: 5;
+  background: var(--bg);
 
 }
 
 .ownership-table tbody tr {
-  background: var(--ownership-card-bg);
+  background: transparent;
 
 }
 
 .ownership-table tbody tr:nth-child(even) {
-  background: var(--ownership-row-alt);
+  background: transparent;
 
 }
 
 .ownership-table tbody tr.is-highlighted {
-  background: var(--ownership-accent-soft);
+  background: color-mix(in srgb, var(--accent-2) 5%, transparent);
 
 }
 
 .ownership-table tbody tr.is-child {
-  background: var(--ownership-muted-bg);
+  background: transparent;
+
+}
+
+.ownership-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-2) 6%, transparent);
 
 }
 
 .ownership-table tbody td {
-  border-top: 1px solid color-mix(in srgb, var(--line) 38%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--line) 34%, transparent);
 
 }
 
 .ownership-particular {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 700;
+  gap: 6px;
+  font-weight: 500;
 
 }
 
 .ownership-row-mark {
-  color: var(--ownership-accent);
-  font-weight: 900;
+  color: var(--muted);
+  font-weight: 500;
 
 }
 
 .ownership-table tr.is-child .ownership-particular {
-  padding-left: 18px;
+  padding-left: 14px;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 450;
 
 }
 
@@ -3428,14 +3728,14 @@
 
 .ownership-investor-card {
   display: grid;
-  gap: 10px;
+  gap: 9px;
 
 }
 
 .ownership-investor-card-head {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   align-items: baseline;
 
 }
@@ -3443,21 +3743,23 @@
 .ownership-investor-card-head h3 {
   margin: 0;
   color: var(--ink);
-  font-size: 17px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.18;
 
 }
 
 .ownership-investor-card-head span {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 500;
 
 }
 
 .ownership-investor-table th:first-child,
 .ownership-investor-table td:first-child {
-  min-width: 330px;
-  max-width: 500px;
+  min-width: 300px;
+  max-width: 460px;
   overflow-wrap: anywhere;
 
 }
@@ -3560,62 +3862,62 @@
   .metric-grid,
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  
+
 }
 
 .stock-layout {
     grid-template-columns: 1fr;
-  
+
 }
 
 .stock-side {
     grid-template-columns: 1fr;
-  
+
 }
 
 .shareholding-chart {
     grid-template-columns: 1fr;
-  
+
 }
 
 .ownership-hero {
     grid-template-columns: 1fr;
     align-items: start;
-  
+
 }
 
 .documents-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 24px;
-  
+
 }
 
 .related-stock-rail {
     grid-auto-columns: minmax(260px, 42vw);
-  
+
 }
 
 .stock-head {
     grid-template-columns: 52px minmax(0, 1fr);
-  
+
 }
 
 .quote-exchange {
     grid-column: 2;
     margin-top: 0;
-  
+
 }
 
 .peer-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  
+
 }
 
 .candlestick-header,
   .candlestick-toolbar {
     grid-template-columns: 1fr;
     align-items: start;
-  
+
 }
 
 .candlestick-ranges {
@@ -3625,12 +3927,12 @@
 
 .financial-mini-chart-head {
     align-items: flex-start;
-  
+
 }
 
 .financial-combo-groups {
     gap: 0;
-  
+
 }
 }
 
@@ -3640,30 +3942,30 @@
     --company-section-nav-height: 42px;
     --company-anchor-offset: calc(var(--company-nav-offset) + var(--company-section-nav-height) + 26px);
     --company-page-gutter: 12px;
-  
+
 }
 
 .company-section-link {
     min-height: 42px;
     padding: 0 14px;
     font-size: 13px;
-  
+
 }
 
 .company-section-link:first-child {
     max-width: 48vw;
-  
+
 }
 
 .stock-head {
     grid-template-columns: 1fr;
     gap: 12px;
-  
+
 }
 
 .stock-logo {
     width: 48px;
-  
+
 }
 
 .sector-grid,
@@ -3673,61 +3975,61 @@
   .stat-grid,
   .pros-cons {
     grid-template-columns: 1fr;
-  
+
 }
 
 .price-value {
     font-size: 26px;
-  
+
 }
 
 .ticker-select {
     min-height: 26px;
     font-size: 12px;
-  
+
 }
 
 .market-status {
     width: 26px;
     height: 26px;
-  
+
 }
 
 .quote-time {
     font-size: 11px;
-  
+
 }
 
 .quote-exchange {
     grid-column: auto;
-  
+
 }
 
 .chart-topbar,
   .chart-ranges {
     overflow-x: auto;
-  
+
 }
 
 .chart-meta-row {
     flex-direction: column;
     align-items: stretch;
-  
+
 }
 
 .related-stocks {
     gap: 18px;
-  
+
 }
 
 .related-stocks-head h2 {
     font-size: 21px;
-  
+
 }
 
 .related-stocks-head p {
     font-size: 12px;
-  
+
 }
 
 .related-stock-rail {
@@ -3735,77 +4037,77 @@
     gap: 12px;
     padding-right: 42px;
     padding-left: 42px;
-  
+
 }
 
 .related-stock-card {
     min-height: 148px;
     padding: 18px;
-  
+
 }
 
 .related-stock-scroll-button {
     width: 36px;
     height: 36px;
-  
+
 }
 
 .financial-overview {
     gap: 22px;
-  
+
 }
 
 .financial-overview-title {
     font-size: 24px;
-  
+
 }
 
 .financial-overview-title svg {
     width: 18px;
     height: 18px;
-  
+
 }
 
 .financial-mini-chart {
     gap: 10px;
-  
+
 }
 
 .financial-mini-chart-head {
     display: grid;
     gap: 10px;
-  
+
 }
 
 .financial-mini-chart-head h3 {
     gap: 6px;
     font-size: 17px;
-  
+
 }
 
 .financial-help button {
     width: 17px;
     height: 17px;
     font-size: 11px;
-  
+
 }
 
 .financial-help-tooltip {
     left: 0;
     transform: translateY(4px);
-  
+
 }
 
 .financial-help:hover .financial-help-tooltip,
   .financial-help:focus-within .financial-help-tooltip {
     transform: translateY(0);
-  
+
 }
 
 .financial-period-toggle {
     gap: 4px;
     margin-top: -2px;
-  
+
 }
 
 .financial-period-toggle button {
@@ -3813,37 +4115,37 @@
     border-radius: 5px;
     padding: 0 9px;
     font-size: 13px;
-  
+
 }
 
 .financial-combo-plot {
     min-height: 190px;
     padding-right: 48px;
-  
+
 }
 
 .financial-combo-plot.has-line-axis {
     padding-left: 44px;
-  
+
 }
 
 .financial-combo-stage {
     right: 48px;
     --financial-bar-gap: 3px;
     --financial-bar-width: clamp(7px, 2.4vw, 11px);
-  
+
 }
 
 .financial-combo-plot.has-line-axis .financial-combo-stage {
     left: 44px;
-  
+
 }
 
 .financial-left-axis,
   .financial-right-axis {
     bottom: 36px;
     font-size: 12px;
-  
+
 }
 
 .financial-combo-grid,
@@ -3851,64 +4153,108 @@
   .financial-combo-line-dots {
     bottom: 36px;
     height: calc(100% - 36px);
-  
+
 }
 
 .financial-combo-groups {
     grid-template-columns: repeat(var(--financial-point-count), minmax(38px, 1fr));
     gap: 0;
-  
+
 }
 
 .financial-combo-group {
     grid-template-rows: minmax(0, 1fr) 36px;
-  
+
 }
 
 .financial-combo-bar-area {
     gap: 3px;
-  
+
 }
 
 .financial-combo-bar-slot {
     width: var(--financial-bar-width);
-  
+
 }
 
 .financial-combo-label,
   .financial-combo-legend {
     font-size: 12px;
-  
+
 }
 
 .financial-combo-legend {
     justify-content: flex-start;
     gap: 12px 16px;
-  
+
 }
 
 .financial-combo-legend i {
     width: 8px;
     height: 8px;
-  
+
 }
 
 .chart-stats {
-    justify-content: space-between;
-    gap: 14px;
-  
+    display: none;
+
+}
+
+.chart-actions {
+    display: grid;
+    justify-content: center;
+    gap: 18px;
+    width: 100%;
+
 }
 
 .chart-ranges {
     display: flex;
-    width: max-content;
+    width: min(100%, 580px);
     max-width: 100%;
-  
+    justify-self: center;
+    border-radius: 6px;
+
+}
+
+.chart-ranges button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 42px;
+    font-size: 15px;
+
+}
+
+.chart-ranges button.active {
+    background: var(--chart-range-active-bg);
+    color: var(--chart-range-active-ink);
+
+}
+
+.chart-view-menu {
+    justify-self: center;
+    width: min(72vw, 320px);
+
+}
+
+.chart-view-trigger {
+    width: 100%;
+    min-height: 50px;
+    font-size: 18px;
+    padding: 0 18px;
+
+}
+
+.chart-view-options {
+    right: 0;
+    left: 0;
+    width: 100%;
+
 }
 
 .chart-frame {
-    height: 300px;
-    min-height: 280px;
+    height: min(62svh, 500px);
+    min-height: 400px;
 
 }
 
@@ -3916,46 +4262,46 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
-  
+
 }
 
 .candlestick-header-top .candlestick-eyebrow {
     justify-self: end;
-  
+
 }
 
 .chart-footer-actions {
     justify-content: flex-start;
-  
+
 }
 
 .candlestick-page {
     width: min(100% - 24px, var(--company-page-max, 1800px));
     gap: 22px;
     padding-top: 28px;
-  
+
 }
 
 .candlestick-header h1 {
     font-size: clamp(32px, 12vw, 48px);
     line-height: 1;
-  
+
 }
 
 .candlestick-panel {
     padding: 12px;
-  
+
 }
 
 .candlestick-stat-row {
     gap: 14px;
-  
+
 }
 
 .candlestick-chart-frame {
     height: 420px;
     min-height: 390px;
-  
+
 }
 
 .candlestick-ranges {
@@ -3963,30 +4309,30 @@
     width: max-content;
     max-width: 100%;
     overflow-x: auto;
-  
+
 }
 
 .financial-chart-summary {
     display: grid;
     gap: 12px;
-  
+
 }
 
 .financial-plot {
     min-height: 230px;
     overflow-x: auto;
-  
+
 }
 
 .financial-bars {
     min-width: 620px;
-  
+
 }
 
 .financial-growth-grid {
     grid-template-columns: 1fr;
     gap: 20px;
-  
+
 }
 
 .financial-growth-grid > div + div {
@@ -3994,37 +4340,37 @@
     border-left: 0;
     padding-top: 20px;
     padding-left: 0;
-  
+
 }
 
 .financials-detail-page {
     width: min(100% - 24px, var(--company-page-max, 1800px));
     gap: 16px;
     padding-top: 16px;
-  
+
 }
 
 .financials-detail-hero {
     display: grid;
     gap: 10px;
     align-items: start;
-  
+
 }
 
 .financials-detail-hero h1 {
     font-size: clamp(26px, 10vw, 34px);
-  
+
 }
 
 .financials-unit-note {
     text-align: left;
-  
+
 }
 
 .financials-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px 18px;
-  
+
 }
 
 .financials-control-row,
@@ -4032,107 +4378,146 @@
     display: grid;
     gap: 9px;
     align-items: start;
-  
+
 }
 
 .financials-control-row {
     top: 0;
-  
+
 }
 
 .financials-table th,
   .financials-table td {
     min-width: 82px;
     padding: 7px 9px;
-  
+
 }
 
 .financials-table th:first-child,
   .financials-table td:first-child {
     min-width: 190px;
-  
+
 }
 
 .shareholding-chart {
     gap: 22px;
     padding: 18px;
-  
+
 }
 
 .shareholding-period-tabs {
     gap: 8px;
-  
+
 }
 
 .shareholding-period-tabs button {
     min-height: 31px;
     padding: 0 10px;
     font-size: 12px;
-  
+
 }
 
 .ownership-detail-page {
-    gap: 22px;
-    padding-top: 28px;
-  
+    width: min(100% - 24px, var(--company-page-max, 1800px));
+    gap: 16px;
+    padding-top: 16px;
+
+}
+
+.ownership-hero {
+    display: grid;
+    gap: 10px;
+    align-items: start;
+
 }
 
 .ownership-hero h1 {
-    font-size: clamp(32px, 13vw, 48px);
-    line-height: 1;
-  
+    font-size: clamp(26px, 10vw, 34px);
+
+}
+
+.ownership-unit-note {
+    text-align: left;
+
 }
 
 .ownership-summary-grid {
-    grid-template-columns: 1fr;
-  
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 18px;
+
 }
 
-.ownership-summary-grid div + div {
-    border-top: 1px solid var(--line);
-    border-left: 0;
-  
+.ownership-control-row,
+  .ownership-section-heading {
+    display: grid;
+    gap: 9px;
+    align-items: start;
+
+}
+
+.ownership-control-row {
+    top: 0;
+
+}
+
+.ownership-table th,
+  .ownership-table td {
+    min-width: 82px;
+    padding: 7px 9px;
+
+}
+
+.ownership-table th:first-child,
+  .ownership-table td:first-child {
+    min-width: 190px;
+
+}
+
+.ownership-investor-table th:first-child,
+  .ownership-investor-table td:first-child {
+    min-width: 250px;
+
 }
 
 .ownership-section-heading {
     display: grid;
     gap: 6px;
     align-items: start;
-  
+
 }
 
 .ownership-table th,
   .ownership-table td {
     min-width: 92px;
     padding: 14px 12px;
-  
+
 }
 
 .ownership-table th:first-child,
   .ownership-table td:first-child {
     min-width: 210px;
-  
+
 }
 
 .peer-list {
     grid-template-columns: 1fr;
-  
+
 }
 
 .documents-stream {
     gap: 20px;
     padding-top: 22px;
-  
+
 }
 
 .documents-grid {
     grid-template-columns: 1fr;
     row-gap: 22px;
-  
+
 }
 
 .documents-heading h2 {
     font-size: 21px;
-  
+
 }
 }

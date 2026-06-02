@@ -69,7 +69,17 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
         <CompanySectionNav links={sectionLinks} />
         <section className={css(styles, "stock-hero")}>
           <StockHeader id="overview" stock={stock} />
-          {hasChart ? <StockChart advancedHref={companyCandlestickHref(stock.ticker)} id="chart" points={prices} /> : null}
+          {hasChart ? (
+            <StockChart
+              advancedHref={companyCandlestickHref(stock.ticker)}
+              annualFinancials={stock.profitLoss}
+              balanceSheet={stock.balanceSheet}
+              faceValueRaw={stock.keyMetrics["Face Value"]}
+              id="chart"
+              points={prices}
+              quarterlyFinancials={stock.quarterly}
+            />
+          ) : null}
         </section>
 
         <section className={css(styles, "stock-layout")}>
