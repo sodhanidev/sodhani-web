@@ -9,7 +9,7 @@ import styles from "./company/company.module.css";
 import { formatIndianNumber, parseNumericCell } from "@/lib/data/format";
 import type { FinRow, FinancialTable, PricePoint } from "@/lib/data/types";
 
-type RangeKey = "1D" | "1W" | "1M" | "6M" | "YTD" | "ALL";
+type RangeKey = "1D" | "1W" | "1M" | "6M" | "1Y" | "YTD" | "ALL";
 type ChartViewKey = "price" | "sales-margin" | "ev-ebitda" | "price-book" | "market-cap-sales";
 
 type ChartView = {
@@ -50,6 +50,7 @@ const ranges: { key: RangeKey; label: string }[] = [
   { key: "1W", label: "1W" },
   { key: "1M", label: "1M" },
   { key: "6M", label: "6M" },
+  { key: "1Y", label: "1Y" },
   { key: "YTD", label: "YTD" },
   { key: "ALL", label: "ALL" }
 ];
@@ -76,6 +77,9 @@ function filterRange(points: PricePoint[], range: RangeKey): PricePoint[] {
   }
   if (range === "6M") {
     return points.slice(-126);
+  }
+  if (range === "1Y") {
+    return points.slice(-252);
   }
   if (range === "YTD") {
     const latest = points.at(-1);
@@ -323,6 +327,10 @@ function filterSalesMarginRange(points: SalesMarginPoint[], range: RangeKey, lat
 
   if (range === "6M") {
     return points.slice(-3);
+  }
+
+  if (range === "1Y") {
+    return points.slice(-4);
   }
 
   if (range === "YTD" && latestPriceDate) {
