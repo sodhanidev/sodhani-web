@@ -727,26 +727,94 @@
 
 }
 
+.chart-sales-margin {
+  --chart-sales-fill: rgba(47, 99, 216, 0.16);
+  --chart-sales-stroke: rgba(47, 99, 216, 0.58);
+  --chart-profit-fill: rgba(22, 128, 59, 0.32);
+  --chart-profit-stroke: rgba(22, 128, 59, 0.76);
+  --chart-margin-stroke: #315fca;
+
+}
+
+:global(:root[data-theme="dark"]) .chart-sales-margin {
+  --chart-sales-fill: rgba(132, 171, 245, 0.32);
+  --chart-sales-stroke: rgba(152, 190, 255, 0.8);
+  --chart-profit-fill: rgba(82, 211, 143, 0.52);
+  --chart-profit-stroke: rgba(104, 232, 169, 0.86);
+  --chart-margin-stroke: #8db8ff;
+
+}
+
+.chart-combo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px 18px;
+  align-items: center;
+  margin: 0 0 8px;
+  color: var(--chart-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+
+}
+
+.chart-combo-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+}
+
+.chart-legend-bar {
+  width: 12px;
+  height: 8px;
+  border-radius: 2px;
+
+}
+
+.chart-legend-bar.sales {
+  border: 1px solid var(--chart-sales-stroke);
+  background: var(--chart-sales-fill);
+
+}
+
+.chart-legend-bar.profit {
+  border: 1px solid var(--chart-profit-stroke);
+  background: var(--chart-profit-fill);
+
+}
+
+.chart-legend-line {
+  width: 15px;
+  height: 0;
+  border-top: 2px solid var(--chart-margin-stroke);
+  border-radius: 999px;
+
+}
+
 .chart-sales-bar {
-  fill: color-mix(in srgb, var(--accent-2) 34%, transparent);
-  stroke: color-mix(in srgb, var(--accent-2) 88%, transparent);
+  fill: var(--chart-sales-fill);
+  stroke: var(--chart-sales-stroke);
   stroke-width: 1.25;
 
 }
 
-.chart-margin-area {
-  pointer-events: none;
+.chart-net-income-bar {
+  fill: var(--chart-profit-fill);
+  stroke: var(--chart-profit-stroke);
+  stroke-width: 1.15;
 
 }
 
 .chart-margin-line {
-  stroke: var(--accent-2);
+  stroke: var(--chart-margin-stroke);
 
 }
 
 .chart-margin-dot {
   fill: var(--chart-range-bg);
-  stroke: var(--accent-2);
+  stroke: var(--chart-margin-stroke);
   stroke-width: 1.7;
 
 }
@@ -767,7 +835,7 @@
 }
 
 .chart-sales-margin .chart-body {
-  padding-top: 16px;
+  padding-top: 10px;
 
 }
 
@@ -1960,19 +2028,29 @@
   border-radius: 5px;
   background: transparent;
   color: var(--ink);
-  cursor: pointer;
+  cursor: default;
   font: inherit;
   font-size: 13px;
   font-weight: 430;
   letter-spacing: 0;
   line-height: 1;
   padding: 0 9px;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
 
 }
 
 .financial-period-toggle button.active {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-  font-weight: 520;
+  background: #242424;
+  font-weight: 450;
+
+}
+
+.financial-period-toggle button:not(.active):hover,
+.financial-period-toggle button:not(.active):focus-visible {
+  background: #2e2e2e;
+  outline: none;
 
 }
 
@@ -2026,7 +2104,7 @@
   position: absolute;
   inset: 0 60px 0 0;
   --financial-bar-gap: clamp(4px, 0.7vw, 7px);
-  --financial-bar-width: clamp(11px, 1.35vw, 18px);
+  --financial-bar-width: clamp(15px, 1.65vw, 25px);
   --financial-line-bias: 0px;
   --financial-point-count: 5;
   overflow: visible;
@@ -4132,7 +4210,7 @@
 .financial-combo-stage {
     right: 48px;
     --financial-bar-gap: 3px;
-    --financial-bar-width: clamp(7px, 2.4vw, 11px);
+    --financial-bar-width: clamp(9px, 3vw, 15px);
 
 }
 

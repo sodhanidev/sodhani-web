@@ -21,6 +21,7 @@ type ChartView = {
 type SalesMarginPoint = {
   period: string;
   margin: number;
+  netIncome: number;
   sales: number;
 };
 
@@ -161,22 +162,27 @@ function findFinancialRow(table: FinancialTable | undefined, labels: string[]): 
 
 function getSalesMarginPoints(table: FinancialTable | undefined): SalesMarginPoint[] {
   const salesRow = findFinancialRow(table, ["Sales", "Revenue"]);
-  const marginRow = findFinancialRow(table, ["OPM %", "Operating Profit Margin"]);
+  const netProfitRow = findFinancialRow(table, ["Net Profit"]);
 
-  if (!table || !salesRow || !marginRow) {
+  if (!table || !salesRow || !netProfitRow) {
     return [];
   }
 
   return table.periods
     .map((period) => {
       const sales = parseNumericCell(salesRow.values[period]);
-      const margin = parseNumericCell(marginRow.values[period]);
+      const netIncome = parseNumericCell(netProfitRow.values[period]);
 
-      if (sales === null || margin === null) {
+      if (sales === null || netIncome === null) {
         return null;
       }
 
-      return { period, sales, margin };
+      return {
+        margin: sales > 0 ? (netIncome / sales) * 100 : 0,
+        netIncome,
+        period,
+        sales
+      };
     })
     .filter((point): point is SalesMarginPoint => Boolean(point));
 }
@@ -212,14 +218,6 @@ function formatPointChange(value: number | null) {
   }
 
   return `${value > 0 ? "+" : ""}${formatIndianNumber(value, { dp: 1 })}%`;
-}
-
-function formatMarginChange(value: number | null) {
-  if (value === null || !Number.isFinite(value)) {
-    return "-";
-  }
-
-  return `${value > 0 ? "+" : ""}${formatIndianNumber(value, { dp: 1 })} pp`;
 }
 
 function getPercentChange(current: number | null | undefined, previous: number | null | undefined) {
@@ -320,9 +318,9 @@ function getPriceDateMs(date: string) {
   return Number.isFinite(value) ? value : null;
 }
 
-function filterSalesMarginRange(points: SalesMarginPoint[], range: RangeKey, latestPriceDate?: string): SalesMarginPoint[] {
+function filterSalesMarginRange(points: SalesMarginPoint[], range: RangeKey): SalesMarginPoint[] {
   if (range === "ALL") {
-    return points;
+    return points.slice(-9);
   }
 
   if (range === "6M") {
@@ -330,24 +328,14 @@ function filterSalesMarginRange(points: SalesMarginPoint[], range: RangeKey, lat
   }
 
   if (range === "1Y") {
+    return points.slice(-5);
+  }
+
+  if (range === "YTD") {
     return points.slice(-4);
   }
 
-  if (range === "YTD" && latestPriceDate) {
-    const latestYear = latestPriceDate.slice(0, 4);
-    const filtered = points.filter((point) => {
-      const endMs = getFinancialPeriodEndMs(point.period);
-      if (endMs === null) {
-        return false;
-      }
-
-      return new Date(endMs).getUTCFullYear().toString() === latestYear;
-    });
-
-    return filtered.length ? filtered : points.slice(-1);
-  }
-
-  return points.slice(-1);
+  return points.slice(-5);
 }
 
 function getValuationPoints({
@@ -604,14 +592,13 @@ export function StockChart({
   const valuationMetric = getValuationMetric(activeView.key);
   const isValuationView = valuationMetric !== null;
   const visible = useMemo(() => filterRange(points, range), [points, range]);
-  const latestPriceDate = points.at(-1)?.date;
   const allSalesMarginPoints = useMemo(
     () => getSalesMarginPoints(quarterlyFinancials ?? annualFinancials),
     [annualFinancials, quarterlyFinancials]
   );
   const salesMarginPoints = useMemo(
-    () => filterSalesMarginRange(allSalesMarginPoints, range, latestPriceDate),
-    [allSalesMarginPoints, latestPriceDate, range]
+    () => filterSalesMarginRange(allSalesMarginPoints, range),
+    [allSalesMarginPoints, range]
   );
   const valuationPoints = useMemo(
     () => getValuationPoints({ annualFinancials, balanceSheet, faceValueRaw, points: visible, quarterlyFinancials }),
@@ -682,9 +669,9 @@ export function StockChart({
   const latestSalesPoint = hasSalesMarginData ? salesMarginPoints[salesMarginPoints.length - 1] : null;
   const previousSalesPoint = hasSalesMarginData ? salesMarginPoints[salesMarginPoints.length - 2] : null;
   const salesGrowth = getPercentChange(latestSalesPoint?.sales, previousSalesPoint?.sales);
-  const marginMove =
-    latestSalesPoint && previousSalesPoint ? latestSalesPoint.margin - previousSalesPoint.margin : null;
-  const salesRawMax = hasSalesMarginData ? Math.max(1, ...salesMarginPoints.map((point) => point.sales)) : 1;
+  const salesRawMax = hasSalesMarginData
+    ? Math.max(1, ...salesMarginPoints.flatMap((point) => [point.sales, point.netIncome]))
+    : 1;
   const salesAxisMax = salesRawMax * 1.08;
   const rawMarginMin = hasSalesMarginData ? Math.min(...salesMarginPoints.map((point) => point.margin)) : 0;
   const rawMarginMax = hasSalesMarginData ? Math.max(...salesMarginPoints.map((point) => point.margin)) : 1;
@@ -692,21 +679,25 @@ export function StockChart({
   const marginMin = Math.max(0, rawMarginMin - marginPadding);
   const marginMax = rawMarginMax + marginPadding;
   const marginSpan = Math.max(1, marginMax - marginMin);
-  const salesPlotWidth = width - salesLeftPad - salesRightPad;
+  const salesPlotAvailableWidth = width - salesLeftPad - salesRightPad;
+  const salesPlotWidth = Math.min(salesPlotAvailableWidth, compactChart ? salesPlotAvailableWidth : 1280);
+  const salesPlotLeft = Math.max(salesLeftPad, (width - salesPlotWidth) / 2);
+  const salesPlotRight = salesPlotLeft + salesPlotWidth;
   const salesPlotHeight = height - topPad - bottomPad;
+  const salesSlotWidth = salesPlotWidth / Math.max(1, salesMarginPoints.length);
   const salesBarWidth = Math.max(
-    compactChart ? 10 : 12,
-    Math.min(compactChart ? 22 : 30, (salesPlotWidth / Math.max(1, salesMarginPoints.length)) * 0.36)
+    compactChart ? 18 : 42,
+    Math.min(compactChart ? 38 : 76, salesSlotWidth * 0.34)
   );
+  const netIncomeBarWidth = Math.max(7, Math.min(compactChart ? 16 : 24, salesBarWidth * 0.36));
   const salesCoords = salesMarginPoints.map((point, index) => {
-    const x =
-      salesMarginPoints.length <= 1
-        ? salesLeftPad + salesPlotWidth / 2
-        : salesLeftPad + (index / (salesMarginPoints.length - 1)) * salesPlotWidth;
+    const x = salesPlotLeft + salesSlotWidth * (index + 0.5);
     const salesHeight = (point.sales / salesAxisMax) * salesPlotHeight;
+    const netIncomeHeight = (point.netIncome / salesAxisMax) * salesPlotHeight;
     const salesY = height - bottomPad - salesHeight;
+    const netIncomeY = height - bottomPad - netIncomeHeight;
     const marginY = height - bottomPad - ((point.margin - marginMin) / marginSpan) * salesPlotHeight;
-    return { ...point, marginY, salesHeight, salesY, x };
+    return { ...point, marginY, netIncomeHeight, netIncomeY, salesHeight, salesY, x };
   });
   const salesYTicks = Array.from({ length: yTickCount }, (_, index) => {
     const value = (salesAxisMax / (yTickCount - 1)) * index;
@@ -734,12 +725,6 @@ export function StockChart({
     salesCoords.length <= 1
       ? ""
       : salesCoords.map((coord, index) => `${index === 0 ? "M" : "L"} ${coord.x} ${coord.marginY}`).join(" ");
-  const marginAreaPath =
-    salesCoords.length <= 1
-      ? ""
-      : `${marginLinePath} L ${salesCoords[salesCoords.length - 1]!.x} ${height - bottomPad} L ${
-          salesCoords[0]!.x
-        } ${height - bottomPad} Z`;
   const salesHover = hoverIndex === null ? null : salesCoords[hoverIndex] ?? null;
 
   const valuationSeries = valuationMetric
@@ -805,8 +790,8 @@ export function StockChart({
       : valuationCoords.map((coord, index) => `${index === 0 ? "M" : "L"} ${coord.x} ${coord.y}`).join(" ");
   const valuationHover = hoverIndex === null ? null : valuationCoords[hoverIndex] ?? null;
   const activePointCount = isSalesMarginView ? salesMarginPoints.length : isValuationView ? valuationSeries.length : visible.length;
-  const activeLeftPad = isSalesMarginView ? salesLeftPad : isValuationView ? valuationLeftPad : priceLeftPad;
-  const activeRightPad = isSalesMarginView ? salesRightPad : isValuationView ? valuationRightPad : priceRightPad;
+  const activeLeftPad = isSalesMarginView ? salesPlotLeft : isValuationView ? valuationLeftPad : priceLeftPad;
+  const activeRightPad = isSalesMarginView ? width - salesPlotRight : isValuationView ? valuationRightPad : priceRightPad;
   const activeHover = isSalesMarginView ? salesHover : isValuationView ? valuationHover : priceHover;
   const activeHoverY = isSalesMarginView
     ? salesHover?.marginY ?? 0
@@ -819,7 +804,6 @@ export function StockChart({
   const hoverSide = activeHover && activeHover.x > width - activeRightPad - 150 ? "left" : "right";
   const rangeTone = rangePct >= 0 ? "up" : "down";
   const salesGrowthTone = salesGrowth === null ? "" : salesGrowth >= 0 ? "up" : "down";
-  const marginMoveTone = marginMove === null ? "" : marginMove >= 0 ? "up" : "down";
   const valuationChangeTone = valuationChange === null ? "" : valuationChange >= 0 ? "up" : "down";
   const valuationTone = valuationMetric ? getValuationTone(valuationMetric) : "";
   const selectChartView = (nextView: ChartViewKey) => {
@@ -862,16 +846,16 @@ export function StockChart({
                 <strong className={css(styles, "numeric")}>{formatSalesValue(latestSalesPoint.sales)}</strong>
               </div>
               <div>
-                <span>OPM</span>
+                <span>Net Profit</span>
+                <strong className={css(styles, "numeric")}>{formatSalesValue(latestSalesPoint.netIncome)}</strong>
+              </div>
+              <div>
+                <span>Net Margin</span>
                 <strong className={css(styles, "numeric")}>{formatPercent(latestSalesPoint.margin)}</strong>
               </div>
               <div>
                 <span>Sales growth</span>
                 <strong className={css(styles, `numeric ${salesGrowthTone}`)}>{formatPointChange(salesGrowth)}</strong>
-              </div>
-              <div>
-                <span>Margin change</span>
-                <strong className={css(styles, `numeric ${marginMoveTone}`)}>{formatMarginChange(marginMove)}</strong>
               </div>
             </>
           ) : null}
@@ -949,6 +933,22 @@ export function StockChart({
         </div>
       </div>
       <div className={css(styles, "chart-body")}>
+        {isSalesMarginView && hasSalesMarginData ? (
+          <div className={css(styles, "chart-combo-legend")} aria-label="Sales and margin legend">
+            <span>
+              <i className={css(styles, "chart-legend-bar sales")} aria-hidden="true" />
+              Sales
+            </span>
+            <span>
+              <i className={css(styles, "chart-legend-bar profit")} aria-hidden="true" />
+              Net profit
+            </span>
+            <span>
+              <i className={css(styles, "chart-legend-line margin")} aria-hidden="true" />
+              Net margin
+            </span>
+          </div>
+        ) : null}
         <div
           ref={frameRef}
           className={css(styles, "chart-frame")}
@@ -1078,25 +1078,19 @@ export function StockChart({
           {isSalesMarginView && hasSalesMarginData ? (
             <>
               <svg preserveAspectRatio="none" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Sales and margin chart">
-                <defs>
-                  <linearGradient id="salesMarginFill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="var(--accent-2)" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="var(--accent-2)" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
                 {salesYTicks.map((tick, index) => (
                   <g key={tick.value}>
                     {index > 0 && index < salesYTicks.length - 1 ? (
                       <line
-                        x1={salesLeftPad}
-                        x2={width - salesRightPad}
+                        x1={salesPlotLeft}
+                        x2={salesPlotRight}
                         y1={tick.y}
                         y2={tick.y}
                         stroke={chartColors.gridLine}
                       />
                     ) : null}
                     <text
-                      x={salesLeftPad - 12}
+                      x={salesPlotLeft - 12}
                       y={tick.y + 4}
                       fill={chartColors.axisText}
                       fontSize="11"
@@ -1111,7 +1105,7 @@ export function StockChart({
                     fill={chartColors.axisText}
                     fontSize="11"
                     key={tick.value}
-                    x={width - salesRightPad + 12}
+                    x={salesPlotRight + 12}
                     y={tick.y + 4}
                   >
                     {formatPercent(tick.value)}
@@ -1122,14 +1116,12 @@ export function StockChart({
                   if (!coord) {
                     return null;
                   }
-                  const isFirst = index === 0;
-                  const isLast = index === salesCoords.length - 1;
                   return (
                     <text
                       fill={chartColors.axisText}
                       fontSize="11"
                       key={coord.period}
-                      textAnchor={isFirst ? "start" : isLast ? "end" : "middle"}
+                      textAnchor="middle"
                       x={coord.x}
                       y={height - 5}
                     >
@@ -1141,7 +1133,7 @@ export function StockChart({
                   <rect
                     className={css(styles, "chart-sales-bar")}
                     height={coord.salesHeight}
-                    key={coord.period}
+                    key={`sales-${coord.period}`}
                     rx="3"
                     vectorEffect="non-scaling-stroke"
                     width={salesBarWidth}
@@ -1149,7 +1141,18 @@ export function StockChart({
                     y={coord.salesY}
                   />
                 ))}
-                {marginAreaPath ? <path className={css(styles, "chart-margin-area")} d={marginAreaPath} fill="url(#salesMarginFill)" /> : null}
+                {salesCoords.map((coord) => (
+                  <rect
+                    className={css(styles, "chart-net-income-bar")}
+                    height={coord.netIncomeHeight}
+                    key={`net-income-${coord.period}`}
+                    rx="2"
+                    vectorEffect="non-scaling-stroke"
+                    width={netIncomeBarWidth}
+                    x={coord.x - netIncomeBarWidth / 2}
+                    y={coord.netIncomeY}
+                  />
+                ))}
                 <path
                   className={css(styles, "chart-margin-line")}
                   d={marginLinePath}
@@ -1178,8 +1181,8 @@ export function StockChart({
                       vectorEffect="non-scaling-stroke"
                     />
                     <line
-                      x1={salesLeftPad}
-                      x2={width - salesRightPad}
+                      x1={salesPlotLeft}
+                      x2={salesPlotRight}
                       y1={salesHover.marginY}
                       y2={salesHover.marginY}
                       stroke={chartColors.hoverLine}
@@ -1198,7 +1201,8 @@ export function StockChart({
                 >
                   <div className={css(styles, "chart-tooltip-price")}>{formatSalesValue(salesHover.sales)}</div>
                   <div className={css(styles, "chart-tooltip-meta")}>
-                    {salesHover.period} · OPM {formatPercent(salesHover.margin)}
+                    {salesHover.period} · Net profit {formatSalesValue(salesHover.netIncome)} · Net margin{" "}
+                    {formatPercent(salesHover.margin)}
                   </div>
                 </div>
               ) : null}
@@ -1381,6 +1385,7 @@ export function StockChart({
                 <tr key={point.period}>
                   <th>{point.period}</th>
                   <td>{point.sales}</td>
+                  <td>{point.netIncome}</td>
                   <td>{point.margin}</td>
                 </tr>
               ))}

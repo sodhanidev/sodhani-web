@@ -36,6 +36,7 @@
   display: flex;
   width: max-content;
   min-height: 36px;
+  will-change: transform;
   animation: ticker-scroll 84s linear infinite;
 
 }
@@ -113,11 +114,21 @@
 
 }
 
-@media (prefers-reduced-motion: reduce) {
-.market-ticker-loop {
-    animation: none;
-  
+@keyframes ticker-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .market-ticker-loop {
+    animation: none;
+
+  }
 }
 
 .topbar {
