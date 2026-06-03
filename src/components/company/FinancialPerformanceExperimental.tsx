@@ -468,10 +468,13 @@ export function FinancialPerformanceExperimental({
 
   return (
     <section className={css(styles, `financial-overview${id ? " section-anchor" : ""}`)} id={id}>
-      <Link className={css(styles, "financial-overview-title")} href={companyFinancialsHref(ticker)}>
-        Financials
-        <ChevronRight size={22} strokeWidth={2.2} aria-hidden="true" />
-      </Link>
+      <div className={css(styles, "section-title-row financial-performance-head")}>
+        <h2>Financial Performance</h2>
+        <Link className={css(styles, "shareholding-detail-link financial-detail-link")} href={companyFinancialsHref(ticker)}>
+          All Financials
+          <ChevronRight size={15} aria-hidden="true" />
+        </Link>
+      </div>
 
       <FinancialMiniChart
         activeMode={resolvedPerformanceMode}

@@ -9,7 +9,7 @@ import { ShareholdingPieChart } from "@/components/ShareholdingPieChart";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
-import { FinancialPerformance } from "@/components/company/FinancialPerformance";
+import { FinancialPerformanceExperimental } from "@/components/company/FinancialPerformanceExperimental";
 import { RelatedStocks } from "@/components/company/RelatedStocks";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyCandlestickHref, companyShareholdingHref } from "@/lib/data/format";
@@ -140,7 +140,9 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             ) : null}
 
             {hasFinancials ? (
-              <FinancialPerformance
+              <FinancialPerformanceExperimental
+                balanceSheet={stock.balanceSheet}
+                cashFlows={stock.cashFlows}
                 id="financials"
                 quarterly={stock.quarterly}
                 ticker={stock.ticker}
