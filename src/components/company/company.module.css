@@ -3851,11 +3851,20 @@
 
 }
 
+.documents-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+}
+
 .documents-heading h2 {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  margin: 0 0 4px;
+  margin: 0;
   color: var(--heading-strong);
   font-size: clamp(20px, 1.55vw, 24px);
   line-height: 1;
@@ -3866,6 +3875,12 @@
 .documents-heading h2 svg {
   width: 20px;
   height: 20px;
+
+}
+
+.documents-filter-toggle {
+  flex: 0 0 auto;
+  margin-top: 0;
 
 }
 
@@ -4585,6 +4600,19 @@
 .documents-stream {
     gap: 20px;
     padding-top: 22px;
+
+}
+
+.documents-heading {
+    display: grid;
+    gap: 12px;
+    align-items: start;
+    justify-content: stretch;
+
+}
+
+.documents-filter-toggle {
+    width: fit-content;
 
 }
 

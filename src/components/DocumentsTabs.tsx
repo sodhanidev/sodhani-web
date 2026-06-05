@@ -9,13 +9,14 @@ import { compactHost } from "@/lib/data/format";
 import type { DocLink, Stock } from "@/lib/data/types";
 
 const documentGroups = [
-  { key: "announcements", label: "Announcement", Icon: Megaphone },
-  { key: "annualReports", label: "Annual Report", Icon: CalendarDays },
-  { key: "creditRatings", label: "Credit Rating", Icon: ShieldCheck },
-  { key: "concalls", label: "Concall", Icon: FileText }
+  { key: "annualReports", label: "Annual Report", toggleLabel: "Annual", Icon: CalendarDays },
+  { key: "announcements", label: "Announcement", toggleLabel: "Announcements", Icon: Megaphone },
+  { key: "creditRatings", label: "Credit Rating", toggleLabel: "Ratings", Icon: ShieldCheck },
+  { key: "concalls", label: "Concall", toggleLabel: "Concalls", Icon: FileText }
 ] satisfies {
   key: keyof Stock["documents"];
   label: string;
+  toggleLabel: string;
   Icon: LucideIcon;
 }[];
 
@@ -29,12 +30,16 @@ type DocumentGridItem = {
 };
 
 export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]; id?: string }) {
+  const availableGroups = documentGroups.filter((group) => documents[group.key].length > 0);
+  const defaultGroup = availableGroups[0];
   const [showAll, setShowAll] = useState(false);
-  const docs = documentGroups.flatMap((group) =>
-    documents[group.key].map((doc): DocumentGridItem => ({ ...group, doc }))
-  );
+  const [activeKey, setActiveKey] = useState<keyof Stock["documents"]>(defaultGroup?.key ?? "annualReports");
+  const activeGroup = availableGroups.find((group) => group.key === activeKey) ?? defaultGroup;
+  const docs = activeGroup
+    ? documents[activeGroup.key].map((doc): DocumentGridItem => ({ ...activeGroup, doc }))
+    : [];
 
-  if (!docs.length) {
+  if (!availableGroups.length || !activeGroup) {
     return null;
   }
 
@@ -48,6 +53,25 @@ export function DocumentsTabs({ documents, id }: { documents: Stock["documents"]
           Documents
           <ChevronRight size={24} strokeWidth={2.3} aria-hidden="true" />
         </h2>
+
+        {availableGroups.length > 1 ? (
+          <div className={css(styles, "financial-period-toggle documents-filter-toggle")} aria-label="Document type">
+            {availableGroups.map((group) => (
+              <button
+                className={css(styles, group.key === activeGroup.key ? "active" : "")}
+                type="button"
+                aria-pressed={group.key === activeGroup.key}
+                key={group.key}
+                onClick={() => {
+                  setActiveKey(group.key);
+                  setShowAll(false);
+                }}
+              >
+                {group.toggleLabel}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div className={css(styles, "documents-grid")}>
