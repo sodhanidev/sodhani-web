@@ -9,7 +9,7 @@ import styles from "./company.module.css";
 import { companyHref, formatIndianNumber, parseNumericCell } from "@/lib/data/format";
 import type { FinRow, FinancialTable, Stock } from "@/lib/data/types";
 
-type FinancialTabKey = "income" | "balance" | "cash" | "ratios";
+type FinancialTabKey = "income" | "balance" | "cash";
 type PeriodMode = "quarterly" | "yearly";
 
 type FinancialTab = {
@@ -22,8 +22,7 @@ type FinancialTab = {
 const financialTabs: FinancialTab[] = [
   { key: "income", label: "Income", kicker: "Statement" },
   { key: "balance", label: "Balance Sheet", kicker: "Position", yearlyOnly: true },
-  { key: "cash", label: "Cash Flow", kicker: "Cash", yearlyOnly: true },
-  { key: "ratios", label: "Ratios", kicker: "Efficiency", yearlyOnly: true }
+  { key: "cash", label: "Cash Flow", kicker: "Cash", yearlyOnly: true }
 ];
 
 const highlightedRows = new Set([
@@ -80,11 +79,7 @@ function getTableForTab(stock: Stock, tab: FinancialTabKey, mode: PeriodMode) {
     return stock.balanceSheet;
   }
 
-  if (tab === "cash") {
-    return stock.cashFlows;
-  }
-
-  return stock.ratios;
+  return stock.cashFlows;
 }
 
 function limitTablePeriods(table: FinancialTable, maxPeriods: number): FinancialTable {
@@ -92,6 +87,10 @@ function limitTablePeriods(table: FinancialTable, maxPeriods: number): Financial
     ...table,
     periods: table.periods.slice(-maxPeriods)
   };
+}
+
+function getTableDisplayPeriods(table: FinancialTable) {
+  return [...table.periods].reverse();
 }
 
 function rowHasValues(row: FinRow, periods: string[]) {
@@ -189,7 +188,6 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
   );
   const balanceSheet = limitTablePeriods(stock.balanceSheet, ANNUAL_RESULT_PERIODS);
   const cashFlows = limitTablePeriods(stock.cashFlows, ANNUAL_RESULT_PERIODS);
-  const ratios = limitTablePeriods(stock.ratios, ANNUAL_RESULT_PERIODS);
   const statementSections = [
     hasIncome
       ? {
@@ -217,22 +215,13 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           tab: financialTabs[2],
           title: "Cash Flow"
         }
-      : null,
-    hasTable(stock.ratios)
-      ? {
-          id: "ratios",
-          mode: "yearly" as const,
-          table: ratios,
-          tab: financialTabs[3],
-          title: "Ratios"
-        }
       : null
   ].filter(
     (
       item
     ): item is {
       id: string;
-      mode?: PeriodMode;
+      mode: PeriodMode;
       table: FinancialTable;
       tab: FinancialTab;
       title: string;
@@ -273,11 +262,6 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
       label: "Net Cash Flow (Cr)",
       period: getLatestPeriod(stock.cashFlows),
       value: getLatestValue(stock.cashFlows, ["Net Cash Flow"])
-    },
-    {
-      label: "ROCE",
-      period: getLatestPeriod(stock.ratios),
-      value: getLatestValue(stock.ratios, ["ROCE %"], { suffix: "%" })
     }
   ];
 
@@ -332,36 +316,40 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
       </div>
 
       <section className={css(styles, "financials-detail-panel")}>
-        {statementSections.map((item) => (
-          <section className={css(styles, "financials-statement-section")} id={item.id} key={item.id}>
-            <div className={css(styles, "financials-detail-heading")}>
-              <div>
-                <span>{item.tab.kicker}</span>
-                <h2>{item.title}</h2>
+        {statementSections.map((item) => {
+          const displayPeriods = getTableDisplayPeriods(item.table);
+
+          return (
+            <section className={css(styles, "financials-statement-section")} id={item.id} key={item.id}>
+              <div className={css(styles, "financials-detail-heading")}>
+                <div>
+                  <span>{item.tab.kicker}</span>
+                  <h2>{item.title}</h2>
+                </div>
+                <p>
+                  {getPeriodLabel(item.table, item.mode)} · latest {getLatestPeriod(item.table)}
+                </p>
               </div>
-              <p>
-                {getPeriodLabel(item.table, item.mode)} · latest {getLatestPeriod(item.table)}
-              </p>
-            </div>
-            <div className={css(styles, "financials-table-card")}>
-              <div className={css(styles, "financials-table-wrap")}>
-                <table className={css(styles, "financials-table")}>
-                  <thead>
-                    <tr>
-                      <th>Particulars</th>
-                      {item.table.periods.map((period) => (
-                        <th key={period}>{period}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <FinancialRows periods={item.table.periods} rows={item.table.rows} />
-                  </tbody>
-                </table>
+              <div className={css(styles, "financials-table-card")}>
+                <div className={css(styles, "financials-table-wrap")}>
+                  <table className={css(styles, "financials-table")}>
+                    <thead>
+                      <tr>
+                        <th>Particulars</th>
+                        {displayPeriods.map((period) => (
+                          <th key={period}>{period}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <FinancialRows periods={displayPeriods} rows={item.table.rows} />
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </section>
     </main>
   );

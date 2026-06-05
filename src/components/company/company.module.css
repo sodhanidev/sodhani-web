@@ -434,6 +434,36 @@
 
 }
 
+.ratios-snapshot {
+  display: grid;
+  gap: 10px;
+
+}
+
+.ratios-snapshot-head {
+  align-items: end;
+
+}
+
+.ratios-snapshot-head > div {
+  display: grid;
+  gap: 6px;
+
+}
+
+.ratios-snapshot-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+
+}
+
+.ratios-snapshot-wrap {
+  margin-top: 2px;
+
+}
+
 .listing-data-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

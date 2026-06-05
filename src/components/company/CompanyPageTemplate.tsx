@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
 import { FinancialPerformanceExperimental } from "@/components/company/FinancialPerformanceExperimental";
+import { FinancialRatiosSnapshot } from "@/components/company/FinancialRatiosSnapshot";
 import { RelatedStocks } from "@/components/company/RelatedStocks";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import {
@@ -249,6 +250,8 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                 </div>
               </section>
             ) : null}
+
+            {hasRatios ? <FinancialRatiosSnapshot table={stock.ratios} /> : null}
 
             {hasProsCons ? (
               <section className={css(styles, "grid pros-cons section-anchor")} id="analysis">
