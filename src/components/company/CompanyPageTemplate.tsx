@@ -30,17 +30,13 @@ function hasDocuments(documents: Stock["documents"]) {
 }
 
 type KeyMetricItem = {
+  badge?: {
+    label: string;
+    tone: "derived" | "estimated" | "unavailable";
+  };
   label: string;
   value: string;
 };
-
-const baseKeyMetricLabels = [
-  "Market Cap",
-  "Stock P/E",
-  "ROCE",
-  "ROE",
-  "Dividend Yield"
-];
 
 function findFinancialRow(rows: FinRow[], label: string): FinRow | undefined {
   for (const row of rows) {
@@ -75,19 +71,19 @@ function parseMetricNumber(value: string | undefined): number | null {
   return parseNumericCell(value.replace(/\b(?:cr|crore|shares?)\.?\b/giu, ""));
 }
 
-function getSharesOutstanding(stock: Stock): number | undefined {
+function getSharesOutstanding(stock: Stock): { value: number; estimated: boolean } | undefined {
   const equityCapital = parseMetricNumber(getLatestTableValue(stock.balanceSheet, "Equity Capital"));
   const faceValue = parseMetricNumber(stock.keyMetrics["Face Value"]);
 
   if (equityCapital !== null && equityCapital > 0 && faceValue !== null && faceValue > 0) {
-    return equityCapital / faceValue;
+    return { value: equityCapital / faceValue, estimated: true };
   }
 
   const marketCap = parseMetricNumber(stock.keyMetrics["Market Cap"]);
   const currentPrice = parseMetricNumber(stock.keyMetrics["Current Price"] || stock.overview.currentPriceRaw);
 
   if (marketCap !== null && marketCap > 0 && currentPrice !== null && currentPrice > 0) {
-    return marketCap / currentPrice;
+    return { value: marketCap / currentPrice, estimated: true };
   }
 
   return undefined;
@@ -146,41 +142,121 @@ function formatPriceRange(range: { high: number; low: number }) {
 }
 
 function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
-  const { industryPe, prices, stock } = model;
+  const { industryPe, marketCapCategory, prices, stock } = model;
   const metrics: KeyMetricItem[] = [];
 
-  baseKeyMetricLabels.forEach((label) => {
-    const value = stock.keyMetrics[label]?.trim();
-    if (value) {
-      metrics.push({ label, value });
-    }
-  });
-
-  if (typeof industryPe === "number" && Number.isFinite(industryPe)) {
-    metrics.splice(2, 0, {
-      label: "Industry P/E",
-      value: formatIndianNumber(industryPe, { dp: 2 })
-    });
-  }
+  const addDirectMetric = (label: string, sourceKey: string) => {
+    const value = stock.keyMetrics[sourceKey]?.trim();
+    metrics.push(
+      value
+        ? { label, value }
+        : {
+            badge: { label: "N/A", tone: "unavailable" },
+            label,
+            value: "Unavailable"
+          }
+    );
+  };
 
   const fiftyTwoWeekRange = getPriceRange(prices, getRangeStart(prices, 365));
-  if (fiftyTwoWeekRange) {
-    metrics.push({ label: "High / Low (52W)", value: formatPriceRange(fiftyTwoWeekRange) });
-  } else if (stock.keyMetrics["High / Low"]) {
-    metrics.push({ label: "High / Low (52W)", value: stock.keyMetrics["High / Low"] });
-  }
+  const fiftyTwoWeekValue = stock.keyMetrics["High / Low"]?.trim();
+  const allTimeRange = getPriceRange(prices);
 
   const sharesOutstanding = getSharesOutstanding(stock);
+  const shareholderCount = getLatestShareholderCount(stock);
+
+  addDirectMetric("Mkt Cap", "Market Cap");
+  metrics.push(
+    marketCapCategory
+      ? {
+          badge: { label: "Est.", tone: "estimated" },
+          label: "Category",
+          value: marketCapCategory
+        }
+      : {
+          badge: { label: "N/A", tone: "unavailable" },
+          label: "Category",
+          value: "Unavailable"
+        }
+  );
+  addDirectMetric("Price", "Current Price");
+  addDirectMetric("Stock P/E", "Stock P/E");
+  metrics.push(
+    typeof industryPe === "number" && Number.isFinite(industryPe)
+      ? {
+          badge: { label: "Derived", tone: "derived" },
+          label: "Ind. P/E",
+          value: formatIndianNumber(industryPe, { dp: 1 })
+        }
+      : {
+          badge: { label: "N/A", tone: "unavailable" },
+          label: "Ind. P/E",
+          value: "Unavailable"
+        }
+  );
+  metrics.push({
+    badge: { label: "N/A", tone: "unavailable" },
+    label: "PEG Ratio",
+    value: "Unavailable"
+  });
+  addDirectMetric("ROCE", "ROCE");
+  addDirectMetric("ROE", "ROE");
+  addDirectMetric("Div Yield", "Dividend Yield");
+  addDirectMetric("Book Value", "Book Value");
+  addDirectMetric("Face Value", "Face Value");
+  metrics.push(
+    fiftyTwoWeekValue
+      ? { label: "52w H/L", value: fiftyTwoWeekValue }
+      : fiftyTwoWeekRange
+        ? {
+            badge: { label: "Derived", tone: "derived" },
+            label: "52w H/L",
+            value: formatPriceRange(fiftyTwoWeekRange)
+          }
+        : {
+            badge: { label: "N/A", tone: "unavailable" },
+            label: "52w H/L",
+            value: "Unavailable"
+          }
+  );
+  metrics.push(
+    allTimeRange
+      ? {
+          badge: { label: "Derived", tone: "derived" },
+          label: "All Time H/L",
+          value: formatPriceRange(allTimeRange)
+        }
+      : {
+          badge: { label: "N/A", tone: "unavailable" },
+          label: "All Time H/L",
+          value: "Unavailable"
+        }
+  );
   if (sharesOutstanding !== undefined) {
     metrics.push({
-      label: "No. of Shares",
-      value: formatIndianNumber(sharesOutstanding, { dp: 2, suffix: " Cr shares" })
+      badge: { label: sharesOutstanding.estimated ? "Est." : "Derived", tone: "estimated" },
+      label: "Shares",
+      value: formatIndianNumber(sharesOutstanding.value, { dp: 2, suffix: " Cr" })
+    });
+  } else {
+    metrics.push({
+      badge: { label: "N/A", tone: "unavailable" },
+      label: "Shares",
+      value: "Unavailable"
     });
   }
 
-  const shareholderCount = getLatestShareholderCount(stock);
   if (shareholderCount) {
-    metrics.push({ label: "No. of Shareholders", value: shareholderCount });
+    metrics.push({
+      label: "No. of shareholders",
+      value: shareholderCount
+    });
+  } else {
+    metrics.push({
+      badge: { label: "N/A", tone: "unavailable" },
+      label: "No. of shareholders",
+      value: "Unavailable"
+    });
   }
 
   return metrics;
@@ -241,9 +317,16 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                   <h2>Key Metrics</h2>
                 </div>
                 <div className={css(styles, "grid metric-grid panel-pad")}>
-                  {keyMetrics.map(({ label, value }) => (
+                  {keyMetrics.map(({ badge, label, value }) => (
                     <div className={css(styles, "metric-card")} key={label}>
-                      <div className={css(styles, "metric-label")}>{label}</div>
+                      <div className={css(styles, "metric-label-row")}>
+                        <div className={css(styles, "metric-label")}>{label}</div>
+                        {badge ? (
+                          <span className={css(styles, "metric-badge", `metric-badge-${badge.tone}`)}>
+                            {badge.label}
+                          </span>
+                        ) : null}
+                      </div>
                       <div className={css(styles, "metric-value")}>{value}</div>
                     </div>
                   ))}
@@ -251,7 +334,9 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
               </section>
             ) : null}
 
-            {hasRatios ? <FinancialRatiosSnapshot table={stock.ratios} /> : null}
+            {hasRatios ? (
+              <FinancialRatiosSnapshot annualRatios={stock.ratios} quarterly={stock.quarterly} />
+            ) : null}
 
             {hasProsCons ? (
               <section className={css(styles, "grid pros-cons section-anchor")} id="analysis">

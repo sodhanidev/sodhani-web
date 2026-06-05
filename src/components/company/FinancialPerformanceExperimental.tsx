@@ -21,10 +21,17 @@ type ChartMetric = {
   className: string;
 };
 
+type ChartLineMetric = {
+  key: string;
+  label: string;
+  className: string;
+  valueFormatter?: (value: number | null) => string;
+};
+
 type ChartPoint = {
   period: string;
   bars: Record<string, number | null>;
-  line?: number | null;
+  lines: Record<string, number | null>;
 };
 
 type Scale = {
@@ -40,7 +47,13 @@ const modeLabels: { key: PeriodMode; label: string }[] = [
 
 const performanceMetrics: ChartMetric[] = [
   { key: "revenue", label: "Revenue", className: "revenue" },
-  { key: "profit", label: "Net income", className: "profit" }
+  { key: "ebitda", label: "EBITDA", className: "ebitda" },
+  { key: "pat", label: "PAT", className: "pat" }
+];
+
+const performanceLineMetrics: ChartLineMetric[] = [
+  { key: "ebitdaMargin", label: "EBITDA margin %", className: "ebitda-margin" },
+  { key: "patMargin", label: "PAT margin %", className: "pat-margin" }
 ];
 
 const debtMetrics: ChartMetric[] = [
@@ -78,40 +91,64 @@ function findRow(table: FinancialTable, labels: string[]): FinRow | undefined {
 
 function getPerformanceSeries(table: FinancialTable): ChartPoint[] {
   const revenueRow = findRow(table, ["Sales", "Revenue"]);
-  const profitRow = findRow(table, ["Net Profit", "Profit After Tax"]);
+  const ebitdaRow = findRow(table, ["Operating Profit", "EBITDA"]);
+  const ebitdaMarginRow = findRow(table, ["OPM %", "EBITDA Margin %"]);
+  const patRow = findRow(table, ["Net Profit", "Profit After Tax", "PAT"]);
 
   return table.periods
     .map((period) => {
       const revenue = parseNumericCell(revenueRow?.values[period]);
-      const profit = parseNumericCell(profitRow?.values[period]);
+      const ebitda = parseNumericCell(ebitdaRow?.values[period]);
+      const pat = parseNumericCell(patRow?.values[period]);
+      const explicitEbitdaMargin = parseNumericCell(ebitdaMarginRow?.values[period]);
+      const ebitdaMargin =
+        explicitEbitdaMargin ?? (revenue !== null && revenue !== 0 && ebitda !== null ? (ebitda / revenue) * 100 : null);
+      const patMargin = revenue !== null && revenue !== 0 && pat !== null ? (pat / revenue) * 100 : null;
 
       return {
         period,
         bars: {
           revenue,
-          profit
+          ebitda,
+          pat
         },
-        line: revenue !== null && revenue !== 0 && profit !== null ? (profit / revenue) * 100 : null
+        lines: {
+          ebitdaMargin,
+          patMargin
+        }
       };
     })
-    .filter((point) => point.bars.revenue !== null || point.bars.profit !== null);
+    .filter((point) => Object.values(point.bars).some((value) => value !== null));
 }
 
 function getDebtSeries(balanceSheet: FinancialTable, cashFlows: FinancialTable): ChartPoint[] {
   const debtRow = findRow(balanceSheet, ["Borrowings", "Debt"]);
+  const equityCapitalRow = findRow(balanceSheet, ["Equity Capital", "Share Capital"]);
+  const reservesRow = findRow(balanceSheet, ["Reserves", "Other Equity"]);
   const cashEquivalentsRow = findRow(balanceSheet, ["Cash Equivalents", "Cash & Equivalents"]);
   const freeCashFlowRow = findRow(cashFlows, ["Free Cash Flow"]);
 
   return balanceSheet.periods
-    .map((period) => ({
-      period,
-      bars: {
-        debt: parseNumericCell(debtRow?.values[period]),
-        freeCashFlow: parseNumericCell(freeCashFlowRow?.values[period]),
-        cashEquivalents: parseNumericCell(cashEquivalentsRow?.values[period])
-      }
-    }))
-    .filter((point) => Object.values(point.bars).some((value) => value !== null));
+    .map((period) => {
+      const debt = parseNumericCell(debtRow?.values[period]);
+      const equityCapital = parseNumericCell(equityCapitalRow?.values[period]);
+      const reserves = parseNumericCell(reservesRow?.values[period]);
+      const totalEquity =
+        equityCapital !== null && reserves !== null ? equityCapital + reserves : null;
+
+      return {
+        period,
+        bars: {
+          debt,
+          freeCashFlow: parseNumericCell(freeCashFlowRow?.values[period]),
+          cashEquivalents: parseNumericCell(cashEquivalentsRow?.values[period])
+        },
+        lines: {
+          debtEquity: debt !== null && totalEquity !== null && totalEquity > 0 ? debt / totalEquity : null
+        }
+      };
+    })
+    .filter((point) => Object.values(point.bars).some((value) => value !== null) || point.lines.debtEquity !== null);
 }
 
 function recent(points: ChartPoint[]) {
@@ -154,6 +191,18 @@ function formatPercent(value: number | null) {
   return `${formatIndianNumber(value, { dp: 1 })}%`;
 }
 
+function formatRatio(value: number | null) {
+  if (value === null || !Number.isFinite(value)) {
+    return "-";
+  }
+
+  return `${formatIndianNumber(value, { dp: 2 })}x`;
+}
+
+function formatLineValue(metric: ChartLineMetric, value: number | null) {
+  return (metric.valueFormatter ?? formatPercent)(value);
+}
+
 function formatValueForLabel(value: number | null) {
   if (value === null || !Number.isFinite(value)) {
     return "not available";
@@ -175,8 +224,10 @@ function makeValueScale(points: ChartPoint[], metrics: ChartMetric[]): Scale {
   return { max, min, range: Math.max(1, max - min) };
 }
 
-function makeLineScale(points: ChartPoint[]): Scale | null {
-  const values = points.map((point) => point.line).filter((value): value is number => value !== null && Number.isFinite(value));
+function makeLineScale(points: ChartPoint[], metrics: ChartLineMetric[]): Scale | null {
+  const values = points
+    .flatMap((point) => metrics.map((metric) => point.lines[metric.key]))
+    .filter((value): value is number => value !== null && Number.isFinite(value));
 
   if (values.length < 2) {
     return null;
@@ -214,13 +265,15 @@ function barStyle(value: number | null, scale: Scale): CSSProperties {
   } as CSSProperties;
 }
 
-function linePoints(points: ChartPoint[], scale: Scale | null) {
+function linePoints(points: ChartPoint[], scale: Scale | null, metric: ChartLineMetric) {
   if (!scale) {
     return [];
   }
 
   return points.flatMap((point, index) => {
-    if (point.line === null || point.line === undefined || !Number.isFinite(point.line)) {
+    const value = point.lines[metric.key];
+
+    if (value === null || value === undefined || !Number.isFinite(value)) {
       return [];
     }
 
@@ -228,14 +281,14 @@ function linePoints(points: ChartPoint[], scale: Scale | null) {
       {
         period: point.period,
         x: ((index + 0.5) / points.length) * 100,
-        y: ((scale.max - point.line) / scale.range) * 100
+        y: ((scale.max - value) / scale.range) * 100
       }
     ];
   });
 }
 
-function lineSegments(points: ChartPoint[], scale: Scale | null) {
-  const plottedPoints = linePoints(points, scale);
+function lineSegments(points: ChartPoint[], scale: Scale | null, metric: ChartLineMetric) {
+  const plottedPoints = linePoints(points, scale, metric);
 
   return plottedPoints.slice(0, -1).map((point, index) => ({
     from: point,
@@ -260,7 +313,7 @@ function FinancialMiniChart({
   activeMode,
   datasets,
   help,
-  lineLabel,
+  lineMetrics = [],
   metrics,
   onModeChange,
   title
@@ -268,7 +321,7 @@ function FinancialMiniChart({
   activeMode: PeriodMode;
   datasets: Record<PeriodMode, ChartPoint[]>;
   help: string;
-  lineLabel?: string;
+  lineMetrics?: ChartLineMetric[];
   metrics: ChartMetric[];
   onModeChange: (mode: PeriodMode) => void;
   title: string;
@@ -282,9 +335,13 @@ function FinancialMiniChart({
 
   const valueScale = makeValueScale(points, metrics);
   const zeroY = ((valueScale.max - 0) / valueScale.range) * 100;
-  const lineScale = makeLineScale(points);
-  const dots = linePoints(points, lineScale);
-  const segments = lineSegments(points, lineScale);
+  const lineScale = makeLineScale(points, lineMetrics);
+  const lineSeries = lineMetrics.map((metric) => ({
+    dots: linePoints(points, lineScale, metric),
+    metric,
+    segments: lineSegments(points, lineScale, metric)
+  }));
+  const lineAxisFormatter = lineMetrics.length === 1 ? lineMetrics[0].valueFormatter ?? formatPercent : formatPercent;
 
   return (
     <section className={css(styles, "financial-mini-chart")}>
@@ -309,11 +366,11 @@ function FinancialMiniChart({
         </div>
       </div>
 
-      <div className={css(styles, `financial-combo-plot${lineScale ? " has-line-axis" : ""}`)}>
+      <div className={css(styles, "financial-combo-plot", lineScale ? "has-line-axis" : "")}>
         {lineScale ? (
           <div className={css(styles, "financial-left-axis")} aria-hidden="true">
             {[lineScale.max, (lineScale.max + lineScale.min) / 2, lineScale.min].map((value) => (
-              <span key={value}>{formatPercent(value)}</span>
+              <span key={value}>{lineAxisFormatter(value)}</span>
             ))}
           </div>
         ) : null}
@@ -335,36 +392,40 @@ function FinancialMiniChart({
             <span />
           </div>
 
-          {segments.length ? (
+          {lineSeries.some((series) => series.segments.length) ? (
             <div className={css(styles, "financial-combo-line-segments")} aria-hidden="true">
-              {segments.map((segment) => (
-                <span
-                  className={css(styles, "financial-combo-line-segment")}
-                  key={`${segment.from.period}-${segment.to.period}`}
-                  style={
-                    {
-                      "--line-left": `${segment.from.x}%`,
-                      "--line-width": `${segment.to.x - segment.from.x}%`
-                    } as CSSProperties
-                  }
-                >
-                  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <line x1="0" x2="100" y1={segment.from.y} y2={segment.to.y} />
-                  </svg>
-                </span>
-              ))}
+              {lineSeries.flatMap((series) =>
+                series.segments.map((segment) => (
+                  <span
+                    className={css(styles, "financial-combo-line-segment", series.metric.className)}
+                    key={`${series.metric.key}-${segment.from.period}-${segment.to.period}`}
+                    style={
+                      {
+                        "--line-left": `${segment.from.x}%`,
+                        "--line-width": `${segment.to.x - segment.from.x}%`
+                      } as CSSProperties
+                    }
+                  >
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <line x1="0" x2="100" y1={segment.from.y} y2={segment.to.y} />
+                    </svg>
+                  </span>
+                ))
+              )}
             </div>
           ) : null}
 
-          {dots.length ? (
+          {lineSeries.some((series) => series.dots.length) ? (
             <div className={css(styles, "financial-combo-line-dots")} aria-hidden="true">
-              {dots.map((dot) => (
-                <span
-                  className={css(styles, "financial-combo-line-point")}
-                  key={dot.period}
-                  style={{ "--line-point-x": `${dot.x}%`, "--line-point-y": `${dot.y}%` } as CSSProperties}
-                />
-              ))}
+              {lineSeries.flatMap((series) =>
+                series.dots.map((dot) => (
+                  <span
+                    className={css(styles, "financial-combo-line-point", series.metric.className)}
+                    key={`${series.metric.key}-${dot.period}`}
+                    style={{ "--line-point-x": `${dot.x}%`, "--line-point-y": `${dot.y}%` } as CSSProperties}
+                  />
+                ))
+              )}
             </div>
           ) : null}
 
@@ -373,7 +434,9 @@ function FinancialMiniChart({
               <button
                 aria-label={`${point.period}: ${metrics
                   .map((metric) => `${metric.label} ${formatValueForLabel(point.bars[metric.key])}`)
-                  .join(", ")}${lineLabel ? `, ${lineLabel} ${formatPercent(point.line ?? null)}` : ""}`}
+                  .join(", ")}${lineMetrics.length ? `, ${lineMetrics
+                  .map((metric) => `${metric.label} ${formatLineValue(metric, point.lines[metric.key] ?? null)}`)
+                  .join(", ")}` : ""}`}
                 className={css(styles, "financial-combo-group")}
                 key={point.period}
                 type="button"
@@ -411,12 +474,12 @@ function FinancialMiniChart({
             {metric.label}
           </span>
         ))}
-        {lineLabel ? (
-          <span>
-            <i className={css(styles, "margin")} />
-            {lineLabel}
+        {lineMetrics.map((metric) => (
+          <span key={metric.key}>
+            <i className={css(styles, metric.className)} />
+            {metric.label}
           </span>
-        ) : null}
+        ))}
       </div>
     </section>
   );
@@ -479,8 +542,8 @@ export function FinancialPerformanceExperimental({
       <FinancialMiniChart
         activeMode={resolvedPerformanceMode}
         datasets={performanceDatasets}
-        help="Revenue shows sales, net income shows profit after tax, and net margin is net income divided by revenue."
-        lineLabel="Net margin %"
+        help="Revenue shows sales. EBITDA uses operating profit, PAT uses net profit, and the margin lines are shown as percentages of revenue."
+        lineMetrics={performanceLineMetrics}
         metrics={performanceMetrics}
         title="Performance"
         onModeChange={setPerformanceMode}
@@ -489,7 +552,8 @@ export function FinancialPerformanceExperimental({
       <FinancialMiniChart
         activeMode={resolvedDebtMode}
         datasets={debtDatasets}
-        help="Debt is total borrowings. Free cash flow is cash left after capital spending. Cash and equivalents are liquid balances on the balance sheet."
+        help="Debt is total borrowings. Free cash flow is cash left after capital spending. Cash and equivalents are liquid balances on the balance sheet. Debt to equity is borrowings divided by equity capital plus reserves."
+        lineMetrics={[{ key: "debtEquity", label: "Debt to Equity", className: "debt-equity", valueFormatter: formatRatio }]}
         metrics={debtMetrics}
         title="Debt level and coverage"
         onModeChange={setDebtMode}

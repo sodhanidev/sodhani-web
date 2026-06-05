@@ -411,8 +411,16 @@
 
 }
 
-.metric-label {
+.metric-label-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
   margin-bottom: 7px;
+
+}
+
+.metric-label {
   color: color-mix(in srgb, var(--muted) 84%, var(--ink));
   font-family: var(--font-sans);
   font-size: 12px;
@@ -420,6 +428,38 @@
   letter-spacing: 0.08em;
   line-height: 1.2;
   text-transform: uppercase;
+
+}
+
+.metric-badge {
+  display: inline-flex;
+  min-height: 16px;
+  align-items: center;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 760;
+  line-height: 1;
+  white-space: nowrap;
+
+}
+
+.metric-badge-derived {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 84%, var(--ink));
+
+}
+
+.metric-badge-estimated {
+  background: color-mix(in srgb, #f28c28 16%, transparent);
+  color: color-mix(in srgb, #a95712 86%, var(--ink));
+
+}
+
+.metric-badge-unavailable {
+  background: color-mix(in srgb, var(--down) 14%, transparent);
+  color: color-mix(in srgb, var(--down) 86%, var(--ink));
 
 }
 
@@ -436,31 +476,46 @@
 
 .ratios-snapshot {
   display: grid;
-  gap: 10px;
+  gap: 9px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  padding-top: 20px;
 
 }
 
 .ratios-snapshot-head {
-  align-items: end;
+  padding-top: 0;
+  padding-bottom: 0;
 
 }
 
-.ratios-snapshot-head > div {
-  display: grid;
-  gap: 6px;
-
-}
-
-.ratios-snapshot-head p {
+.financials-detail-heading.ratios-snapshot-head h2 {
   margin: 0;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.2;
+
+}
+
+.ratios-snapshot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+
+}
+
+.ratios-snapshot-actions p {
+  margin: 0;
+
+}
+
+.ratios-snapshot-toggle {
+  min-width: max-content;
 
 }
 
 .ratios-snapshot-wrap {
-  margin-top: 2px;
+  margin-top: 0;
 
 }
 
@@ -2178,7 +2233,7 @@
 .financial-combo-line-segments {
   position: absolute;
   inset: 0 0 34px;
-  z-index: 4;
+  z-index: 8;
   overflow: visible;
   pointer-events: none;
 
@@ -2204,9 +2259,9 @@
 }
 
 .financial-combo-line-segment line {
-  stroke: #f28c28;
+  stroke: var(--financial-line-color, #f28c28);
   stroke-linecap: round;
-  stroke-width: 0.95;
+  stroke-width: 2.2;
   vector-effect: non-scaling-stroke;
 
 }
@@ -2214,7 +2269,7 @@
 .financial-combo-line-dots {
   position: absolute;
   inset: 0 0 34px;
-  z-index: 5;
+  z-index: 9;
   pointer-events: none;
 
 }
@@ -2222,14 +2277,42 @@
 .financial-combo-line-point {
   position: absolute;
   display: block;
-  width: 7px;
-  height: 7px;
-  border: 1.5px solid #f28c28;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--financial-line-color, #f28c28);
   border-radius: 50%;
   background: var(--bg);
   left: calc(var(--line-point-x) - var(--financial-line-bias));
   top: var(--line-point-y);
   transform: translate(-50%, -50%);
+
+}
+
+.financial-combo-line-segment.ebitda-margin,
+.financial-combo-line-point.ebitda-margin {
+  --financial-line-color: #ef4444;
+
+}
+
+.financial-combo-line-segment.pat-margin,
+.financial-combo-line-point.pat-margin {
+  --financial-line-color: #e5b50f;
+
+}
+
+.financial-combo-line-segment.debt-equity,
+.financial-combo-line-point.debt-equity {
+  --financial-line-color: #e5b50f;
+
+}
+
+.financial-combo-plot.line-margin {
+  --financial-line-color: #f28c28;
+
+}
+
+.financial-combo-plot.line-debt-equity {
+  --financial-line-color: #e5b50f;
 
 }
 
@@ -2321,6 +2404,16 @@
 
 }
 
+.financial-combo-bar.ebitda {
+  background: #18a874;
+
+}
+
+.financial-combo-bar.pat {
+  background: #7c4dff;
+
+}
+
 .financial-combo-bar.debt {
   background: #e9578f;
 
@@ -2385,8 +2478,33 @@
 
 }
 
+.financial-combo-legend .ebitda {
+  background: #18a874;
+
+}
+
+.financial-combo-legend .pat {
+  background: #7c4dff;
+
+}
+
 .financial-combo-legend .margin {
   background: #f28c28;
+
+}
+
+.financial-combo-legend .ebitda-margin {
+  background: #ef4444;
+
+}
+
+.financial-combo-legend .pat-margin {
+  background: #e5b50f;
+
+}
+
+.financial-combo-legend .debt-equity {
+  background: #e5b50f;
 
 }
 
@@ -4172,6 +4290,12 @@
 .related-stock-scroll-button {
     width: 36px;
     height: 36px;
+
+}
+
+.ratios-snapshot {
+    gap: 8px;
+    padding-top: 16px;
 
 }
 

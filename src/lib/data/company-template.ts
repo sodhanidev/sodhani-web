@@ -1,4 +1,4 @@
-import { getCompanyByCode, getCompaniesForNode } from "./companies";
+import { getCompanies, getCompanyByCode, getCompaniesForNode } from "./companies";
 import { getNodeByCode } from "./industry";
 import { getAvailableStockCodes, getPricePoints, getStock } from "./stocks";
 import type {
@@ -13,6 +13,7 @@ export type CompanyPageModel = {
   hasFullStockData: boolean;
   industryPe?: number;
   leafNode?: IndustryNode;
+  marketCapCategory?: string;
   peers: Company[];
   peerSource?: IndustryNode;
   prices: PricePoint[];
@@ -86,6 +87,52 @@ function getIndustryPe(company: Company): number | undefined {
   return undefined;
 }
 
+let marketCapRankCache: Map<string, number> | null = null;
+
+function getMarketCapRank(company: Company): number | undefined {
+  if (!marketCapRankCache) {
+    const byCode = new Map<string, Company>();
+
+    getCompanies().forEach((candidate) => {
+      if (typeof candidate.marketCapCr !== "number" || candidate.marketCapCr <= 0) {
+        return;
+      }
+
+      const code = candidate.code.toUpperCase();
+      const existing = byCode.get(code);
+      if (!existing || candidate.marketCapCr > (existing.marketCapCr ?? 0)) {
+        byCode.set(code, candidate);
+      }
+    });
+
+    marketCapRankCache = new Map(
+      [...byCode.values()]
+        .sort((a, b) => (b.marketCapCr ?? 0) - (a.marketCapCr ?? 0))
+        .map((candidate, index) => [candidate.code.toUpperCase(), index + 1])
+    );
+  }
+
+  return marketCapRankCache.get(company.code.toUpperCase());
+}
+
+function getMarketCapCategory(company: Company): string | undefined {
+  const rank = getMarketCapRank(company);
+
+  if (rank === undefined) {
+    return undefined;
+  }
+
+  if (rank <= 100) {
+    return "Large Cap";
+  }
+
+  if (rank <= 250) {
+    return "Mid Cap";
+  }
+
+  return "Small Cap";
+}
+
 export async function getCompanyPageModel(code: string): Promise<CompanyPageModel | undefined> {
   const stockData = getStock(code);
   if (!stockData) {
@@ -101,6 +148,7 @@ export async function getCompanyPageModel(code: string): Promise<CompanyPageMode
     hasFullStockData: true,
     industryPe: company ? getIndustryPe(company) : undefined,
     leafNode,
+    marketCapCategory: company ? getMarketCapCategory(company) : undefined,
     peers: related.peers,
     peerSource: related.source,
     prices: getPricePoints(code),
