@@ -32,7 +32,7 @@ function hasDocuments(documents: Stock["documents"]) {
 type KeyMetricItem = {
   badge?: {
     label: string;
-    tone: "derived" | "estimated" | "unavailable";
+    tone: "estimated" | "unavailable";
   };
   label: string;
   value: string;
@@ -184,7 +184,6 @@ function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
   metrics.push(
     typeof industryPe === "number" && Number.isFinite(industryPe)
       ? {
-          badge: { label: "Derived", tone: "derived" },
           label: "Ind. P/E",
           value: formatIndianNumber(industryPe, { dp: 1 })
         }
@@ -209,7 +208,6 @@ function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
       ? { label: "52w H/L", value: fiftyTwoWeekValue }
       : fiftyTwoWeekRange
         ? {
-            badge: { label: "Derived", tone: "derived" },
             label: "52w H/L",
             value: formatPriceRange(fiftyTwoWeekRange)
           }
@@ -222,7 +220,6 @@ function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
   metrics.push(
     allTimeRange
       ? {
-          badge: { label: "Derived", tone: "derived" },
           label: "All Time H/L",
           value: formatPriceRange(allTimeRange)
         }
@@ -234,7 +231,7 @@ function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
   );
   if (sharesOutstanding !== undefined) {
     metrics.push({
-      badge: { label: sharesOutstanding.estimated ? "Est." : "Derived", tone: "estimated" },
+      badge: sharesOutstanding.estimated ? { label: "Est.", tone: "estimated" } : undefined,
       label: "Shares",
       value: formatIndianNumber(sharesOutstanding.value, { dp: 2, suffix: " Cr" })
     });

@@ -445,12 +445,6 @@
 
 }
 
-.metric-badge-derived {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: color-mix(in srgb, var(--accent) 84%, var(--ink));
-
-}
-
 .metric-badge-estimated {
   background: color-mix(in srgb, #f28c28 16%, transparent);
   color: color-mix(in srgb, #a95712 86%, var(--ink));
