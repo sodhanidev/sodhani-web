@@ -12,8 +12,13 @@ import { StockHeader } from "@/components/StockHeader";
 import { FinancialPerformanceExperimental } from "@/components/company/FinancialPerformanceExperimental";
 import { RelatedStocks } from "@/components/company/RelatedStocks";
 import type { CompanyPageModel } from "@/lib/data/company-template";
-import { companyCandlestickHref, companyShareholdingHref } from "@/lib/data/format";
-import type { FinancialTable as FinancialTableModel, Stock } from "@/lib/data/types";
+import {
+  companyCandlestickHref,
+  companyShareholdingHref,
+  formatIndianNumber,
+  parseNumericCell
+} from "@/lib/data/format";
+import type { FinancialTable as FinancialTableModel, FinRow, PricePoint, Stock } from "@/lib/data/types";
 
 function hasTable(table: FinancialTableModel) {
   return table.periods.length > 0 && table.rows.length > 0;
@@ -23,22 +28,167 @@ function hasDocuments(documents: Stock["documents"]) {
   return Object.values(documents).some((items) => items.length > 0);
 }
 
-const keyMetricLabels = [
+type KeyMetricItem = {
+  label: string;
+  value: string;
+};
+
+const baseKeyMetricLabels = [
   "Market Cap",
   "Stock P/E",
   "ROCE",
   "ROE",
-  "Dividend Yield",
-  "High / Low"
+  "Dividend Yield"
 ];
+
+function findFinancialRow(rows: FinRow[], label: string): FinRow | undefined {
+  for (const row of rows) {
+    if (row.label.toLowerCase() === label.toLowerCase()) {
+      return row;
+    }
+
+    const child = findFinancialRow(row.children, label);
+    if (child) {
+      return child;
+    }
+  }
+
+  return undefined;
+}
+
+function getLatestTableValue(table: FinancialTableModel, label: string): string {
+  const period = table.periods.at(-1);
+  if (!period) {
+    return "";
+  }
+
+  const row = findFinancialRow(table.rows, label);
+  return row?.values[period]?.trim() ?? "";
+}
+
+function parseMetricNumber(value: string | undefined): number | null {
+  if (!value) {
+    return null;
+  }
+
+  return parseNumericCell(value.replace(/\b(?:cr|crore|shares?)\.?\b/giu, ""));
+}
+
+function getSharesOutstanding(stock: Stock): number | undefined {
+  const equityCapital = parseMetricNumber(getLatestTableValue(stock.balanceSheet, "Equity Capital"));
+  const faceValue = parseMetricNumber(stock.keyMetrics["Face Value"]);
+
+  if (equityCapital !== null && equityCapital > 0 && faceValue !== null && faceValue > 0) {
+    return equityCapital / faceValue;
+  }
+
+  const marketCap = parseMetricNumber(stock.keyMetrics["Market Cap"]);
+  const currentPrice = parseMetricNumber(stock.keyMetrics["Current Price"] || stock.overview.currentPriceRaw);
+
+  if (marketCap !== null && marketCap > 0 && currentPrice !== null && currentPrice > 0) {
+    return marketCap / currentPrice;
+  }
+
+  return undefined;
+}
+
+function getLatestShareholderCount(stock: Stock): string {
+  return (
+    getLatestTableValue(stock.shareholding.quarterly, "No. of Shareholders") ||
+    getLatestTableValue(stock.shareholding.yearly, "No. of Shareholders")
+  );
+}
+
+function getPointTime(point: PricePoint): number | undefined {
+  const time = Date.parse(`${point.date}T00:00:00Z`);
+  return Number.isFinite(time) ? time : undefined;
+}
+
+function getRangeStart(points: PricePoint[], days: number): number | undefined {
+  const latest = points.reduce<number | undefined>((max, point) => {
+    const time = getPointTime(point);
+    if (time === undefined) {
+      return max;
+    }
+
+    return max === undefined ? time : Math.max(max, time);
+  }, undefined);
+
+  return latest === undefined ? undefined : latest - days * 24 * 60 * 60 * 1000;
+}
+
+function getPriceRange(points: PricePoint[], startTime?: number): { high: number; low: number } | undefined {
+  let high = Number.NEGATIVE_INFINITY;
+  let low = Number.POSITIVE_INFINITY;
+  let hasPoint = false;
+
+  points.forEach((point) => {
+    const time = getPointTime(point);
+    if (startTime !== undefined && (time === undefined || time < startTime)) {
+      return;
+    }
+
+    high = Math.max(high, point.high);
+    low = Math.min(low, point.low);
+    hasPoint = true;
+  });
+
+  return hasPoint ? { high, low } : undefined;
+}
+
+function formatPriceForMetric(value: number) {
+  return formatIndianNumber(value, { dp: Number.isInteger(value) ? 0 : 2, prefix: "₹ " });
+}
+
+function formatPriceRange(range: { high: number; low: number }) {
+  return `${formatPriceForMetric(range.high)} / ${formatPriceForMetric(range.low)}`;
+}
+
+function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
+  const { industryPe, prices, stock } = model;
+  const metrics: KeyMetricItem[] = [];
+
+  baseKeyMetricLabels.forEach((label) => {
+    const value = stock.keyMetrics[label]?.trim();
+    if (value) {
+      metrics.push({ label, value });
+    }
+  });
+
+  if (typeof industryPe === "number" && Number.isFinite(industryPe)) {
+    metrics.splice(2, 0, {
+      label: "Industry P/E",
+      value: formatIndianNumber(industryPe, { dp: 2 })
+    });
+  }
+
+  const fiftyTwoWeekRange = getPriceRange(prices, getRangeStart(prices, 365));
+  if (fiftyTwoWeekRange) {
+    metrics.push({ label: "High / Low (52W)", value: formatPriceRange(fiftyTwoWeekRange) });
+  } else if (stock.keyMetrics["High / Low"]) {
+    metrics.push({ label: "High / Low (52W)", value: stock.keyMetrics["High / Low"] });
+  }
+
+  const sharesOutstanding = getSharesOutstanding(stock);
+  if (sharesOutstanding !== undefined) {
+    metrics.push({
+      label: "No. of Shares",
+      value: formatIndianNumber(sharesOutstanding, { dp: 2, suffix: " Cr shares" })
+    });
+  }
+
+  const shareholderCount = getLatestShareholderCount(stock);
+  if (shareholderCount) {
+    metrics.push({ label: "No. of Shareholders", value: shareholderCount });
+  }
+
+  return metrics;
+}
 
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
   const { prices, stock } = model;
   const hasChart = prices.length > 0;
-  const keyMetrics = keyMetricLabels.flatMap((label) => {
-    const value = stock.keyMetrics[label];
-    return value ? [{ label, value }] : [];
-  });
+  const keyMetrics = buildKeyMetrics(model);
   const hasKeyMetrics = keyMetrics.length > 0;
   const hasPros = stock.prosCons.pros.length > 0;
   const hasCons = stock.prosCons.cons.length > 0;

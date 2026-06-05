@@ -39,6 +39,9 @@ const highlightedRows = new Set([
   "roce %"
 ]);
 
+const QUARTERLY_RESULT_PERIODS = 8;
+const ANNUAL_RESULT_PERIODS = 7;
+
 function hasTable(table: FinancialTable) {
   return table.periods.length > 0 && table.rows.length > 0;
 }
@@ -84,6 +87,13 @@ function getTableForTab(stock: Stock, tab: FinancialTabKey, mode: PeriodMode) {
   return stock.ratios;
 }
 
+function limitTablePeriods(table: FinancialTable, maxPeriods: number): FinancialTable {
+  return {
+    ...table,
+    periods: table.periods.slice(-maxPeriods)
+  };
+}
+
 function rowHasValues(row: FinRow, periods: string[]) {
   return periods.some((period) => row.values[period]);
 }
@@ -115,7 +125,9 @@ function getCellTone(label: string, value: string) {
 
 function getPeriodLabel(table: FinancialTable, mode?: PeriodMode) {
   if (mode === "quarterly") {
-    return `${table.periods.length} quarters`;
+    const years = table.periods.length / 4;
+    const yearLabel = Number.isInteger(years) ? `${years} years` : `${formatIndianNumber(years, { dp: 1 })} years`;
+    return `${table.periods.length} quarters · ${yearLabel}`;
   }
 
   if (mode === "yearly") {
@@ -171,7 +183,13 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
     hasTable(stock.profitLoss) ? { key: "yearly" as const, label: "Annual" } : null
   ].filter((item): item is { key: PeriodMode; label: string } => Boolean(item));
   const activeIncomeMode = incomeModes.some((item) => item.key === incomeMode) ? incomeMode : incomeModes[0]?.key ?? "yearly";
-  const incomeTable = getTableForTab(stock, "income", activeIncomeMode);
+  const incomeTable = limitTablePeriods(
+    getTableForTab(stock, "income", activeIncomeMode),
+    activeIncomeMode === "quarterly" ? QUARTERLY_RESULT_PERIODS : ANNUAL_RESULT_PERIODS
+  );
+  const balanceSheet = limitTablePeriods(stock.balanceSheet, ANNUAL_RESULT_PERIODS);
+  const cashFlows = limitTablePeriods(stock.cashFlows, ANNUAL_RESULT_PERIODS);
+  const ratios = limitTablePeriods(stock.ratios, ANNUAL_RESULT_PERIODS);
   const statementSections = [
     hasIncome
       ? {
@@ -179,13 +197,14 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           mode: activeIncomeMode,
           table: incomeTable,
           tab: financialTabs[0],
-          title: activeIncomeMode === "quarterly" ? "Quarterly Results" : "Profit & Loss"
+          title: activeIncomeMode === "quarterly" ? "Quarterly Results" : "Annual Results"
         }
       : null,
     hasTable(stock.balanceSheet)
       ? {
           id: "balance-sheet",
-          table: stock.balanceSheet,
+          mode: "yearly" as const,
+          table: balanceSheet,
           tab: financialTabs[1],
           title: "Balance Sheet"
         }
@@ -193,7 +212,8 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
     hasTable(stock.cashFlows)
       ? {
           id: "cash-flow",
-          table: stock.cashFlows,
+          mode: "yearly" as const,
+          table: cashFlows,
           tab: financialTabs[2],
           title: "Cash Flow"
         }
@@ -201,7 +221,8 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
     hasTable(stock.ratios)
       ? {
           id: "ratios",
-          table: stock.ratios,
+          mode: "yearly" as const,
+          table: ratios,
           tab: financialTabs[3],
           title: "Ratios"
         }
