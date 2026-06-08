@@ -2,6 +2,7 @@ import Link from "next/link";
 import { css } from "@/lib/css-module";
 import styles from "./market.module.css";
 
+import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
@@ -27,7 +28,10 @@ export function MetricRail({
         {companies.map((company) => (
           <li key={`${metric}-${company.code}`}>
             <Link className={css(styles, "rail-row")} href={companyHref(company.code)}>
-              <span className={css(styles, "rail-name")}>{company.name}</span>
+              <span className={css(styles, "rail-company")}>
+                <CompanyLogoMark code={company.code} name={company.name} size="sm" />
+                <span className={css(styles, "rail-name")}>{company.name}</span>
+              </span>
               <span className={css(styles, "numeric")}>{formatMetric(company[metric], kind)}</span>
             </Link>
           </li>

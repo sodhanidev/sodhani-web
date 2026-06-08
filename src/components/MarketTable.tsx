@@ -1,10 +1,12 @@
 "use client";
 
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { css } from "@/lib/css-module";
 import styles from "./market.module.css";
 
+import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { companyHref, formatMetric } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
@@ -95,6 +97,8 @@ export function MarketTable({
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * pageSize;
   const pageRows = filtered.slice(start, start + pageSize);
+  const rangeStart = filtered.length ? start + 1 : 0;
+  const rangeEnd = Math.min(start + pageSize, filtered.length);
 
   function cycleSort(key: SortKey) {
     if (key === sortKey) {
@@ -107,29 +111,34 @@ export function MarketTable({
   }
 
   return (
-    <section className={css(styles, "panel")}>
+    <section className={css(styles, "market-table-panel")}>
       <div className={css(styles, "table-toolbar")}>
-        <input
-          className={css(styles, "text-input")}
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setPage(1);
-          }}
-          placeholder="Filter company or code"
-          aria-label="Filter companies"
-        />
-        <span className={css(styles, "muted numeric")}>
-          {filtered.length.toLocaleString("en-IN")} rows · showing {start + 1}-
-          {Math.min(start + pageSize, filtered.length)}
-        </span>
+        <div>
+          <h2>Companies</h2>
+          <span className={css(styles, "muted numeric")}>
+            Showing {rangeStart}-{rangeEnd} of {filtered.length.toLocaleString("en-IN")}
+          </span>
+        </div>
+        <label className={css(styles, "market-filter")}>
+          <span>Search</span>
+          <input
+            className={css(styles, "text-input")}
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Company or ticker"
+            aria-label="Filter companies"
+          />
+        </label>
       </div>
 
       <div className={css(styles, "table-wrap")}>
-        <table>
+        <table className={css(styles, "market-table")}>
           <thead>
             <tr>
-              <th>S.No.</th>
+              <th className={css(styles, "col-rank")}>#</th>
               {columns.map((column) => (
                 <th className={column.className} key={column.key}>
                   <button className={css(styles, "sort-button")} type="button" onClick={() => cycleSort(column.key)}>
@@ -162,16 +171,26 @@ export function MarketTable({
                   }
                 }}
               >
-                <td className={css(styles, "numeric")}>{start + index + 1}.</td>
+                <td className={css(styles, "numeric col-rank")}>{start + index + 1}</td>
                 {columns.map((column) => (
                   <td
                     className={css(styles, `${column.className ?? ""} ${valueClass(column.key, company)}`)}
                     key={column.key}
                   >
                     {column.kind === "text" ? (
-                      <a href={companyHref(company.code)} onClick={(event) => event.stopPropagation()}>
-                        {company.name}
-                      </a>
+                      <Link
+                        className={css(styles, "company-cell")}
+                        href={companyHref(company.code)}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <CompanyLogoMark code={company.code} name={company.name} size="md" />
+                        <span className={css(styles, "company-cell-copy")}>
+                          <span className={css(styles, "company-name")}>{company.name}</span>
+                          <span className={css(styles, "company-meta")}>
+                            {company.code} · {company.leaf.name}
+                          </span>
+                        </span>
+                      </Link>
                     ) : (
                       <span className={css(styles, "numeric")}>
                         {formatMetric(company[column.key] as number | null, column.kind)}
