@@ -4,7 +4,7 @@ import { AuthPlaceholder } from "@/components/AuthPlaceholder";
 
 export const metadata: Metadata = {
   title: "Sign in · Sodhani",
-  description: "Placeholder sign-in page for Sodhani account access."
+  description: "Sign in to Sodhani with a mobile OTP."
 };
 
 export default function SignInPage() {

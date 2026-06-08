@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "echarts": "^6.1.0",
+    "jose": "^6.2.3",
     "lightweight-charts": "^5.2.0",
     "lucide-react": "latest",
+    "mongodb": "^7.2.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"

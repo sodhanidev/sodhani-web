@@ -6,7 +6,13 @@ const nextConfig: NextConfig = {
     root: process.cwd()
   },
   images: {
-    unoptimized: true
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com"
+      }
+    ]
   }
 };
 

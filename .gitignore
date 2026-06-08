@@ -5,6 +5,7 @@ src/app/preview/
 out/
 node_modules/
 .env*
+!.env.example
 .DS_Store
 AGENTS.md
 CLAUDE.md

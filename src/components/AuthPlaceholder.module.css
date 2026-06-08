@@ -99,6 +99,7 @@
   font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.15s ease, border-color 0.15s ease;
 
 }
@@ -106,6 +107,16 @@
 .auth-google:hover {
   background: var(--surface-2);
   border-color: var(--line-strong);
+
+}
+
+.auth-summary {
+  margin: -2px 0 2px;
+  color: var(--auth-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: center;
 
 }
 
@@ -159,17 +170,28 @@
 }
 
 .auth-inline-link {
+  border: 0;
+  background: transparent;
   color: var(--auth-muted);
+  cursor: pointer;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 400;
+  padding: 0;
   text-decoration: none;
 
 }
 
-.auth-inline-link:hover {
+.auth-inline-link:hover:not(:disabled) {
   color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 2px;
+
+}
+
+.auth-inline-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 
 }
 
@@ -204,6 +226,54 @@
 
 }
 
+.auth-phone-input {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--auth-line);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 0 11px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+}
+
+.auth-phone-input:hover {
+  border-color: var(--line-strong);
+
+}
+
+.auth-phone-input:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent);
+
+}
+
+.auth-phone-prefix {
+  color: var(--ink);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+
+}
+
+.auth-phone-input input {
+  min-height: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+
+}
+
+.auth-phone-input input:hover,
+.auth-phone-input input:focus,
+.auth-phone-input input:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+
+}
+
 .auth-primary {
   display: inline-flex;
   min-height: 40px;
@@ -223,8 +293,56 @@
 
 }
 
-.auth-primary:hover {
+.auth-primary:hover:not(:disabled) {
   opacity: 0.88;
+
+}
+
+.auth-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+
+}
+
+.auth-secondary {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--auth-muted);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--auth-muted) 50%, transparent);
+  text-underline-offset: 3px;
+
+}
+
+.auth-secondary:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+
+}
+
+.auth-message {
+  margin: 0;
+  border-left: 2px solid var(--up);
+  color: var(--auth-muted);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.45;
+  padding-left: 9px;
+
+}
+
+.auth-message.error {
+  border-left-color: var(--down);
+  color: var(--down);
 
 }
 
