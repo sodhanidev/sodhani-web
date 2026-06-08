@@ -3,6 +3,7 @@ import Image from "next/image";
 import { css } from "@/lib/css-module";
 import styles from "./layout.module.css";
 
+import { AuthNavStatus } from "./AuthNavStatus";
 import { CommandSearch } from "./CommandSearch";
 
 export function TopNav() {
@@ -21,6 +22,7 @@ export function TopNav() {
           <span>Sodhani</span>
         </Link>
         <CommandSearch />
+        <AuthNavStatus />
       </div>
     </header>
   );

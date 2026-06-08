@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
+import { LandingAuthActions } from "@/components/LandingAuthActions";
 import { LandingSearch } from "@/components/LandingSearch";
 import { SiteFooter } from "@/components/SiteFooter";
 import { candlestickToolHref } from "@/lib/data/format";
@@ -144,16 +145,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
             </div>
           </div>
-          <div className={css(styles, "landing-actions")}>
-            <Link className={css(styles, "landing-login")} href="/sign-in/">
-              <span className={css(styles, "landing-action-icon")} data-icon="user-round" aria-hidden="true" />
-              Login
-            </Link>
-            <Link className={css(styles, "landing-account")} href="/sign-up/">
-              <span className={css(styles, "landing-action-icon")} data-icon="user-plus" aria-hidden="true" />
-              Sign up
-            </Link>
-          </div>
+          <LandingAuthActions />
         </nav>
 
         <div className={css(styles, "landing-center")}>
