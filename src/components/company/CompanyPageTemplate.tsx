@@ -332,7 +332,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
             ) : null}
 
             {hasRatios ? (
-              <FinancialRatiosSnapshot annualRatios={stock.ratios} quarterly={stock.quarterly} />
+              <FinancialRatiosSnapshot annualRatios={stock.ratios} />
             ) : null}
 
             {hasProsCons ? (
