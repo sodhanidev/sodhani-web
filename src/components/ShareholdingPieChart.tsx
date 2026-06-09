@@ -184,8 +184,12 @@ export function ShareholdingPieChart({ table }: { table: FinancialTable }) {
     <div className={css(styles, "shareholding-chart")} aria-label={`Shareholding pattern for ${period}`}>
       <div className={css(styles, "shareholding-visual")}>
         <div className={css(styles, "shareholding-donut-wrap")} ref={donutWrapRef} onPointerLeave={clearActive}>
-          <svg className={css(styles, "shareholding-donut")} viewBox="0 0 120 120" role="img">
-            <title>{`Shareholding pattern for ${period}`}</title>
+          <svg
+            aria-label={`Shareholding pattern for ${period}`}
+            className={css(styles, "shareholding-donut")}
+            viewBox="0 0 120 120"
+            role="img"
+          >
             <circle className={css(styles, "shareholding-donut-track")} cx="60" cy="60" r={radius} />
             {chartSlices.map((slice, index) => {
               const isActive = activeIndex === index;

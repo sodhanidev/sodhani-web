@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Bookmark } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./market.module.css";
 
@@ -32,7 +32,6 @@ export function SectorCard({
               <span>{company.name}</span>
             </span>
             <span className={css(styles, "numeric")}>{formatMetric(company.marketCapCr, "crore")}</span>
-            <Bookmark className={css(styles, "mini-bookmark")} size={18} aria-hidden="true" />
           </li>
         ))}
       </ul>

@@ -885,50 +885,58 @@ export function StockChart({
           ) : null}
         </div>
         <div className={css(styles, "chart-actions")}>
-          <div className={css(styles, "range-toggle chart-ranges")} aria-label="Chart range">
-            {ranges.map((candidate) => (
+          {advancedHref && isPriceView ? (
+            <Link className={css(styles, "chart-advanced-link")} href={advancedHref}>
+              <ChartCandlestick size={15} aria-hidden="true" />
+              Advanced
+            </Link>
+          ) : null}
+          <div className={css(styles, "chart-actions-row")}>
+            <div className={css(styles, "range-toggle chart-ranges")} aria-label="Chart range">
+              {ranges.map((candidate) => (
+                <button
+                  aria-pressed={candidate.key === range}
+                  className={css(styles, candidate.key === range ? "active" : "")}
+                  key={candidate.key}
+                  type="button"
+                  onClick={() => {
+                    setRange(candidate.key);
+                    setHoverIndex(null);
+                    setHoverPointerY(null);
+                  }}
+                >
+                  {candidate.label}
+                </button>
+              ))}
+            </div>
+            <div ref={viewMenuRef} className={css(styles, `chart-view-menu${viewMenuOpen ? " open" : ""}`)}>
               <button
-                aria-pressed={candidate.key === range}
-                className={css(styles, candidate.key === range ? "active" : "")}
-                key={candidate.key}
+                aria-expanded={viewMenuOpen}
+                aria-haspopup="listbox"
+                className={css(styles, "chart-view-trigger")}
                 type="button"
-                onClick={() => {
-                  setRange(candidate.key);
-                  setHoverIndex(null);
-                  setHoverPointerY(null);
-                }}
+                onClick={() => setViewMenuOpen((open) => !open)}
               >
-                {candidate.label}
+                <span>{activeView.label}</span>
+                <ChevronDown size={14} aria-hidden="true" />
               </button>
-            ))}
-          </div>
-          <div ref={viewMenuRef} className={css(styles, `chart-view-menu${viewMenuOpen ? " open" : ""}`)}>
-            <button
-              aria-expanded={viewMenuOpen}
-              aria-haspopup="listbox"
-              className={css(styles, "chart-view-trigger")}
-              type="button"
-              onClick={() => setViewMenuOpen((open) => !open)}
-            >
-              <span>{activeView.label}</span>
-              <ChevronDown size={14} aria-hidden="true" />
-            </button>
-            {viewMenuOpen ? (
-              <div className={css(styles, "chart-view-options")} role="listbox" aria-label="Chart view">
-                {chartViews.map((view) => (
-                  <button
-                    aria-selected={view.key === viewKey}
-                    className={css(styles, view.key === viewKey ? "active" : "")}
-                    key={view.key}
-                    role="option"
-                    type="button"
-                    onClick={() => selectChartView(view.key)}
-                  >
-                    {view.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+              {viewMenuOpen ? (
+                <div className={css(styles, "chart-view-options")} role="listbox" aria-label="Chart view">
+                  {chartViews.map((view) => (
+                    <button
+                      aria-selected={view.key === viewKey}
+                      className={css(styles, view.key === viewKey ? "active" : "")}
+                      key={view.key}
+                      role="option"
+                      type="button"
+                      onClick={() => selectChartView(view.key)}
+                    >
+                      {view.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -1354,14 +1362,6 @@ export function StockChart({
           ) : null}
         </div>
       </div>
-      {advancedHref && isPriceView ? (
-        <div className={css(styles, "chart-footer-actions")}>
-          <Link className={css(styles, "chart-advanced-link")} href={advancedHref}>
-            <ChartCandlestick size={15} aria-hidden="true" />
-            Advanced
-          </Link>
-        </div>
-      ) : null}
       <div className={css(styles, "sr-only")}>
         {isPriceView ? (
           <table>

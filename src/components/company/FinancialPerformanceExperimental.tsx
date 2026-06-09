@@ -316,6 +316,7 @@ function FinancialMiniChart({
   lineMetrics = [],
   metrics,
   onModeChange,
+  selectableFields = false,
   title
 }: {
   activeMode: PeriodMode;
@@ -324,24 +325,53 @@ function FinancialMiniChart({
   lineMetrics?: ChartLineMetric[];
   metrics: ChartMetric[];
   onModeChange: (mode: PeriodMode) => void;
+  selectableFields?: boolean;
   title: string;
 }) {
+  const allFieldKeys = useMemo(
+    () => [...metrics.map((metric) => metric.key), ...lineMetrics.map((metric) => metric.key)],
+    [lineMetrics, metrics]
+  );
+  const [selectedFieldKeys, setSelectedFieldKeys] = useState(() => new Set(allFieldKeys));
   const points = recent(datasets[activeMode]);
   const availableModes = modeLabels.filter((mode) => datasets[mode.key].length > 0);
+  const visibleFieldKeys = selectableFields ? selectedFieldKeys : new Set(allFieldKeys);
+  const visibleMetrics = metrics.filter((metric) => visibleFieldKeys.has(metric.key));
+  const visibleLineMetrics = lineMetrics.filter((metric) => visibleFieldKeys.has(metric.key));
 
   if (!points.length) {
     return null;
   }
 
-  const valueScale = makeValueScale(points, metrics);
+  const valueScale = makeValueScale(points, visibleMetrics);
   const zeroY = ((valueScale.max - 0) / valueScale.range) * 100;
-  const lineScale = makeLineScale(points, lineMetrics);
-  const lineSeries = lineMetrics.map((metric) => ({
+  const lineScale = makeLineScale(points, visibleLineMetrics);
+  const lineSeries = visibleLineMetrics.map((metric) => ({
     dots: linePoints(points, lineScale, metric),
     metric,
     segments: lineSegments(points, lineScale, metric)
   }));
-  const lineAxisFormatter = lineMetrics.length === 1 ? lineMetrics[0].valueFormatter ?? formatPercent : formatPercent;
+  const lineAxisFormatter =
+    visibleLineMetrics.length === 1 ? visibleLineMetrics[0].valueFormatter ?? formatPercent : formatPercent;
+  const selectedFieldCount = visibleMetrics.length + visibleLineMetrics.length;
+
+  function toggleField(key: string) {
+    setSelectedFieldKeys((current) => {
+      const next = new Set(current);
+
+      if (next.has(key)) {
+        if (next.size === 1) {
+          return current;
+        }
+
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+
+      return next;
+    });
+  }
 
   return (
     <section className={css(styles, "financial-mini-chart")}>
@@ -432,9 +462,9 @@ function FinancialMiniChart({
           <div className={css(styles, "financial-combo-groups")}>
             {points.map((point) => (
               <button
-                aria-label={`${point.period}: ${metrics
+                aria-label={`${point.period}: ${visibleMetrics
                   .map((metric) => `${metric.label} ${formatValueForLabel(point.bars[metric.key])}`)
-                  .join(", ")}${lineMetrics.length ? `, ${lineMetrics
+                  .join(", ")}${visibleLineMetrics.length ? `, ${visibleLineMetrics
                   .map((metric) => `${metric.label} ${formatLineValue(metric, point.lines[metric.key] ?? null)}`)
                   .join(", ")}` : ""}`}
                 className={css(styles, "financial-combo-group")}
@@ -442,7 +472,7 @@ function FinancialMiniChart({
                 type="button"
               >
                 <span className={css(styles, "financial-combo-bar-area")} aria-hidden="true">
-                  {metrics.map((metric) => {
+                  {visibleMetrics.map((metric) => {
                     const value = point.bars[metric.key];
 
                     return (
@@ -467,20 +497,41 @@ function FinancialMiniChart({
         </div>
       </div>
 
-      <div className={css(styles, "financial-combo-legend")} aria-hidden="true">
-        {metrics.map((metric) => (
-          <span key={metric.key}>
-            <i className={css(styles, metric.className)} />
-            {metric.label}
-          </span>
-        ))}
-        {lineMetrics.map((metric) => (
-          <span key={metric.key}>
-            <i className={css(styles, metric.className)} />
-            {metric.label}
-          </span>
-        ))}
-      </div>
+      {selectableFields ? (
+        <div className={css(styles, "financial-field-toggles")} aria-label={`${title} visible fields`}>
+          {[...metrics, ...lineMetrics].map((metric) => {
+            const checked = visibleFieldKeys.has(metric.key);
+
+            return (
+              <label className={css(styles, "financial-field-toggle")} key={metric.key}>
+                <input
+                  checked={checked}
+                  disabled={checked && selectedFieldCount === 1}
+                  type="checkbox"
+                  onChange={() => toggleField(metric.key)}
+                />
+                <span className={css(styles, "financial-field-swatch", metric.className)} aria-hidden="true" />
+                <span>{metric.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      ) : (
+        <div className={css(styles, "financial-combo-legend")} aria-hidden="true">
+          {metrics.map((metric) => (
+            <span key={metric.key}>
+              <i className={css(styles, metric.className)} />
+              {metric.label}
+            </span>
+          ))}
+          {lineMetrics.map((metric) => (
+            <span key={metric.key}>
+              <i className={css(styles, metric.className)} />
+              {metric.label}
+            </span>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -500,6 +551,7 @@ export function FinancialPerformanceExperimental({
   ticker: string;
   yearly: FinancialTable;
 }) {
+  const showDebtCoverageChart = false;
   const [performanceMode, setPerformanceMode] = useState<PeriodMode>(hasTable(yearly) ? "yearly" : "quarterly");
   const [debtMode, setDebtMode] = useState<PeriodMode>("yearly");
 
@@ -525,7 +577,7 @@ export function FinancialPerformanceExperimental({
       : "quarterly";
   const resolvedDebtMode = debtDatasets[debtMode].length ? debtMode : debtDatasets.yearly.length ? "yearly" : "quarterly";
 
-  if (!performanceDatasets[resolvedPerformanceMode].length && !debtDatasets[resolvedDebtMode].length) {
+  if (!performanceDatasets[resolvedPerformanceMode].length) {
     return null;
   }
 
@@ -545,19 +597,23 @@ export function FinancialPerformanceExperimental({
         help="Revenue shows sales. EBITDA uses operating profit, PAT uses net profit, and the margin lines are shown as percentages of revenue."
         lineMetrics={performanceLineMetrics}
         metrics={performanceMetrics}
+        selectableFields
         title="Performance"
         onModeChange={setPerformanceMode}
       />
 
-      <FinancialMiniChart
-        activeMode={resolvedDebtMode}
-        datasets={debtDatasets}
-        help="Debt is total borrowings. Free cash flow is cash left after capital spending. Cash and equivalents are liquid balances on the balance sheet. Debt to equity is borrowings divided by equity capital plus reserves."
-        lineMetrics={[{ key: "debtEquity", label: "Debt to Equity", className: "debt-equity", valueFormatter: formatRatio }]}
-        metrics={debtMetrics}
-        title="Debt level and coverage"
-        onModeChange={setDebtMode}
-      />
+      {/* Debt level and coverage graph hidden for now; flip showDebtCoverageChart to restore it. */}
+      {showDebtCoverageChart ? (
+        <FinancialMiniChart
+          activeMode={resolvedDebtMode}
+          datasets={debtDatasets}
+          help="Debt is total borrowings. Free cash flow is cash left after capital spending. Cash and equivalents are liquid balances on the balance sheet. Debt to equity is borrowings divided by equity capital plus reserves."
+          lineMetrics={[{ key: "debtEquity", label: "Debt to Equity", className: "debt-equity", valueFormatter: formatRatio }]}
+          metrics={debtMetrics}
+          title="Debt level and coverage"
+          onModeChange={setDebtMode}
+        />
+      ) : null}
     </section>
   );
 }

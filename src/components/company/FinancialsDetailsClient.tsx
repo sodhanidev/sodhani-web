@@ -104,7 +104,9 @@ function getCellTone(label: string, value: string) {
     normalized.includes("%") ||
     normalized.includes("growth") ||
     normalized.includes("margin") ||
+    normalized.includes("ebitda") ||
     normalized.includes("profit") ||
+    normalized === "pat" ||
     normalized.includes("cash flow") ||
     normalized.includes("opm") ||
     normalized.includes("roce") ||
@@ -229,39 +231,39 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
   );
   const summaryItems = [
     {
-      label: "Sales (Cr)",
+      label: "Revenue Sale",
       period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["Sales", "Revenue"])
+      value: getLatestValue(incomeTable, ["Revenue Sale", "Sales", "Revenue"])
     },
     {
-      label: "Net Profit (Cr)",
+      label: "Other Income",
       period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["Net Profit", "Profit After Tax"])
+      value: getLatestValue(incomeTable, ["Other Income"])
     },
     {
-      label: "OPM",
+      label: "Profit Before Tax",
       period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["OPM %"], { suffix: "%" })
+      value: getLatestValue(incomeTable, ["Profit before tax", "Profit Before Tax"])
     },
     {
-      label: "Assets (Cr)",
-      period: getLatestPeriod(stock.balanceSheet),
-      value: getLatestValue(stock.balanceSheet, ["Total Assets"])
+      label: "PAT",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["PAT", "Net Profit", "Profit After Tax"])
     },
     {
-      label: "Borrowings (Cr)",
-      period: getLatestPeriod(stock.balanceSheet),
-      value: getLatestValue(stock.balanceSheet, ["Borrowings"])
+      label: "Operating Profit",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["Operating Profit"])
     },
     {
-      label: "Free Cash Flow (Cr)",
-      period: getLatestPeriod(stock.cashFlows),
-      value: getLatestValue(stock.cashFlows, ["Free Cash Flow"])
+      label: "EBITDA",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["EBITDA", "Operating Profit"])
     },
     {
-      label: "Net Cash Flow (Cr)",
-      period: getLatestPeriod(stock.cashFlows),
-      value: getLatestValue(stock.cashFlows, ["Net Cash Flow"])
+      label: "EBITDA Margin",
+      period: getLatestPeriod(incomeTable),
+      value: getLatestValue(incomeTable, ["EBITDA Margin", "OPM %", "Operating Profit Margin"], { suffix: "%" })
     }
   ];
 
@@ -295,7 +297,6 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           {statementSections.map((item) => (
             <a href={`#${item.id}`} key={item.id}>
               <span>{item.tab.label}</span>
-              <small>{getPeriodLabel(item.table, item.mode)}</small>
             </a>
           ))}
         </nav>

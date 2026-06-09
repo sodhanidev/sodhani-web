@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import { css } from "@/lib/css-module";
 import styles from "@/components/market.module.css";
@@ -137,19 +136,6 @@ function MostBoughtStocks({ companies }: { companies: Company[] }) {
   );
 }
 
-function ThemeControls() {
-  return (
-    <div className={css(styles, "theme-controls")} aria-hidden="true">
-      <button type="button" disabled>
-        <ChevronLeft size={22} />
-      </button>
-      <button type="button" disabled>
-        <ChevronRight size={22} />
-      </button>
-    </div>
-  );
-}
-
 export function generateStaticParams() {
   getCompanies();
   const params: { slug?: string[] }[] = [{ slug: [] }];
@@ -201,7 +187,6 @@ export default async function MarketPage({ params }: PageProps) {
                 {formatIndianNumber(totalCompanies)} companies across {formatIndianNumber(roots.length)} sectors.
               </p>
             </div>
-            <ThemeControls />
           </div>
           <div className={css(styles, "grid sector-grid")}>
             {roots.map((node) => (
