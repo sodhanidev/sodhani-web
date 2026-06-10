@@ -4,6 +4,7 @@ import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
+import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyHref } from "@/lib/data/format";
 import type { FinRow, FinancialTable, Stock } from "@/lib/data/types";
@@ -254,45 +255,42 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
   const hasQuarterlyInvestors = hasInvestorGroups(stock.investors.quarterly);
   const hasYearlyInvestors = hasInvestorGroups(stock.investors.yearly);
   const investorHolderCount = countInvestorHolders(stock.investors);
-  const summaryItems = [
+  const toPatternMetric = (label: string): MetricCardItem => {
+    const value = getLatestTableValue(stock.shareholding.quarterly, label);
+
+    if (value === "-") {
+      return {
+        badge: { label: "N/A", tone: "unavailable" },
+        label,
+        value: "Unavailable"
+      };
+    }
+
+    return {
+      detail: getLatestPeriod(stock.shareholding.quarterly),
+      label,
+      value
+    };
+  };
+  const summaryItems: MetricCardItem[] = [
+    toPatternMetric("Promoters"),
+    toPatternMetric("FIIs"),
+    toPatternMetric("DIIs"),
+    toPatternMetric("Public"),
+    toPatternMetric("Government"),
     {
-      label: "Promoters",
-      period: getLatestPeriod(stock.shareholding.quarterly),
-      value: getLatestTableValue(stock.shareholding.quarterly, "Promoters")
-    },
-    {
-      label: "FIIs",
-      period: getLatestPeriod(stock.shareholding.quarterly),
-      value: getLatestTableValue(stock.shareholding.quarterly, "FIIs")
-    },
-    {
-      label: "DIIs",
-      period: getLatestPeriod(stock.shareholding.quarterly),
-      value: getLatestTableValue(stock.shareholding.quarterly, "DIIs")
-    },
-    {
-      label: "Public",
-      period: getLatestPeriod(stock.shareholding.quarterly),
-      value: getLatestTableValue(stock.shareholding.quarterly, "Public")
-    },
-    {
-      label: "Government",
-      period: getLatestPeriod(stock.shareholding.quarterly),
-      value: getLatestTableValue(stock.shareholding.quarterly, "Government")
-    },
-    {
+      detail: "quarterly + yearly",
       label: "Named Holders",
-      period: "quarterly + yearly",
       value: String(investorHolderCount)
     },
     {
+      detail: `${stock.shareholding.quarterly.periods.length} periods`,
       label: "Latest Quarter",
-      period: `${stock.shareholding.quarterly.periods.length} periods`,
       value: getLatestPeriod(stock.shareholding.quarterly)
     },
     {
+      detail: `${stock.shareholding.yearly.periods.length} periods`,
       label: "Latest Year",
-      period: `${stock.shareholding.yearly.periods.length} periods`,
       value: getLatestPeriod(stock.shareholding.yearly)
     }
   ];
@@ -313,14 +311,8 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
           <p className={css(styles, "ownership-unit-note")}>Pattern values in %</p>
         </header>
 
-        <section className={css(styles, "ownership-summary-grid")} aria-label="Latest shareholding snapshot">
-          {summaryItems.map((item) => (
-            <div key={item.label}>
-              <span>{item.label}</span>
-              <strong className={css(styles, "numeric")}>{item.value}</strong>
-              <small>{item.period}</small>
-            </div>
-          ))}
+        <section className={css(styles, "metric-summary-band")} aria-label="Latest shareholding snapshot">
+          <MetricCardGrid className="metric-grid-wide" items={summaryItems} />
         </section>
 
         <div className={css(styles, "ownership-control-row")}>

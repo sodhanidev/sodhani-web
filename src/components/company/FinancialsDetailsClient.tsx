@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
+import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
 import { companyHref, formatIndianNumber, parseNumericCell } from "@/lib/data/format";
 import type { FinRow, FinancialTable, Stock } from "@/lib/data/types";
 
@@ -229,42 +230,32 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
       title: string;
     } => Boolean(item)
   );
-  const summaryItems = [
-    {
-      label: "Revenue Sale",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["Revenue Sale", "Sales", "Revenue"])
-    },
-    {
-      label: "Other Income",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["Other Income"])
-    },
-    {
-      label: "Profit Before Tax",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["Profit before tax", "Profit Before Tax"])
-    },
-    {
-      label: "PAT",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["PAT", "Net Profit", "Profit After Tax"])
-    },
-    {
-      label: "Operating Profit",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["Operating Profit"])
-    },
-    {
-      label: "EBITDA",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["EBITDA", "Operating Profit"])
-    },
-    {
-      label: "EBITDA Margin",
-      period: getLatestPeriod(incomeTable),
-      value: getLatestValue(incomeTable, ["EBITDA Margin", "OPM %", "Operating Profit Margin"], { suffix: "%" })
+  const toSummaryMetric = (label: string, labels: string[], options: { prefix?: string; suffix?: string } = {}): MetricCardItem => {
+    const value = getLatestValue(incomeTable, labels, options);
+
+    if (value === "-") {
+      return {
+        badge: { label: "N/A", tone: "unavailable" },
+        label,
+        value: "Unavailable"
+      };
     }
+
+    return {
+      detail: getLatestPeriod(incomeTable),
+      label,
+      value,
+      valueTone: getCellTone(label, value)
+    };
+  };
+  const summaryItems: MetricCardItem[] = [
+    toSummaryMetric("Revenue Sale", ["Revenue Sale", "Sales", "Revenue"]),
+    toSummaryMetric("Other Income", ["Other Income"]),
+    toSummaryMetric("Profit Before Tax", ["Profit before tax", "Profit Before Tax"]),
+    toSummaryMetric("PAT", ["PAT", "Net Profit", "Profit After Tax"]),
+    toSummaryMetric("Operating Profit", ["Operating Profit"]),
+    toSummaryMetric("EBITDA", ["EBITDA", "Operating Profit"]),
+    toSummaryMetric("EBITDA Margin", ["EBITDA Margin", "OPM %", "Operating Profit Margin"], { suffix: "%" })
   ];
 
   return (
@@ -282,14 +273,8 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
         <p className={css(styles, "financials-unit-note")}>Values in ₹ Cr unless stated</p>
       </header>
 
-      <section className={css(styles, "financials-summary-grid")} aria-label="Latest financial snapshot">
-        {summaryItems.map((item) => (
-          <div key={item.label}>
-            <span>{item.label}</span>
-            <strong className={css(styles, `numeric ${getCellTone(item.label, item.value)}`)}>{item.value}</strong>
-            <small>{item.period}</small>
-          </div>
-        ))}
+      <section className={css(styles, "metric-summary-band")} aria-label="Latest financial snapshot">
+        <MetricCardGrid className="metric-grid-wide" items={summaryItems} />
       </section>
 
       <div className={css(styles, "financials-control-row")}>

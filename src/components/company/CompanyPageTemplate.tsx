@@ -11,6 +11,7 @@ import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
 import { FinancialPerformanceExperimental } from "@/components/company/FinancialPerformanceExperimental";
 import { FinancialRatiosSnapshot } from "@/components/company/FinancialRatiosSnapshot";
+import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
 import { RelatedStocks } from "@/components/company/RelatedStocks";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import {
@@ -29,14 +30,7 @@ function hasDocuments(documents: Stock["documents"]) {
   return Object.values(documents).some((items) => items.length > 0);
 }
 
-type KeyMetricItem = {
-  badge?: {
-    label: string;
-    tone: "estimated" | "unavailable";
-  };
-  label: string;
-  value: string;
-};
+type KeyMetricItem = MetricCardItem;
 
 function findFinancialRow(rows: FinRow[], label: string): FinRow | undefined {
   for (const row of rows) {
@@ -313,21 +307,7 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                 <div className={css(styles, "section-title-row")}>
                   <h2>Key Metrics</h2>
                 </div>
-                <div className={css(styles, "grid metric-grid panel-pad")}>
-                  {keyMetrics.map(({ badge, label, value }) => (
-                    <div className={css(styles, "metric-card")} key={label}>
-                      <div className={css(styles, "metric-label-row")}>
-                        <div className={css(styles, "metric-label")}>{label}</div>
-                        {badge ? (
-                          <span className={css(styles, "metric-badge", `metric-badge-${badge.tone}`)}>
-                            {badge.label}
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className={css(styles, "metric-value")}>{value}</div>
-                    </div>
-                  ))}
-                </div>
+                <MetricCardGrid className="panel-pad" items={keyMetrics} />
               </section>
             ) : null}
 
