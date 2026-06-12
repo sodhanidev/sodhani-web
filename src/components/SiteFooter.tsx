@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Laptop, Moon, Sun } from "lucide-react";
+import { Heart } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./SiteFooter.module.css";
 
@@ -73,21 +73,6 @@ export function SiteFooter({ className }: { className?: string }) {
           <h2>Team</h2>
           <Link href="/market/">About us</Link>
           <Link href="/market/">Support</Link>
-        </div>
-        <div>
-          <h2>Theme</h2>
-          <button aria-pressed="false" data-theme-option="light" suppressHydrationWarning type="button">
-            <Sun size={14} aria-hidden="true" />
-            Light
-          </button>
-          <button aria-pressed="false" data-theme-option="dark" suppressHydrationWarning type="button">
-            <Moon size={14} aria-hidden="true" />
-            Dark
-          </button>
-          <button aria-pressed="false" data-theme-option="system" suppressHydrationWarning type="button">
-            <Laptop size={14} aria-hidden="true" />
-            Auto
-          </button>
         </div>
       </div>
     </footer>

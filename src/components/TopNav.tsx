@@ -5,6 +5,7 @@ import styles from "./layout.module.css";
 
 import { AuthNavStatus } from "./AuthNavStatus";
 import { CommandSearch } from "./CommandSearch";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 export function TopNav() {
   return (
@@ -22,7 +23,10 @@ export function TopNav() {
           <span>Sodhani</span>
         </Link>
         <CommandSearch />
-        <AuthNavStatus />
+        <div className={css(styles, "topbar-actions")}>
+          <AuthNavStatus />
+          <ThemeSwitch />
+        </div>
       </div>
     </header>
   );

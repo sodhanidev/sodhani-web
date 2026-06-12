@@ -852,6 +852,776 @@
 
 .landing-market-sparkline {
     width: 94px;
-  
+
 }
+}
+
+/* ============================================================
+   Homepage dashboard — flat, border-defined, no grey fills.
+   Surfaces inherit the page background (white in light, near-black
+   in dark); structure comes from thin borders, not filled boxes.
+   ============================================================ */
+
+.landing-page {
+  --dash-card: transparent;
+  --dash-hover: color-mix(in srgb, var(--landing-ink) 4%, transparent);
+}
+
+.dash-section {
+  position: relative;
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 34px 0;
+}
+
+/* Full-bleed separator: spans the viewport edge-to-edge, not just the
+   centered content column. */
+.dash-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-top: 1px solid var(--landing-line);
+}
+
+/* First section sits under the hero, which already supplies the line. */
+.dash-hero + .dash-section::before {
+  display: none;
+}
+
+/* Sections that should not carry a top separator. */
+.dash-section-flush::before {
+  display: none;
+}
+
+.dash-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.dash-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: var(--landing-ink);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.dash-section-title svg {
+  color: var(--landing-muted);
+}
+
+.dash-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--landing-muted);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.16s ease;
+}
+
+.dash-view-all:hover {
+  color: var(--landing-ink);
+}
+
+.dash-view-all svg {
+  transition: transform 0.18s ease;
+}
+
+.dash-view-all:hover svg {
+  transform: translateX(3px);
+}
+
+/* Hero — flat, sits on the page background (black in dark) */
+.dash-hero {
+  width: 100%;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.dash-hero-inner {
+  display: grid;
+  justify-items: center;
+  width: min(820px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(52px, 9vh, 96px) 0 clamp(44px, 7vh, 72px);
+  text-align: center;
+}
+
+.dash-hero-title {
+  margin: 0 0 16px;
+  color: var(--landing-ink);
+  font-size: clamp(32px, 4.4vw, 50px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.dash-hero-sub {
+  max-width: 540px;
+  margin: 0 0 30px;
+  color: var(--landing-muted);
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.5;
+}
+
+.dash-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dash-cta-primary,
+.dash-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+/* Primary = solid ink button (black on light, white on dark) */
+.dash-cta-primary {
+  background: var(--landing-ink);
+  color: var(--landing-bg);
+  border: 1px solid var(--landing-ink);
+}
+
+.dash-cta-primary:hover {
+  background: var(--landing-ink-strong);
+  border-color: var(--landing-ink-strong);
+}
+
+.dash-cta-secondary {
+  background: var(--dash-card);
+  color: var(--landing-ink);
+  border: 1px solid var(--landing-line-strong);
+}
+
+.dash-cta-secondary:hover {
+  background: var(--dash-hover);
+  border-color: var(--landing-ink);
+}
+
+/* Stock rail */
+.dash-rail-wrap {
+  position: relative;
+}
+
+.dash-stock-rail {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.dash-stock-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.dash-rail-nav {
+  position: absolute;
+  top: calc(50% - 14px);
+  z-index: 2;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--landing-line-strong);
+  border-radius: 50%;
+  background: var(--landing-bg);
+  color: var(--landing-ink);
+  cursor: pointer;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--landing-ink) 12%, transparent);
+  transition: opacity 0.18s ease, background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.dash-rail-nav:hover {
+  background: var(--dash-hover);
+  border-color: var(--landing-ink);
+}
+
+.dash-rail-nav:active {
+  transform: scale(0.94);
+}
+
+.dash-rail-nav.left {
+  left: -10px;
+}
+
+.dash-rail-nav.right {
+  right: -10px;
+}
+
+.dash-rail-nav.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dash-stock-card {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  flex: 0 0 auto;
+  width: 184px;
+  padding: 16px;
+  border: 1px solid var(--landing-line);
+  border-radius: 12px;
+  background: var(--dash-card);
+  scroll-snap-align: start;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.dash-stock-card:hover {
+  border-color: var(--landing-line-strong);
+  background: var(--dash-hover);
+}
+
+.dash-stock-name {
+  margin-top: 10px;
+  color: var(--landing-ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-stock-price {
+  color: var(--landing-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dash-stock-meta {
+  color: var(--landing-muted);
+  font-size: 12px;
+}
+
+.dash-stock-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  color: var(--landing-ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dash-stock-link svg {
+  transition: transform 0.16s ease;
+}
+
+.dash-stock-card:hover .dash-stock-link svg {
+  transform: translateX(3px);
+}
+
+/* Promo cards — accent-tinted, still flat */
+.dash-promo-card,
+.dash-tool-promo {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  border: 1px solid var(--landing-line);
+  border-radius: 12px;
+  background: var(--dash-card);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.dash-promo-card {
+  flex: 0 0 auto;
+  width: 244px;
+  padding: 18px;
+}
+
+.dash-promo-card:hover,
+.dash-tool-promo:hover {
+  border-color: var(--landing-line-strong);
+  background: var(--dash-hover);
+}
+
+.dash-promo-card h3,
+.dash-tool-promo h3 {
+  margin: 0;
+  color: var(--landing-ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dash-promo-card p,
+.dash-tool-promo p {
+  margin: 0;
+  color: var(--landing-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dash-promo-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  color: var(--landing-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dash-promo-action svg {
+  transition: transform 0.16s ease;
+}
+
+.dash-promo-card:hover .dash-promo-action svg,
+.dash-tool-promo:hover .dash-promo-action svg {
+  transform: translateX(3px);
+}
+
+/* Two-column: movers + ranks */
+.dash-two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 0 40px;
+  align-items: stretch;
+}
+
+.dash-col-main,
+.dash-col-side {
+  min-width: 0;
+}
+
+/* Vertical rule splits the two columns (no boxes, just a line).
+   The list stretches to the row height so the rule runs the full
+   height of the section, not just the ROCE content. */
+.dash-col-side {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--landing-line);
+  padding-left: 40px;
+}
+
+.dash-col-side .dash-rank-list {
+  flex: 1;
+}
+
+/* Movers tabs */
+.dash-tabs {
+  display: inline-flex;
+  gap: 2px;
+  margin-bottom: 14px;
+  padding: 3px;
+  border: 1px solid var(--landing-line);
+  border-radius: 9px;
+}
+
+.dash-tab {
+  appearance: none;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--landing-muted);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 16px;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.dash-tab:hover {
+  color: var(--landing-ink);
+}
+
+.dash-tab.active {
+  background: var(--landing-ink);
+  color: var(--landing-bg);
+}
+
+.dash-movers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 28px;
+}
+
+.dash-mover {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.dash-mover-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--landing-ink);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.14s ease;
+}
+
+.dash-mover:hover .dash-mover-name {
+  color: var(--landing-muted);
+}
+
+.dash-mover-price {
+  color: var(--landing-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dash-mover-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dash-mover-change.up {
+  color: var(--up);
+}
+
+.dash-mover-change.down {
+  color: var(--down);
+}
+
+.dash-movers-note {
+  margin: 14px 0 0;
+  color: var(--landing-muted);
+  font-size: 12px;
+}
+
+/* Rank list (side column) + link list */
+.dash-rank-list,
+.dash-link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dash-rank-row,
+.dash-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.dash-rank-name,
+.dash-link-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--landing-ink);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.dash-rank-name > span:last-child,
+.dash-link-name > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-rank-val {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dash-rank-val.up {
+  color: var(--up);
+}
+
+.dash-link-row svg {
+  flex: 0 0 auto;
+  color: var(--landing-muted);
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+
+.dash-link-row:hover svg {
+  color: var(--landing-ink);
+  transform: translate(2px, -2px);
+}
+
+/* Sector cards grid (inline, theme-aware) */
+.dash-sector-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dash-sectorcard {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 16px 16px 6px;
+  border: 1px solid var(--landing-line);
+  border-radius: 12px;
+  background: var(--dash-card);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.dash-sectorcard:hover {
+  border-color: var(--landing-line-strong);
+  background: var(--dash-hover);
+}
+
+.dash-sectorcard-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-sectorcard-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--landing-line);
+  border-radius: 9px;
+  background: var(--dash-hover);
+  color: var(--landing-ink);
+}
+
+.dash-sectorcard:hover .dash-sectorcard-icon {
+  border-color: var(--landing-line-strong);
+}
+
+.dash-sectorcard-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--landing-ink);
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-sectorcard-head svg {
+  color: var(--landing-muted);
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+
+.dash-sectorcard:hover .dash-sectorcard-head svg {
+  color: var(--landing-ink);
+  transform: translate(2px, -2px);
+}
+
+.dash-sectorcard-count {
+  margin-top: -4px;
+  color: var(--landing-muted);
+  font-size: 12px;
+}
+
+.dash-sectorcard-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.dash-sectorcard-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--landing-line);
+}
+
+.dash-sectorcard-co {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--landing-ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dash-sectorcard-co > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-sectorcard-mcap {
+  color: var(--landing-muted);
+  font-size: 12px;
+}
+
+/* Bottom grid */
+.dash-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+  padding-bottom: 48px;
+}
+
+.dash-bottom-col {
+  min-width: 0;
+}
+
+.dash-tool-promo {
+  padding: 24px;
+  border-radius: 14px;
+}
+
+.dash-tool-promo h3 {
+  font-size: 16px;
+}
+
+@media (max-width: 1000px) {
+  .dash-section {
+    width: calc(100% - 40px);
+  }
+
+  .dash-two-col,
+  .dash-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .dash-col-side {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .dash-sector-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .dash-section {
+    width: calc(100% - 28px);
+    padding: 26px 0;
+  }
+
+  .dash-movers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-sector-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-hero-cta {
+    width: 100%;
+  }
+
+  .dash-cta-primary,
+  .dash-cta-secondary {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* Market overview cards (indices, commodities, currency) */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.overview-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start;
+  gap: 2px 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--landing-line);
+  border-radius: 9px;
+  background: var(--dash-card);
+  overflow: hidden;
+}
+
+.overview-label {
+  grid-column: 1 / -1;
+  color: var(--landing-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.overview-value {
+  align-self: center;
+  color: var(--landing-ink);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.overview-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 1px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.overview-change.up {
+  color: var(--up);
+}
+
+.overview-change.down {
+  color: var(--down);
+}
+
+.overview-spark {
+  grid-row: 2 / 4;
+  grid-column: 2;
+  align-self: center;
+  width: 64px;
+  height: 26px;
+}
+
+.overview-spark.up {
+  stroke: var(--up);
+}
+
+.overview-spark.down {
+  stroke: var(--down);
+}
+
+@media (max-width: 900px) {
+  .overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

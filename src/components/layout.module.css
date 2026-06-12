@@ -220,6 +220,57 @@
 
 }
 
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+
+}
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--control-bg);
+
+}
+
+.theme-switch-btn {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+
+}
+
+.theme-switch-btn:hover {
+  color: var(--ink);
+
+}
+
+.theme-switch-btn[data-active="true"] {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+
+}
+
+.theme-switch-btn:focus-visible {
+  outline: 2px solid var(--line-strong);
+  outline-offset: 1px;
+
+}
+
 .auth-nav {
   position: relative;
   display: inline-flex;
