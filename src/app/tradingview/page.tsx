@@ -4,7 +4,7 @@ import { TradingViewReference } from "@/components/TradingViewReference";
 import { getCandlestickCatalog } from "@/lib/data/candlestick";
 
 export const metadata: Metadata = {
-  title: "TradingView Reference · Sodhani",
+  title: "TradingView Reference · SAFEedge",
   description: "Isolated TradingView-style candlestick reference page for chart design exploration."
 };
 

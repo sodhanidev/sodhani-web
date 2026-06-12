@@ -181,7 +181,7 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
       <div className={css(styles, "auth-shell")}>
         <Link className={css(styles, "auth-brand")} href="/">
           <Image src="/logo-transparent.png" alt="" width={28} height={28} priority />
-          <span>sodhani</span>
+          <span>SAFEedge</span>
         </Link>
 
         <h1 className={css(styles, "auth-title")}>{copy.title}</h1>

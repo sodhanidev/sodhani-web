@@ -7,6 +7,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { MarketMoversTabs, type Mover } from "@/components/MarketMoversTabs";
 import { MarketOverview } from "@/components/MarketOverview";
+import { PromoBanner } from "@/components/PromoBanner";
+import { ScreenerInsights } from "@/components/ScreenerInsights";
 import { RailScroller } from "@/components/RailScroller";
 import { SectorIcon } from "@/components/SectorIcon";
 
@@ -67,8 +69,8 @@ export default function HomePage() {
   const { roots } = getIndustryData();
 
   const featured = topCompanies(companies, "marketCapCr", 8);
-  const gainers = topGainers(companies, 6).map(toMover);
-  const losers = topLosers(companies, 6).map(toMover);
+  const gainers = topGainers(companies, 10).map(toMover);
+  const losers = topLosers(companies, 10).map(toMover);
   const qualityLeaders = topCompanies(companies, "rocePct", 6);
 
   const sectors = [...roots]
@@ -93,7 +95,9 @@ export default function HomePage() {
       <section className={css(styles, "dash-hero")}>
         <div className={css(styles, "dash-hero-inner")}>
           <h1 className={css(styles, "dash-hero-title")}>
-            Research every listed Indian company in one place
+            Research every listed
+            <br />
+            Indian company in one place
           </h1>
           <p className={css(styles, "dash-hero-sub")}>
             Screen, compare, and dig into financials, ratios, and shareholding — all from fast,
@@ -111,9 +115,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Market overview: indices, commodities, currency */}
-      <MarketOverview />
 
       {/* Explore & analyze stocks rail */}
       <section className={css(styles, "dash-section")}>
@@ -160,6 +161,12 @@ export default function HomePage() {
           </Link>
         </RailScroller>
       </section>
+
+      {/* SEBI RA promo banner */}
+      <PromoBanner />
+
+      {/* Market overview: indices + breadth + sample RA calls */}
+      <MarketOverview />
 
       {/* Market movers + quality leaders */}
       <section className={css(styles, "dash-section dash-two-col")}>
@@ -268,6 +275,9 @@ export default function HomePage() {
           </span>
         </Link>
       </section>
+
+      {/* Screener + market news + advisory */}
+      <ScreenerInsights />
 
       <SiteFooter />
     </main>

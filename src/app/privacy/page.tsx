@@ -4,7 +4,7 @@ import { css } from "@/lib/css-module";
 import styles from "../legal.module.css";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy · Sodhani",
+  title: "Privacy Policy · SAFEedge",
   description:
     "How Sodhani Capital handles information collected through our research and screening tools."
 };

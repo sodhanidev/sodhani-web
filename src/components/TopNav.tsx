@@ -15,12 +15,12 @@ export function TopNav() {
           <Image
             className={css(styles, "brand-mark")}
             src="/logo-transparent.png"
-            alt="Sodhani"
+            alt="SAFEedge"
             width={38}
             height={38}
             priority
           />
-          <span>Sodhani</span>
+          <span>SAFEedge</span>
         </Link>
         <CommandSearch />
         <div className={css(styles, "topbar-actions")}>

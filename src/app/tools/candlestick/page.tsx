@@ -4,7 +4,7 @@ import { CandlestickChartTool } from "@/components/CandlestickChartTool";
 import { getCandlestickCatalog } from "@/lib/data/candlestick";
 
 export const metadata: Metadata = {
-  title: "Candlestick Chart · Sodhani",
+  title: "Candlestick Chart · SAFEedge",
   description: "Search and inspect OHLC candlestick charts for companies with available price data."
 };
 

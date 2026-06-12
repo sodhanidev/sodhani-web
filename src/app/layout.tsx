@@ -116,7 +116,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sodhani",
+  title: "SAFEedge",
   description: "Static Indian equity research browser powered by local Screener-style data.",
   icons: {
     icon: "/logo.png"

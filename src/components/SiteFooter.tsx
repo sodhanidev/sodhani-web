@@ -19,7 +19,7 @@ export function SiteFooter({ className }: { className?: string }) {
             width={34}
             height={34}
           />
-          <span>sodhani</span>
+          <span>SAFEedge</span>
         </div>
         <p className={css(styles, "footer-tagline")}>Stock analysis and screening tool</p>
         <p className={css(styles, "footer-copy")}>
