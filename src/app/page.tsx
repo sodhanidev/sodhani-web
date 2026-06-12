@@ -14,7 +14,6 @@ import { SectorIcon } from "@/components/SectorIcon";
 
 import { getCompanies, getTopCompaniesForNode, topCompanies } from "@/lib/data/companies";
 import { getIndustryData } from "@/lib/data/industry";
-import { getAvailableStockCodes, getStock } from "@/lib/data/stocks";
 import {
   candlestickToolHref,
   companyHref,
@@ -80,14 +79,6 @@ export default function HomePage() {
     node,
     leaders: getTopCompaniesForNode(node.code, "marketCapCr", 4)
   }));
-
-  const fullDataCompanies = getAvailableStockCodes()
-    .slice(0, 6)
-    .map((code) => {
-      const stock = getStock(code);
-      return stock ? { code, name: stock.overview.companyName ?? code } : null;
-    })
-    .filter((entry): entry is { code: string; name: string } => entry !== null);
 
   return (
     <main className={css(styles, "landing-page")}>
@@ -243,37 +234,6 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
-      </section>
-
-      {/* Bottom: full-analysis companies + tool promo */}
-      <section className={css(styles, "dash-section dash-bottom-grid")}>
-        <div className={css(styles, "dash-bottom-col")}>
-          <div className={css(styles, "dash-section-head")}>
-            <h2 className={css(styles, "dash-section-title")}>In-depth analysis available</h2>
-          </div>
-          <ul className={css(styles, "dash-link-list")}>
-            {fullDataCompanies.map((company) => (
-              <li key={company.code}>
-                <Link href={companyHref(company.code)} className={css(styles, "dash-link-row")}>
-                  <span className={css(styles, "dash-link-name")}>
-                    <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                    <span>{company.name}</span>
-                  </span>
-                  <ArrowUpRight size={15} aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <Link className={css(styles, "dash-tool-promo")} href={candlestickToolHref()}>
-          <h3>Candlestick &amp; OHLC tool</h3>
-          <p>Plot any stock&apos;s price history with volume and moving averages.</p>
-          <span className={css(styles, "dash-promo-action")}>
-            Open the tool
-            <ArrowRight size={14} aria-hidden="true" />
-          </span>
-        </Link>
       </section>
 
       {/* Screener + market news + advisory */}
