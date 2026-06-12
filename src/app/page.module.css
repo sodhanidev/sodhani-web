@@ -2107,7 +2107,7 @@
   max-height: 340px;
   margin-top: 12px;
   object-fit: contain;
-  object-position: right bottom;
+  object-position: center bottom;
 }
 
 [data-theme="dark"] .promo-banner {
