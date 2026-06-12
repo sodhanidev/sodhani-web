@@ -23,6 +23,10 @@
 
 }
 
+:global(:root[data-theme="dark"]) .market-ticker {
+  --ticker-bg: #000;
+}
+
 .market-ticker-window {
   width: 100%;
   max-width: 100vw;
