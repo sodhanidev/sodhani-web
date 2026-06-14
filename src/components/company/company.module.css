@@ -2155,14 +2155,15 @@
 }
 
 .financial-period-toggle button.active {
-  background: #242424;
+  background: var(--ink);
+  color: var(--bg);
   font-weight: 450;
 
 }
 
 .financial-period-toggle button:not(.active):hover,
 .financial-period-toggle button:not(.active):focus-visible {
-  background: #2e2e2e;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
   outline: none;
 
 }
