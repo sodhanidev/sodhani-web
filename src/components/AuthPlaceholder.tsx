@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, KeyboardEvent, ClipboardEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { css } from "@/lib/css-module";
 import styles from "./AuthPlaceholder.module.css";
@@ -42,6 +42,7 @@ type OtpResponse = {
 };
 
 const REDIRECT_AFTER_AUTH = "/";
+const OTP_LENGTH = 4;
 const googleAuthErrorCopy = "Google sign-in could not be completed. Try again or use mobile OTP.";
 
 // Only allow same-origin, relative paths so `returnTo` can't be used as an
@@ -104,6 +105,7 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resendSeconds, setResendSeconds] = useState(0);
+  const otpInputs = useRef<Array<HTMLInputElement | null>>([]);
   const isOtpStep = Boolean(reqId);
   const primaryLabel = isOtpStep ? copy.verify : copy.primary;
   // Carry `returnTo` across in-page navigations (mode tabs, Google, alt CTA)
@@ -119,7 +121,7 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
     }
 
     if (isOtpStep) {
-      return otp.trim().length === 4;
+      return new RegExp(`^\\d{${OTP_LENGTH}}$`, "u").test(otp);
     }
 
     return phone.length === 10;
@@ -142,6 +144,65 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
 
     return () => window.clearTimeout(timer);
   }, [resendSeconds]);
+
+  // Focus first OTP box as soon as we enter the verify step.
+  useEffect(() => {
+    if (isOtpStep) {
+      otpInputs.current[0]?.focus();
+    }
+  }, [isOtpStep]);
+
+  function setOtpDigit(index: number, digit: string) {
+    setOtp((current) => {
+      const chars = current.padEnd(OTP_LENGTH, " ").split("");
+      chars[index] = digit || " ";
+      return chars.join("").replace(/\s+$/u, "");
+    });
+  }
+
+  function handleOtpChange(index: number, raw: string) {
+    const digit = raw.replace(/\D/gu, "").slice(-1);
+    setOtpDigit(index, digit);
+
+    if (digit && index < OTP_LENGTH - 1) {
+      otpInputs.current[index + 1]?.focus();
+    }
+  }
+
+  function handleOtpKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Backspace" && !otp[index] && index > 0) {
+      event.preventDefault();
+      setOtpDigit(index - 1, "");
+      otpInputs.current[index - 1]?.focus();
+    } else if (event.key === "ArrowLeft" && index > 0) {
+      event.preventDefault();
+      otpInputs.current[index - 1]?.focus();
+    } else if (event.key === "ArrowRight" && index < OTP_LENGTH - 1) {
+      event.preventDefault();
+      otpInputs.current[index + 1]?.focus();
+    }
+  }
+
+  function handleOtpPaste(event: ClipboardEvent<HTMLInputElement>) {
+    const pasted = event.clipboardData.getData("text").replace(/\D/gu, "").slice(0, OTP_LENGTH);
+
+    if (!pasted) {
+      return;
+    }
+
+    event.preventDefault();
+    setOtp(pasted);
+    const next = Math.min(pasted.length, OTP_LENGTH - 1);
+    otpInputs.current[next]?.focus();
+  }
+
+  function resetToPhoneStep() {
+    setReqId("");
+    setOtp("");
+    setMaskedPhone("");
+    setMessage("");
+    setError("");
+  }
 
   async function sendOtp() {
     setError("");
@@ -243,106 +304,126 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
           </Link>
         </div>
 
-        <a className={css(styles, "auth-google")} href={withReturnTo("/api/auth/google/start/")}>
-          <Image src="/icons/google.svg" alt="" width={16} height={16} aria-hidden="true" />
-          Continue with Google
-        </a>
+        {isOtpStep ? (
+          <>
+            <p className={css(styles, "auth-summary")}>
+              Enter the {OTP_LENGTH}-digit code we sent to{" "}
+              <strong className={css(styles, "auth-phone-target")}>+91 {maskedPhone || phone}</strong>.
+            </p>
 
-        <div className={css(styles, "auth-divider")} aria-hidden="true">
-          <span />
-          <p>or with mobile OTP</p>
-          <span />
-        </div>
+            <form className={css(styles, "auth-form")} noValidate onSubmit={handleSubmit}>
+              <div
+                className={css(styles, "auth-otp-boxes")}
+                role="group"
+                aria-label={`${OTP_LENGTH}-digit one-time code`}
+              >
+                {Array.from({ length: OTP_LENGTH }).map((_, index) => (
+                  <input
+                    key={index}
+                    ref={(element) => {
+                      otpInputs.current[index] = element;
+                    }}
+                    aria-label={`Digit ${index + 1}`}
+                    autoComplete={index === 0 ? "one-time-code" : "off"}
+                    className={css(styles, "auth-otp-box")}
+                    inputMode="numeric"
+                    maxLength={1}
+                    onChange={(event) => handleOtpChange(index, event.target.value)}
+                    onKeyDown={(event) => handleOtpKeyDown(index, event)}
+                    onPaste={handleOtpPaste}
+                    type="text"
+                    value={otp[index] ?? ""}
+                  />
+                ))}
+              </div>
 
-        <p className={css(styles, "auth-summary")}>{copy.summary}</p>
-
-        <form className={css(styles, "auth-form")} noValidate onSubmit={handleSubmit}>
-          {mode === "sign-up" ? (
-            <label>
-              <span>Name</span>
-              <input
-                autoComplete="name"
-                name="name"
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Jane Doe"
-                type="text"
-                value={name}
-              />
-            </label>
-          ) : null}
-          <label>
-            <span>Mobile number</span>
-            <span className={css(styles, "auth-phone-input")}>
-              <span className={css(styles, "auth-phone-prefix")}>+91</span>
-              <input
-                autoComplete="tel-national"
-                inputMode="numeric"
-                maxLength={10}
-                name="phone"
-                onChange={(event) => {
-                  setPhone(normalizePhoneInput(event.target.value));
-                  setReqId("");
-                  setOtp("");
-                  setMaskedPhone("");
-                  setMessage("");
-                  setError("");
-                }}
-                placeholder="98765 43210"
-                type="tel"
-                value={phone}
-              />
-            </span>
-          </label>
-          {isOtpStep ? (
-            <label>
-              <span className={css(styles, "auth-label-row")}>
-                OTP code
+              <div className={css(styles, "auth-otp-actions")}>
+                <button
+                  className={css(styles, "auth-inline-link")}
+                  onClick={resetToPhoneStep}
+                  type="button"
+                >
+                  Change number
+                </button>
                 <button
                   className={css(styles, "auth-inline-link")}
                   disabled={isSubmitting || resendSeconds > 0}
                   onClick={sendOtp}
                   type="button"
                 >
-                  {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend"}
+                  {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend code"}
                 </button>
-              </span>
-              <input
-                autoComplete="one-time-code"
-                inputMode="numeric"
-                name="otp"
-                onChange={(event) => setOtp(event.target.value.replace(/\D/gu, "").slice(0, 4))}
-                placeholder="4-digit code"
-                type="text"
-                value={otp}
-              />
-            </label>
-          ) : null}
+              </div>
 
-          {maskedPhone && isOtpStep ? (
-            <button
-              className={css(styles, "auth-secondary")}
-              onClick={() => {
-                setReqId("");
-                setOtp("");
-                setMaskedPhone("");
-                setMessage("");
-                setError("");
-              }}
-              type="button"
-            >
-              Change number
-            </button>
-          ) : null}
+              {message ? <p className={css(styles, "auth-message")}>{message}</p> : null}
+              {error ? <p className={css(styles, "auth-message error")}>{error}</p> : null}
 
-          {message ? <p className={css(styles, "auth-message")}>{message}</p> : null}
-          {error || googleError ? (
-            <p className={css(styles, "auth-message error")}>{error || googleError}</p>
-          ) : null}
+              <button className={css(styles, "auth-primary")} disabled={!canSubmit} type="submit">
+                {isSubmitting ? "Please wait..." : primaryLabel}
+              </button>
+            </form>
+          </>
+        ) : (
+          <>
+            <a className={css(styles, "auth-google")} href={withReturnTo("/api/auth/google/start/")}>
+              <Image src="/icons/google.svg" alt="" width={16} height={16} aria-hidden="true" />
+              Continue with Google
+            </a>
 
-          <button className={css(styles, "auth-primary")} disabled={!canSubmit} type="submit">
-            {isSubmitting ? "Please wait..." : primaryLabel}
-          </button>
-        </form>
+            <div className={css(styles, "auth-divider")} aria-hidden="true">
+              <span />
+              <p>or with mobile OTP</p>
+              <span />
+            </div>
+
+            <p className={css(styles, "auth-summary")}>{copy.summary}</p>
+
+            <form className={css(styles, "auth-form")} noValidate onSubmit={handleSubmit}>
+              {mode === "sign-up" ? (
+                <label>
+                  <span>Name</span>
+                  <input
+                    autoComplete="name"
+                    name="name"
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Jane Doe"
+                    type="text"
+                    value={name}
+                  />
+                </label>
+              ) : null}
+              <label>
+                <span>Mobile number</span>
+                <span className={css(styles, "auth-phone-input")}>
+                  <span className={css(styles, "auth-phone-prefix")}>+91</span>
+                  <input
+                    autoComplete="tel-national"
+                    inputMode="numeric"
+                    maxLength={10}
+                    name="phone"
+                    onChange={(event) => {
+                      setPhone(normalizePhoneInput(event.target.value));
+                      setMessage("");
+                      setError("");
+                    }}
+                    placeholder="98765 43210"
+                    type="tel"
+                    value={phone}
+                  />
+                </span>
+              </label>
+
+              {message ? <p className={css(styles, "auth-message")}>{message}</p> : null}
+              {error || googleError ? (
+                <p className={css(styles, "auth-message error")}>{error || googleError}</p>
+              ) : null}
+
+              <button className={css(styles, "auth-primary")} disabled={!canSubmit} type="submit">
+                {isSubmitting ? "Please wait..." : primaryLabel}
+              </button>
+            </form>
+          </>
+        )}
 
         <p className={css(styles, "auth-alt")}>
           {copy.alternateLabel}{" "}

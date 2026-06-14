@@ -7,7 +7,14 @@ import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
 import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
-import { companyHref, formatIndianNumber, parseNumericCell } from "@/lib/data/format";
+import {
+  ANNUAL_RESULT_PERIODS,
+  QUARTERLY_RESULT_PERIODS,
+  companyHref,
+  formatIndianNumber,
+  limitTablePeriods,
+  parseNumericCell
+} from "@/lib/data/format";
 import type { FinRow, FinancialTable, Stock } from "@/lib/data/types";
 
 type FinancialTabKey = "income" | "balance" | "cash";
@@ -38,9 +45,6 @@ const highlightedRows = new Set([
   "free cash flow",
   "roce %"
 ]);
-
-const QUARTERLY_RESULT_PERIODS = 8;
-const ANNUAL_RESULT_PERIODS = 7;
 
 function hasTable(table: FinancialTable) {
   return table.periods.length > 0 && table.rows.length > 0;
@@ -81,13 +85,6 @@ function getTableForTab(stock: Stock, tab: FinancialTabKey, mode: PeriodMode) {
   }
 
   return stock.cashFlows;
-}
-
-function limitTablePeriods(table: FinancialTable, maxPeriods: number): FinancialTable {
-  return {
-    ...table,
-    periods: table.periods.slice(-maxPeriods)
-  };
 }
 
 function getTableDisplayPeriods(table: FinancialTable) {
@@ -139,42 +136,123 @@ function getPeriodLabel(table: FinancialTable, mode?: PeriodMode) {
   return `${table.periods.length} periods`;
 }
 
-function FinancialRows({
+function FinancialRow({
   child = false,
   periods,
-  rows
+  row
 }: {
   child?: boolean;
   periods: string[];
-  rows: FinRow[];
+  row: FinRow;
 }) {
-  return rows.flatMap((row) => {
-    if (!rowHasValues(row, periods) && !row.children.length) {
-      return [];
-    }
+  const [open, setOpen] = useState(false);
+  const hasChildren = row.children.length > 0;
 
-    const rowKey = `${child ? "child" : "row"}-${row.label}`;
-    const isHighlighted = !child && highlightedRows.has(normalizedLabel(row.label));
+  if (!rowHasValues(row, periods) && !hasChildren) {
+    return null;
+  }
 
-    return [
-      <tr className={css(styles, `${child ? "is-child" : ""}${isHighlighted ? " is-highlighted" : ""}`)} key={rowKey}>
+  const rowKey = `${child ? "child" : "row"}-${row.label}`;
+  const isHighlighted = !child && highlightedRows.has(normalizedLabel(row.label));
+
+  return (
+    <>
+      <tr className={css(styles, `${child ? "is-child" : ""}${isHighlighted ? " is-highlighted" : ""}`)}>
         <td>
-          <span className={css(styles, "financials-particular")}>
-            {row.children.length ? <span className={css(styles, "financials-row-mark")}>+</span> : null}
-            {row.label}
-          </span>
+          {hasChildren ? (
+            <button
+              aria-expanded={open}
+              className={css(styles, "financials-row-toggle")}
+              onClick={() => setOpen((value) => !value)}
+              type="button"
+            >
+              <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
+              {row.label}
+            </button>
+          ) : (
+            <span className={css(styles, "financials-particular")}>{row.label}</span>
+          )}
         </td>
         {periods.map((period) => (
           <td className={css(styles, `numeric ${getCellTone(row.label, row.values[period] || "")}`)} key={`${rowKey}-${period}`}>
             {row.values[period] || "-"}
           </td>
         ))}
-      </tr>,
-      row.children.length ? (
-        <FinancialRows child key={`${rowKey}-children`} periods={periods} rows={row.children} />
-      ) : null
-    ];
-  });
+      </tr>
+      {hasChildren && open
+        ? row.children.map((childRow) => (
+            <FinancialRow child key={`${rowKey}-${childRow.label}`} periods={periods} row={childRow} />
+          ))
+        : null}
+    </>
+  );
+}
+
+function FinancialRows({ periods, rows }: { periods: string[]; rows: FinRow[] }) {
+  return (
+    <>
+      {rows.map((row) => (
+        <FinancialRow key={`row-${row.label}`} periods={periods} row={row} />
+      ))}
+    </>
+  );
+}
+
+function StatementSection({
+  id,
+  kicker,
+  meta,
+  periods,
+  rows,
+  title
+}: {
+  id: string;
+  kicker: string;
+  meta: string;
+  periods: string[];
+  rows: FinRow[];
+  title: string;
+}) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <section className={css(styles, "financials-statement-section")} id={id}>
+      <button
+        aria-expanded={open}
+        className={css(styles, "financials-detail-heading financials-section-toggle")}
+        onClick={() => setOpen((value) => !value)}
+        type="button"
+      >
+        <div>
+          <span>{kicker}</span>
+          <h2>
+            <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
+            {title}
+          </h2>
+        </div>
+        <p>{meta}</p>
+      </button>
+      {open ? (
+        <div className={css(styles, "financials-table-card")}>
+          <div className={css(styles, "financials-table-wrap")}>
+            <table className={css(styles, "financials-table")}>
+              <thead>
+                <tr>
+                  <th>Particulars</th>
+                  {periods.map((period) => (
+                    <th key={period}>{period}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <FinancialRows periods={periods} rows={rows} />
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
 }
 
 export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
@@ -302,40 +380,17 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
       </div>
 
       <section className={css(styles, "financials-detail-panel")}>
-        {statementSections.map((item) => {
-          const displayPeriods = getTableDisplayPeriods(item.table);
-
-          return (
-            <section className={css(styles, "financials-statement-section")} id={item.id} key={item.id}>
-              <div className={css(styles, "financials-detail-heading")}>
-                <div>
-                  <span>{item.tab.kicker}</span>
-                  <h2>{item.title}</h2>
-                </div>
-                <p>
-                  {getPeriodLabel(item.table, item.mode)} · latest {getLatestPeriod(item.table)}
-                </p>
-              </div>
-              <div className={css(styles, "financials-table-card")}>
-                <div className={css(styles, "financials-table-wrap")}>
-                  <table className={css(styles, "financials-table")}>
-                    <thead>
-                      <tr>
-                        <th>Particulars</th>
-                        {displayPeriods.map((period) => (
-                          <th key={period}>{period}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <FinancialRows periods={displayPeriods} rows={item.table.rows} />
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </section>
-          );
-        })}
+        {statementSections.map((item) => (
+          <StatementSection
+            id={item.id}
+            key={item.id}
+            kicker={item.tab.kicker}
+            meta={`${getPeriodLabel(item.table, item.mode)} · latest ${getLatestPeriod(item.table)}`}
+            periods={getTableDisplayPeriods(item.table)}
+            rows={item.table.rows}
+            title={item.title}
+          />
+        ))}
       </section>
     </main>
   );

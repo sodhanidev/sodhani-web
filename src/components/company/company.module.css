@@ -1804,7 +1804,7 @@
   border: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
   border-radius: 8px;
   background: transparent;
-  padding: clamp(24px, 3.1vw, 34px) clamp(24px, 3.4vw, 34px) 24px;
+  padding: clamp(14px, 1.9vw, 22px) clamp(24px, 3.4vw, 34px) 18px;
 
 }
 
@@ -1888,27 +1888,27 @@
 .shareholding-breakdown {
   display: grid;
   min-width: 0;
-  gap: 24px;
+  gap: 16px;
 
 }
 
 .shareholding-period-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(16px, 2.4vw, 30px);
+  gap: clamp(10px, 1.6vw, 20px);
   align-items: center;
 
 }
 
 .shareholding-period-tabs button {
-  min-height: 30px;
+  min-height: 26px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
-  padding: 0 12px;
+  padding: 0 10px;
   font: inherit;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -1938,7 +1938,7 @@
 
 .shareholding-bars {
   display: grid;
-  gap: 31px;
+  gap: 18px;
 
 }
 
@@ -2117,11 +2117,13 @@
 }
 
 .financial-help-tooltip {
+  --tip-shift: 0px;
   position: absolute;
   bottom: calc(100% + 9px);
   left: 50%;
   z-index: 10;
-  width: min(300px, 72vw);
+  width: min(300px, 92vw);
+  max-width: 300px;
   border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
   border-radius: 4px;
   background: var(--ink);
@@ -2134,7 +2136,7 @@
   padding: 9px 10px;
   pointer-events: none;
   text-align: left;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(calc(-50% + var(--tip-shift))) translateY(4px);
   transition:
     opacity 140ms ease,
     transform 140ms ease;
@@ -2144,7 +2146,7 @@
 .financial-help:hover .financial-help-tooltip,
 .financial-help:focus-within .financial-help-tooltip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(calc(-50% + var(--tip-shift))) translateY(0);
 
 }
 
@@ -3407,6 +3409,57 @@
 
 }
 
+.financials-section-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+}
+
+.financials-section-toggle h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+}
+
+.financials-section-toggle .collapse-caret,
+.ownership-section-toggle .collapse-caret {
+  color: var(--ink);
+  border-left-width: 11px;
+  border-top-width: 8px;
+  border-bottom-width: 8px;
+
+}
+
+.financials-section-toggle:hover h2,
+.ownership-section-toggle:hover h2 {
+  color: var(--ink);
+
+}
+
+.ownership-section-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+}
+
+.ownership-section-toggle h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+}
+
 .financials-detail-heading p {
   margin: 0;
   color: var(--muted);
@@ -3564,11 +3617,35 @@
 
 }
 
+/* Solid filled triangle toggle (ticker up/down shape). Points right when
+   collapsed; rotates down when open. */
+.collapse-caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid currentColor;
+  color: var(--muted);
+  transition: transform 150ms ease, color 140ms ease;
+
+}
+
+.collapse-caret.is-open {
+  transform: rotate(90deg);
+
+}
+
 .financials-row-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 0;
   background: transparent;
   color: inherit;
   font: inherit;
+  font-weight: 500;
   padding: 0;
   cursor: pointer;
   text-align: left;
@@ -3580,13 +3657,13 @@
 
 }
 
-.financials-row-toggle:hover .financials-row-mark {
+.financials-row-toggle:hover .collapse-caret {
   color: var(--ink);
 
 }
 
 .financials-table tr.is-child .financials-particular {
-  padding-left: 14px;
+  padding-left: 26px;
   color: color-mix(in srgb, var(--ink) 68%, var(--muted));
   font-weight: 450;
 
@@ -4023,10 +4100,14 @@
 }
 
 .ownership-row-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 0;
   background: transparent;
   color: inherit;
   font: inherit;
+  font-weight: 500;
   padding: 0;
   cursor: pointer;
   text-align: left;
@@ -4038,13 +4119,13 @@
 
 }
 
-.ownership-row-toggle:hover .ownership-row-mark {
+.ownership-row-toggle:hover .collapse-caret {
   color: var(--ink);
 
 }
 
 .ownership-table tr.is-child .ownership-particular {
-  padding-left: 14px;
+  padding-left: 26px;
   color: var(--muted);
   font-weight: 450;
 

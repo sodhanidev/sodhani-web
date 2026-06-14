@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import { css } from "@/lib/css-module";
 import styles from "./company/company.module.css";
 
+import { recentPeriods as getRecentPeriods } from "@/lib/data/format";
 import type { FinancialTable } from "@/lib/data/types";
 
 type Slice = {
@@ -74,11 +75,6 @@ function formatPeriodTab(period: string) {
   }
 
   return `${match[1]} '${match[2].slice(-2)}`;
-}
-
-function getRecentPeriods(periods: string[]) {
-  const looksQuarterly = periods.some((period) => !period.startsWith("Mar "));
-  return periods.slice(looksQuarterly ? -12 : -3);
 }
 
 function getShareholdingSlices(table: FinancialTable, activePeriod: string): { period: string; slices: Slice[] } {

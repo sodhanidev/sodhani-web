@@ -5,9 +5,11 @@ import styles from "./company.module.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
+import { OwnershipSection } from "@/components/company/OwnershipSection";
+import { ShareholdingRows } from "@/components/company/ShareholdingRows";
 import type { CompanyPageModel } from "@/lib/data/company-template";
-import { companyHref } from "@/lib/data/format";
-import type { FinRow, FinancialTable, Stock } from "@/lib/data/types";
+import { companyHref, limitTablePeriods } from "@/lib/data/format";
+import type { FinancialTable, Stock } from "@/lib/data/types";
 
 type InvestorGroups = Stock["investors"]["quarterly"];
 
@@ -81,38 +83,6 @@ function formatInvestorValue(value: string | undefined) {
   return /^-?[\d,.]+$/u.test(value) ? `${value}%` : value;
 }
 
-function ShareholdingRows({
-  rows,
-  periods,
-  child = false
-}: {
-  rows: FinRow[];
-  periods: string[];
-  child?: boolean;
-}) {
-  return rows.flatMap((row, index) => {
-    const rowKey = `${row.label}-${child ? "child" : "row"}`;
-    const hasChildren = row.children.length > 0;
-
-    return [
-      <tr className={css(styles, `${child ? "is-child" : ""}${!child && index === 0 ? " is-highlighted" : ""}`)} key={rowKey}>
-        <td>
-          <span className={css(styles, "ownership-particular")}>
-            {hasChildren ? <span className={css(styles, "ownership-row-mark")}>+</span> : null}
-            {row.label}
-          </span>
-        </td>
-        {periods.map((period) => (
-          <td className={css(styles, "numeric")} key={`${rowKey}-${period}`}>
-            {row.values[period] || "-"}
-          </td>
-        ))}
-      </tr>,
-      hasChildren ? <ShareholdingRows child key={`${rowKey}-children`} periods={periods} rows={row.children} /> : null
-    ];
-  });
-}
-
 function ShareholdingTable({
   id,
   kicker,
@@ -129,16 +99,12 @@ function ShareholdingTable({
   }
 
   return (
-    <section className={css(styles, "ownership-section")} id={id}>
-      <div className={css(styles, "ownership-section-heading")}>
-        <div>
-          <span>{kicker}</span>
-          <h2>{title}</h2>
-        </div>
-        <p>
-          {table.periods.length} periods · latest {getLatestPeriod(table)}
-        </p>
-      </div>
+    <OwnershipSection
+      id={id}
+      kicker={kicker}
+      meta={`${table.periods.length} periods · latest ${getLatestPeriod(table)}`}
+      title={title}
+    >
       <div className={css(styles, "ownership-table-card")}>
         <div className={css(styles, "ownership-table-wrap")}>
           <table className={css(styles, "ownership-table")}>
@@ -156,7 +122,7 @@ function ShareholdingTable({
           </table>
         </div>
       </div>
-    </section>
+    </OwnershipSection>
   );
 }
 
@@ -231,20 +197,13 @@ function InvestorDetailsSection({
   const periods = getInvestorPeriods(groups, preferredPeriods);
 
   return (
-    <section className={css(styles, "ownership-section")} id={id}>
-      <div className={css(styles, "ownership-section-heading")}>
-        <div>
-          <span>Investor Holding</span>
-          <h2>{title}</h2>
-        </div>
-        <p>{periods.length} periods</p>
-      </div>
+    <OwnershipSection id={id} kicker="Investor Holding" meta={`${periods.length} periods`} title={title}>
       <div className={css(styles, "ownership-investor-list")}>
         {categories.map(([category, holders]) => (
           <InvestorCategoryCard category={category} holders={holders} key={category} periods={periods} />
         ))}
       </div>
-    </section>
+    </OwnershipSection>
   );
 }
 
@@ -348,25 +307,25 @@ export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) 
           <ShareholdingTable
             id="quarterly-shareholding"
             kicker="Shareholding Pattern"
-            table={stock.shareholding.quarterly}
+            table={limitTablePeriods(stock.shareholding.quarterly)}
             title="Quarterly Shareholding"
           />
           <ShareholdingTable
             id="yearly-shareholding"
             kicker="Shareholding Pattern"
-            table={stock.shareholding.yearly}
+            table={limitTablePeriods(stock.shareholding.yearly)}
             title="Yearly Shareholding"
           />
           <InvestorDetailsSection
             groups={stock.investors.quarterly}
             id="quarterly-investors"
-            preferredPeriods={stock.shareholding.quarterly.periods}
+            preferredPeriods={limitTablePeriods(stock.shareholding.quarterly).periods}
             title="Quarterly Investor Holdings"
           />
           <InvestorDetailsSection
             groups={stock.investors.yearly}
             id="yearly-investors"
-            preferredPeriods={stock.shareholding.yearly.periods}
+            preferredPeriods={limitTablePeriods(stock.shareholding.yearly).periods}
             title="Yearly Investor Holdings"
           />
         </div>

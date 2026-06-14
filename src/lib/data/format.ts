@@ -1,3 +1,27 @@
+import type { FinancialTable } from "@/lib/data/types";
+
+// Period windowing — shared so financials, shareholding tables, and the
+// shareholding pie chart all show the same recent date range.
+export const QUARTERLY_RESULT_PERIODS = 8;
+export const ANNUAL_RESULT_PERIODS = 7;
+
+export function isQuarterlyPeriods(periods: string[]): boolean {
+  return periods.some((period) => !period.startsWith("Mar "));
+}
+
+export function recentPeriods(periods: string[]): string[] {
+  const maxPeriods = isQuarterlyPeriods(periods) ? QUARTERLY_RESULT_PERIODS : ANNUAL_RESULT_PERIODS;
+  return periods.slice(-maxPeriods);
+}
+
+export function limitTablePeriods(table: FinancialTable, maxPeriods?: number): FinancialTable {
+  const max = maxPeriods ?? (isQuarterlyPeriods(table.periods) ? QUARTERLY_RESULT_PERIODS : ANNUAL_RESULT_PERIODS);
+  return {
+    ...table,
+    periods: table.periods.slice(-max)
+  };
+}
+
 export function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }

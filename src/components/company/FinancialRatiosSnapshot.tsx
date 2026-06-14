@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import { css } from "@/lib/css-module";
 import type { FinancialTable } from "@/lib/data/types";
 import styles from "./company.module.css";
@@ -24,41 +28,63 @@ export function FinancialRatiosSnapshot({ annualRatios }: { annualRatios: Financ
     return null;
   }
 
+  return <RatiosSection displayPeriods={displayPeriods} rows={rows} />;
+}
+
+function RatiosSection({
+  displayPeriods,
+  rows
+}: {
+  displayPeriods: string[];
+  rows: FinancialTable["rows"];
+}) {
+  const [open, setOpen] = useState(true);
+
   return (
     <section className={css(styles, "ratios-snapshot")} aria-labelledby="financial-ratios-heading">
-      <div className={css(styles, "financials-detail-heading ratios-snapshot-head")}>
+      <button
+        aria-expanded={open}
+        className={css(styles, "financials-detail-heading ratios-snapshot-head financials-section-toggle")}
+        onClick={() => setOpen((value) => !value)}
+        type="button"
+      >
         <div>
-          <h2 id="financial-ratios-heading">Ratios</h2>
+          <h2 id="financial-ratios-heading">
+            <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
+            Ratios
+          </h2>
         </div>
-      </div>
-      <div className={css(styles, "financials-table-card")}>
-        <div className={css(styles, "financials-table-wrap ratios-snapshot-wrap")}>
-          <table className={css(styles, "financials-table")}>
-            <thead>
-              <tr>
-                <th>Particulars</th>
-                {displayPeriods.map((period) => (
-                  <th key={period}>{period}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.label}>
-                  <td>
-                    <span className={css(styles, "financials-particular")}>{row.label}</span>
-                  </td>
+      </button>
+      {open ? (
+        <div className={css(styles, "financials-table-card")}>
+          <div className={css(styles, "financials-table-wrap ratios-snapshot-wrap")}>
+            <table className={css(styles, "financials-table")}>
+              <thead>
+                <tr>
+                  <th>Particulars</th>
                   {displayPeriods.map((period) => (
-                    <td className={css(styles, "numeric")} key={`${row.label}-${period}`}>
-                      {row.values[period] || "-"}
-                    </td>
+                    <th key={period}>{period}</th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.label}>
+                    <td>
+                      <span className={css(styles, "financials-particular")}>{row.label}</span>
+                    </td>
+                    {displayPeriods.map((period) => (
+                      <td className={css(styles, "numeric")} key={`${row.label}-${period}`}>
+                        {row.values[period] || "-"}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }

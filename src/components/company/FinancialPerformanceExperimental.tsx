@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { css } from "@/lib/css-module";
@@ -297,12 +297,40 @@ function lineSegments(points: ChartPoint[], scale: Scale | null, metric: ChartLi
 }
 
 function InfoTooltip({ children }: { children: string }) {
+  const tooltipRef = useRef<HTMLSpanElement>(null);
+
+  // Keep the centered tooltip inside the viewport: measure on open and nudge
+  // it horizontally via --tip-shift so it never overflows either edge.
+  const clampToViewport = useCallback(() => {
+    const tooltip = tooltipRef.current;
+
+    if (!tooltip) {
+      return;
+    }
+
+    const margin = 8;
+    tooltip.style.setProperty("--tip-shift", "0px");
+
+    const rect = tooltip.getBoundingClientRect();
+    let shift = 0;
+
+    if (rect.right > window.innerWidth - margin) {
+      shift = window.innerWidth - margin - rect.right;
+    } else if (rect.left < margin) {
+      shift = margin - rect.left;
+    }
+
+    if (shift !== 0) {
+      tooltip.style.setProperty("--tip-shift", `${Math.round(shift)}px`);
+    }
+  }, []);
+
   return (
-    <span className={css(styles, "financial-help")}>
+    <span className={css(styles, "financial-help")} onMouseEnter={clampToViewport} onFocus={clampToViewport}>
       <button aria-label={children} type="button">
         ?
       </button>
-      <span className={css(styles, "financial-help-tooltip")} role="tooltip">
+      <span className={css(styles, "financial-help-tooltip")} ref={tooltipRef} role="tooltip">
         {children}
       </span>
     </span>
