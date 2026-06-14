@@ -173,11 +173,17 @@
 
 .stock-head {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 52px minmax(0, 1fr) auto;
   gap: 18px;
   align-items: center;
   border-bottom: 0;
   padding: 4px 0 0;
+
+}
+
+.stock-head-advanced {
+  align-self: center;
+  justify-self: end;
 
 }
 
@@ -669,10 +675,17 @@
 
 .chart-actions {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: flex-end;
   gap: 10px;
+  align-items: flex-start;
+
+}
+
+.chart-actions-row {
+  display: inline-flex;
   align-items: center;
+  gap: 10px;
 
 }
 
@@ -1120,38 +1133,46 @@
 
 .chart-advanced-link {
   display: inline-flex;
-  min-height: 30px;
+  min-height: 38px;
   align-items: center;
-  gap: 7px;
-  border: 1px solid var(--chart-range-active-bg);
+  gap: 8px;
+  border: 0;
   border-radius: 0;
-  background: var(--chart-range-active-bg);
-  color: var(--chart-range-active-ink);
-  box-shadow: none;
+  background: linear-gradient(180deg, color-mix(in srgb, #1e3a8a 92%, #fff), #1e3a8a);
+  color: #fff;
+  box-shadow:
+    0 2px 8px color-mix(in srgb, #1e3a8a 32%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
   line-height: 1;
-  padding: 0 11px;
+  padding: 0 16px;
   transition:
     background 150ms ease,
     border-color 150ms ease,
-    color 150ms ease;
+    box-shadow 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
 
 }
 
 .chart-advanced-link svg {
-  width: 15px;
-  height: 15px;
-  color: color-mix(in srgb, currentColor 72%, transparent);
+  width: 17px;
+  height: 17px;
+  color: currentColor;
 
 }
 
 .chart-advanced-link:hover,
 .chart-advanced-link:focus-visible {
-  border-color: var(--chart-range-active-bg);
-  background: color-mix(in srgb, var(--chart-range-active-bg) 86%, var(--chart-range-bg));
-  color: var(--chart-range-active-ink);
+  background: linear-gradient(180deg, color-mix(in srgb, #1e3a8a 98%, #fff), color-mix(in srgb, #1e3a8a 88%, #000));
+  color: #fff;
+  box-shadow:
+    0 6px 16px color-mix(in srgb, #1e3a8a 42%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
   outline: none;
 
 }
@@ -3534,8 +3555,33 @@
 }
 
 .financials-row-mark {
+  display: inline-flex;
+  width: 12px;
+  justify-content: center;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+}
+
+.financials-row-toggle {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+
+}
+
+.financials-row-toggle:hover {
+  color: var(--ink);
+
+}
+
+.financials-row-toggle:hover .financials-row-mark {
+  color: var(--ink);
 
 }
 
@@ -3967,8 +4013,33 @@
 }
 
 .ownership-row-mark {
+  display: inline-flex;
+  width: 12px;
+  justify-content: center;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+}
+
+.ownership-row-toggle {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+
+}
+
+.ownership-row-toggle:hover {
+  color: var(--ink);
+
+}
+
+.ownership-row-toggle:hover .ownership-row-mark {
+  color: var(--ink);
 
 }
 

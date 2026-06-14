@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ChartCandlestick } from "lucide-react";
 import { formatIndianNumber, marketHref, parseNumericCell } from "@/lib/data/format";
 import type { Company, Stock } from "@/lib/data/types";
 import { css } from "@/lib/css-module";
@@ -6,10 +8,12 @@ import styles from "./company/company.module.css";
 export function StockHeader({
   stock,
   company,
+  advancedHref,
   id
 }: {
   stock: Stock;
   company?: Company;
+  advancedHref?: string;
   id?: string;
 }) {
   const currentPrice = stock.keyMetrics["Current Price"] || stock.overview.currentPriceRaw;
@@ -43,6 +47,12 @@ export function StockHeader({
           </div>
         ) : null}
       </div>
+      {advancedHref ? (
+        <Link className={css(styles, "chart-advanced-link stock-head-advanced")} href={advancedHref}>
+          <ChartCandlestick size={17} aria-hidden="true" />
+          Advanced
+        </Link>
+      ) : null}
     </section>
   );
 }

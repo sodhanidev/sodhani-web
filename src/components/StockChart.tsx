@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { ChartCandlestick, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./company/company.module.css";
 
@@ -505,7 +504,6 @@ function getValuationPoints({
 }
 
 export function StockChart({
-  advancedHref,
   annualFinancials,
   balanceSheet,
   faceValueRaw,
@@ -513,7 +511,6 @@ export function StockChart({
   points,
   quarterlyFinancials
 }: {
-  advancedHref?: string;
   annualFinancials?: FinancialTable;
   balanceSheet?: FinancialTable;
   faceValueRaw?: string;
@@ -885,12 +882,6 @@ export function StockChart({
           ) : null}
         </div>
         <div className={css(styles, "chart-actions")}>
-          {advancedHref && isPriceView ? (
-            <Link className={css(styles, "chart-advanced-link")} href={advancedHref}>
-              <ChartCandlestick size={15} aria-hidden="true" />
-              Advanced
-            </Link>
-          ) : null}
           <div className={css(styles, "chart-actions-row")}>
             <div className={css(styles, "range-toggle chart-ranges")} aria-label="Chart range">
               {ranges.map((candidate) => (
