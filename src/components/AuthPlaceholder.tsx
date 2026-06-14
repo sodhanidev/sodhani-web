@@ -44,6 +44,16 @@ type OtpResponse = {
 const REDIRECT_AFTER_AUTH = "/";
 const googleAuthErrorCopy = "Google sign-in could not be completed. Try again or use mobile OTP.";
 
+// Only allow same-origin, relative paths so `returnTo` can't be used as an
+// open redirect (mirrors `safeReturnTo` in src/lib/auth/google.ts).
+function resolveSafeRedirect(value: string | null | undefined) {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) {
+    return REDIRECT_AFTER_AUTH;
+  }
+
+  return value;
+}
+
 function normalizePhoneInput(value: string) {
   const digits = value.replace(/\D/gu, "");
   const withoutCountryCode = digits.length > 10 && digits.startsWith("91") ? digits.slice(2) : digits;
@@ -78,6 +88,13 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
 
     return new URLSearchParams(window.location.search).has("auth_error") ? googleAuthErrorCopy : "";
   });
+  const [redirectTarget] = useState(() => {
+    if (typeof window === "undefined") {
+      return REDIRECT_AFTER_AUTH;
+    }
+
+    return resolveSafeRedirect(new URLSearchParams(window.location.search).get("returnTo"));
+  });
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -89,6 +106,13 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
   const [resendSeconds, setResendSeconds] = useState(0);
   const isOtpStep = Boolean(reqId);
   const primaryLabel = isOtpStep ? copy.verify : copy.primary;
+  // Carry `returnTo` across in-page navigations (mode tabs, Google, alt CTA)
+  // so the post-login redirect target survives.
+  const returnToQuery = useMemo(
+    () => (redirectTarget === REDIRECT_AFTER_AUTH ? "" : `?returnTo=${encodeURIComponent(redirectTarget)}`),
+    [redirectTarget]
+  );
+  const withReturnTo = (href: string) => `${href}${returnToQuery}`;
   const canSubmit = useMemo(() => {
     if (isSubmitting) {
       return false;
@@ -152,11 +176,25 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
       });
       setMessage("Signed in. Redirecting...");
       window.dispatchEvent(new Event("sodhani-auth-changed"));
-      router.replace(REDIRECT_AFTER_AUTH);
+
+      // Refresh the RSC cache (it was populated while logged out) before
+      // navigating so the destination renders in its signed-in state.
       router.refresh();
+      router.replace(redirectTarget);
+
+      // Fallback: a soft `router.replace` can silently no-op (e.g. if the
+      // RSC payload errors or the target is the current route). Force a hard
+      // navigation shortly after so the user is never stranded on the auth
+      // page after a successful sign-in.
+      window.setTimeout(() => {
+        if (window.location.pathname !== redirectTarget.split("?")[0]) {
+          window.location.assign(redirectTarget);
+        }
+      }, 600);
+
+      return;
     } catch (verifyError) {
       setError(verifyError instanceof Error ? verifyError.message : "Unable to verify OTP");
-    } finally {
       setIsSubmitting(false);
     }
   }
@@ -190,7 +228,7 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
           <Link
             aria-selected={mode === "sign-in"}
             className={css(styles, mode === "sign-in" ? "active" : undefined)}
-            href="/sign-in/"
+            href={withReturnTo("/sign-in/")}
             role="tab"
           >
             Sign in
@@ -198,14 +236,14 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
           <Link
             aria-selected={mode === "sign-up"}
             className={css(styles, mode === "sign-up" ? "active" : undefined)}
-            href="/sign-up/"
+            href={withReturnTo("/sign-up/")}
             role="tab"
           >
             Sign up
           </Link>
         </div>
 
-        <a className={css(styles, "auth-google")} href="/api/auth/google/start/">
+        <a className={css(styles, "auth-google")} href={withReturnTo("/api/auth/google/start/")}>
           <Image src="/icons/google.svg" alt="" width={16} height={16} aria-hidden="true" />
           Continue with Google
         </a>
@@ -308,7 +346,7 @@ export function AuthPlaceholder({ mode }: AuthPlaceholderProps) {
 
         <p className={css(styles, "auth-alt")}>
           {copy.alternateLabel}{" "}
-          <Link href={copy.alternateHref}>{copy.alternateCta}</Link>
+          <Link href={withReturnTo(copy.alternateHref)}>{copy.alternateCta}</Link>
         </p>
 
         <p className={css(styles, "auth-fineprint")}>
