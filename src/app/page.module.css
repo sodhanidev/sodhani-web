@@ -1397,111 +1397,185 @@
   transform: translate(2px, -2px);
 }
 
-/* Sector cards grid (inline, theme-aware) */
+/* Sector cards grid — Swiss/editorial terminal: sharp edges, hairline rules, tabular figures */
 .dash-sector-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  border-top: 1px solid var(--landing-line);
+  border-left: 1px solid var(--landing-line);
 }
 
+/* Single shared grid skeleton — cards sit flush, separated by hairlines only */
 .dash-sectorcard {
   display: grid;
   align-content: start;
-  gap: 10px;
-  padding: 16px 16px 6px;
-  border: 1px solid var(--landing-line);
-  border-radius: 12px;
+  gap: 0;
+  padding: 0;
+  border-right: 1px solid var(--landing-line);
+  border-bottom: 1px solid var(--landing-line);
   background: var(--dash-card);
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition: background 0.16s ease;
 }
 
 .dash-sectorcard:hover {
-  border-color: var(--landing-line-strong);
   background: var(--dash-hover);
 }
 
+/* Masthead: top accent rule that ignites on hover */
 .dash-sectorcard-head {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.dash-sectorcard-head::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: var(--landing-ink);
+  opacity: 0.22;
+  transition: width 0.22s ease, opacity 0.22s ease;
+}
+
+.dash-sectorcard:hover .dash-sectorcard-head::before {
+  width: 100%;
+  opacity: 1;
 }
 
 .dash-sectorcard-icon {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   place-items: center;
   border: 1px solid var(--landing-line);
-  border-radius: 9px;
-  background: var(--dash-hover);
+  border-radius: 0;
+  background: transparent;
   color: var(--landing-ink);
+  transition: border-color 0.16s ease;
 }
 
 .dash-sectorcard:hover .dash-sectorcard-icon {
   border-color: var(--landing-line-strong);
 }
 
+.dash-sectorcard-headtext {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
 .dash-sectorcard-title {
   min-width: 0;
   overflow: hidden;
   color: var(--landing-ink);
-  font-size: 15px;
+  font-size: 12.5px;
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.dash-sectorcard-head svg {
+.dash-sectorcard-count {
+  color: var(--landing-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dash-sectorcard-go {
+  align-self: start;
   color: var(--landing-muted);
   transition: transform 0.16s ease, color 0.16s ease;
 }
 
-.dash-sectorcard:hover .dash-sectorcard-head svg {
+.dash-sectorcard:hover .dash-sectorcard-go {
   color: var(--landing-ink);
   transform: translate(2px, -2px);
 }
 
-.dash-sectorcard-count {
-  margin-top: -4px;
-  color: var(--landing-muted);
-  font-size: 12px;
-}
-
 .dash-sectorcard-list {
   list-style: none;
-  margin: 4px 0 0;
+  display: grid;
+  margin: 0;
   padding: 0;
 }
 
-.dash-sectorcard-list li {
+/* Each company = a dense ledger line with a square proportional meter */
+.dash-sectorcard-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  padding: 9px 0;
+  column-gap: 11px;
+  row-gap: 8px;
+  padding: 11px 18px;
+}
+
+.dash-sectorcard-row + .dash-sectorcard-row {
   border-top: 1px solid var(--landing-line);
+}
+
+.dash-sectorcard-rank {
+  color: var(--landing-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 .dash-sectorcard-co {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   min-width: 0;
   color: var(--landing-ink);
   font-size: 13px;
   font-weight: 500;
 }
 
-.dash-sectorcard-co > span:last-child {
+/* Square the logo marks in this section to match the sharp grammar */
+.dash-sectorcard-co :global(.company-logo-mark) {
+  border-radius: 0;
+}
+
+.dash-sectorcard-coname {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .dash-sectorcard-mcap {
-  color: var(--landing-muted);
+  color: var(--landing-ink);
   font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dash-sectorcard-meter {
+  grid-column: 2 / -1;
+  display: block;
+  height: 2px;
+  background: color-mix(in srgb, var(--landing-ink) 8%, transparent);
+}
+
+.dash-sectorcard-meter-fill {
+  display: block;
+  height: 100%;
+  background: color-mix(in srgb, var(--landing-ink) 38%, transparent);
+  transition: background 0.16s ease;
+}
+
+.dash-sectorcard:hover .dash-sectorcard-meter-fill {
+  background: var(--landing-ink);
 }
 
 /* Bottom grid */
@@ -1682,30 +1756,6 @@
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 18px;
-}
-
-/* Static (non-interactive) segmented tabs */
-.market-tabs {
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px;
-  border: 1px solid var(--landing-line);
-  border-radius: 9px;
-}
-
-.market-tab {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 6px;
-  color: var(--landing-muted);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 14px;
-}
-
-.market-tab.active {
-  background: #1f4bff;
-  color: #ffffff;
 }
 
 .breadth-block {
@@ -2203,106 +2253,21 @@
 /* Screener + market news + advisory band */
 .screener-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, 0.7fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
   gap: 36px;
   align-items: stretch;
 }
 
 .news-col {
-  padding: 0 36px;
-  border-left: 1px solid var(--landing-line);
+  padding-right: 36px;
   border-right: 1px solid var(--landing-line);
 }
 
-.screener-col,
 .news-col {
   display: grid;
   gap: 16px;
   min-width: 0;
 }
-
-/* Screener tabs */
-.screen-tabs {
-  display: inline-flex;
-  gap: 8px;
-}
-
-.screen-tab {
-  appearance: none;
-  border: 1px solid var(--landing-line);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--landing-muted);
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 16px;
-}
-
-.screen-tab:hover {
-  color: var(--landing-ink);
-}
-
-.screen-tab.active {
-  border-color: #0039ff;
-  background: #0039ff;
-  color: #ffffff;
-}
-
-/* Screen tiles */
-.screen-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.screen-tile {
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--landing-line);
-  border-radius: 12px;
-  background: var(--dash-card);
-  transition: border-color 150ms ease, background 150ms ease;
-}
-
-.screen-tile:hover {
-  border-color: var(--landing-line-strong);
-  background: var(--dash-hover);
-}
-
-.screen-tile-name {
-  color: var(--landing-ink);
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.screen-tile-rule {
-  color: var(--landing-muted);
-  font-size: 12.5px;
-  line-height: 1.4;
-}
-
-.screen-tile-count {
-  margin-top: 2px;
-  color: #0039ff;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.screen-tile-spark {
-  width: 100%;
-  height: 40px;
-  margin-top: 4px;
-}
-
-.spark-green { stroke: #16a34a; }
-.spark-blue { stroke: #2563eb; }
-.spark-violet { stroke: #7c3aed; }
-.spark-amber { stroke: #f59e0b; }
 
 /* Market news list */
 .news-list {
@@ -2417,20 +2382,4 @@
   .screener-grid {
     grid-template-columns: minmax(0, 1fr);
   }
-}
-
-@media (max-width: 560px) {
-  .screen-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.screen-empty {
-  margin: 0;
-  padding: 28px 16px;
-  border: 1px dashed var(--landing-line);
-  border-radius: 12px;
-  color: var(--landing-muted);
-  font-size: 13.5px;
-  line-height: 1.5;
 }

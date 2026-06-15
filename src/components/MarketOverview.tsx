@@ -109,10 +109,6 @@ export function MarketOverview() {
       <div className={css(styles, "market-board-main")}>
         <div className={css(styles, "market-board-head")}>
           <h2 className={css(styles, "dash-section-title")}>Market overview</h2>
-          <div className={css(styles, "market-tabs")} aria-hidden="true">
-            <span className={css(styles, "market-tab active")}>Trending</span>
-            <span className={css(styles, "market-tab")}>Volume shockers</span>
-          </div>
         </div>
 
         <div className={css(styles, "overview-grid")}>

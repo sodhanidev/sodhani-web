@@ -1,31 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Check, Newspaper, Search } from "lucide-react";
+import { ArrowRight, Check, Newspaper } from "lucide-react";
 
 import { css } from "@/lib/css-module";
 import styles from "@/app/page.module.css";
 import { ADVISORY_BULLETS, MARKET_NEWS } from "@/lib/data/screener-promo";
-import { ScreenerTabs } from "./ScreenerTabs";
 
 export function ScreenerInsights() {
   return (
     <section className={css(styles, "dash-section screener-band")}>
       <div className={css(styles, "screener-grid")}>
-        {/* Screener */}
-        <div className={css(styles, "screener-col")}>
-          <div className={css(styles, "dash-section-head")}>
-            <h2 className={css(styles, "dash-section-title")}>
-              <Search size={18} aria-hidden="true" />
-              Screener
-            </h2>
-            <Link className={css(styles, "dash-view-all")} href="/market/">
-              View all screens
-              <ArrowRight size={14} aria-hidden="true" />
-            </Link>
-          </div>
-
-          <ScreenerTabs />
-        </div>
-
         {/* Market news */}
         <aside className={css(styles, "news-col")}>
           <div className={css(styles, "dash-section-head")}>

@@ -206,33 +206,50 @@ export default function HomePage() {
           </Link>
         </div>
         <div className={css(styles, "dash-sector-grid")}>
-          {sectorCards.map(({ node, leaders }) => (
-            <Link key={node.code} href={marketHref(node.path)} className={css(styles, "dash-sectorcard")}>
-              <div className={css(styles, "dash-sectorcard-head")}>
-                <span className={css(styles, "dash-sectorcard-icon")} aria-hidden="true">
-                  <SectorIcon name={node.name} size={16} />
-                </span>
-                <span className={css(styles, "dash-sectorcard-title")}>{node.name}</span>
-                <ArrowUpRight size={15} aria-hidden="true" />
-              </div>
-              <span className={css(styles, "dash-sectorcard-count")}>
-                {formatIndianNumber(node.companyCount)} companies
-              </span>
-              <ul className={css(styles, "dash-sectorcard-list")}>
-                {leaders.map((company) => (
-                  <li key={company.code}>
-                    <span className={css(styles, "dash-sectorcard-co")}>
-                      <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                      <span>{company.name}</span>
+          {sectorCards.map(({ node, leaders }) => {
+            const topMcap = leaders[0]?.marketCapCr ?? 0;
+            return (
+              <Link key={node.code} href={marketHref(node.path)} className={css(styles, "dash-sectorcard")}>
+                <div className={css(styles, "dash-sectorcard-head")}>
+                  <span className={css(styles, "dash-sectorcard-icon")} aria-hidden="true">
+                    <SectorIcon name={node.name} size={17} />
+                  </span>
+                  <span className={css(styles, "dash-sectorcard-headtext")}>
+                    <span className={css(styles, "dash-sectorcard-title")}>{node.name}</span>
+                    <span className={css(styles, "dash-sectorcard-count")}>
+                      {formatIndianNumber(node.companyCount)} companies
                     </span>
-                    <span className={css(styles, "numeric dash-sectorcard-mcap")}>
-                      {formatMetric(company.marketCapCr, "crore")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Link>
-          ))}
+                  </span>
+                  <ArrowUpRight className={css(styles, "dash-sectorcard-go")} size={16} aria-hidden="true" />
+                </div>
+                <ol className={css(styles, "dash-sectorcard-list")}>
+                  {leaders.map((company, i) => {
+                    const pct = topMcap > 0 ? Math.max(6, (company.marketCapCr / topMcap) * 100) : 0;
+                    return (
+                      <li key={company.code} className={css(styles, "dash-sectorcard-row")}>
+                        <span className={css(styles, "numeric dash-sectorcard-rank")}>
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className={css(styles, "dash-sectorcard-co")}>
+                          <CompanyLogoMark code={company.code} name={company.name} size="sm" />
+                          <span className={css(styles, "dash-sectorcard-coname")}>{company.name}</span>
+                        </span>
+                        <span className={css(styles, "numeric dash-sectorcard-mcap")}>
+                          {formatMetric(company.marketCapCr, "crore")}
+                        </span>
+                        <span className={css(styles, "dash-sectorcard-meter")} aria-hidden="true">
+                          <span
+                            className={css(styles, "dash-sectorcard-meter-fill")}
+                            style={{ width: `${pct.toFixed(1)}%` }}
+                          />
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
