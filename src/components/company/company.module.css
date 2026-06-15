@@ -40,6 +40,7 @@
 .stock-layout {
   width: min(var(--company-page-max, 1800px), calc(100% - var(--company-page-gutter, 16px) - var(--company-page-gutter, 16px)));
   margin: 28px auto 0;
+  padding-inline: 104px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 28px;
@@ -4296,6 +4297,7 @@
 }
 
 .stock-layout {
+    padding-inline: 24px;
     grid-template-columns: 1fr;
 
 }
@@ -4372,6 +4374,11 @@
     --company-section-nav-height: 42px;
     --company-anchor-offset: calc(var(--company-nav-offset) + var(--company-section-nav-height) + 26px);
     --company-page-gutter: 12px;
+
+}
+
+.stock-layout {
+    padding-inline: 12px;
 
 }
 

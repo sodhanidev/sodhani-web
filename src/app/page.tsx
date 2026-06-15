@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { MarketMoversTabs, type Mover } from "@/components/MarketMoversTabs";
 import { MarketOverview } from "@/components/MarketOverview";
+import { MarketSnapshot } from "@/components/MarketSnapshot";
 import { PromoBanner } from "@/components/PromoBanner";
 import { ScreenerInsights } from "@/components/ScreenerInsights";
 import { RailScroller } from "@/components/RailScroller";
@@ -107,6 +108,12 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Market snapshot: indices, commodities, currency */}
+      <MarketSnapshot />
+
+      {/* SEBI RA promo banner */}
+      <PromoBanner />
+
       {/* Explore & analyze stocks rail */}
       <section className={css(styles, "dash-section")}>
         <div className={css(styles, "dash-section-head")}>
@@ -153,10 +160,7 @@ export default function HomePage() {
         </RailScroller>
       </section>
 
-      {/* SEBI RA promo banner */}
-      <PromoBanner />
-
-      {/* Market overview: indices + breadth + sample RA calls */}
+      {/* Market overview: breadth + sample RA calls */}
       <MarketOverview />
 
       {/* Market movers + quality leaders */}

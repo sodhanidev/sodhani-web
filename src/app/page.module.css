@@ -865,6 +865,19 @@
 .landing-page {
   --dash-card: transparent;
   --dash-hover: color-mix(in srgb, var(--landing-ink) 4%, transparent);
+
+  /* Elevated-surface tokens for premium cards (sector grid, etc.) */
+  --dash-elev-bg: var(--landing-surface);
+  --dash-elev-border: color-mix(in srgb, var(--landing-ink) 6%, transparent);
+  --dash-elev-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --dash-elev-shadow-hover: 0 8px 16px -6px rgba(16, 24, 40, 0.12), 0 4px 8px -4px rgba(16, 24, 40, 0.08);
+}
+
+:global(:root[data-theme="dark"]) .landing-page {
+  --dash-elev-bg: var(--landing-surface);
+  --dash-elev-border: color-mix(in srgb, var(--landing-ink) 9%, transparent);
+  --dash-elev-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --dash-elev-shadow-hover: 0 10px 22px -8px rgba(0, 0, 0, 0.6), 0 4px 10px -4px rgba(0, 0, 0, 0.45);
 }
 
 .dash-section {
@@ -1084,7 +1097,7 @@
 }
 
 .dash-rail-nav:hover {
-  background: var(--dash-hover);
+  background: var(--landing-bg);
   border-color: var(--landing-ink);
 }
 
@@ -1252,25 +1265,28 @@
 
 /* Movers tabs */
 .dash-tabs {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
+  margin-left: auto;
   gap: 2px;
+  margin-top: -6px;
   margin-bottom: 14px;
-  padding: 3px;
+  padding: 2px;
   border: 1px solid var(--landing-line);
-  border-radius: 9px;
+  border-radius: 7px;
 }
 
 .dash-tab {
   appearance: none;
   border: 0;
-  border-radius: 6px;
+  border-radius: 5px;
   background: transparent;
   color: var(--landing-muted);
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 6px 16px;
+  padding: 5px 13px;
   transition: background 0.16s ease, color 0.16s ease;
 }
 
@@ -1397,72 +1413,57 @@
   transform: translate(2px, -2px);
 }
 
-/* Sector cards grid — Swiss/editorial terminal: sharp edges, hairline rules, tabular figures */
+/* Sector cards — Groww-clean: elevated surfaces on a soft canvas, lift on hover */
 .dash-sector-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid var(--landing-line);
-  border-left: 1px solid var(--landing-line);
+  gap: 18px;
+  padding: 20px;
+  border-radius: 20px;
+  background: var(--landing-surface-soft);
 }
 
-/* Single shared grid skeleton — cards sit flush, separated by hairlines only */
 .dash-sectorcard {
   display: grid;
   align-content: start;
-  gap: 0;
-  padding: 0;
-  border-right: 1px solid var(--landing-line);
-  border-bottom: 1px solid var(--landing-line);
-  background: var(--dash-card);
-  transition: background 0.16s ease;
+  gap: 18px;
+  padding: 20px 20px 18px;
+  border: 1px solid var(--dash-elev-border);
+  border-radius: 16px;
+  background: var(--dash-elev-bg);
+  box-shadow: var(--dash-elev-shadow);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .dash-sectorcard:hover {
-  background: var(--dash-hover);
+  transform: translateY(-3px);
+  border-color: transparent;
+  box-shadow: var(--dash-elev-shadow-hover);
 }
 
-/* Masthead: top accent rule that ignites on hover */
 .dash-sectorcard-head {
-  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 11px;
-  padding: 16px 18px 14px;
-  border-bottom: 1px solid var(--landing-line);
-}
-
-.dash-sectorcard-head::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 28px;
-  height: 2px;
-  background: var(--landing-ink);
-  opacity: 0.22;
-  transition: width 0.22s ease, opacity 0.22s ease;
-}
-
-.dash-sectorcard:hover .dash-sectorcard-head::before {
-  width: 100%;
-  opacity: 1;
+  gap: 12px;
 }
 
 .dash-sectorcard-icon {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   place-items: center;
-  border: 1px solid var(--landing-line);
-  border-radius: 0;
-  background: transparent;
-  color: var(--landing-ink);
-  transition: border-color 0.16s ease;
+  border: 0;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--landing-surface));
+  color: var(--accent);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .dash-sectorcard:hover .dash-sectorcard-icon {
-  border-color: var(--landing-line-strong);
+  background: var(--accent);
+  color: var(--landing-surface);
 }
 
 .dash-sectorcard-headtext {
@@ -1475,60 +1476,59 @@
   min-width: 0;
   overflow: hidden;
   color: var(--landing-ink);
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .dash-sectorcard-count {
   color: var(--landing-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .dash-sectorcard-go {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
   align-self: start;
+  border-radius: 8px;
   color: var(--landing-muted);
-  transition: transform 0.16s ease, color 0.16s ease;
+  transition: transform 0.18s ease, color 0.18s ease, background 0.18s ease;
 }
 
 .dash-sectorcard:hover .dash-sectorcard-go {
-  color: var(--landing-ink);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
   transform: translate(2px, -2px);
 }
 
 .dash-sectorcard-list {
   list-style: none;
   display: grid;
+  gap: 14px;
   margin: 0;
   padding: 0;
 }
 
-/* Each company = a dense ledger line with a square proportional meter */
+/* Each company = name + value on one line, slim proportional meter beneath */
 .dash-sectorcard-row {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 11px;
-  row-gap: 8px;
-  padding: 11px 18px;
-}
-
-.dash-sectorcard-row + .dash-sectorcard-row {
-  border-top: 1px solid var(--landing-line);
+  row-gap: 7px;
 }
 
 .dash-sectorcard-rank {
   color: var(--landing-muted);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+  opacity: 0.6;
 }
 
 .dash-sectorcard-co {
@@ -1537,13 +1537,12 @@
   gap: 9px;
   min-width: 0;
   color: var(--landing-ink);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
 }
 
-/* Square the logo marks in this section to match the sharp grammar */
-.dash-sectorcard-co :global(.company-logo-mark) {
-  border-radius: 0;
+.dash-sectorcard-co > :first-child {
+  border-radius: 7px;
 }
 
 .dash-sectorcard-coname {
@@ -1554,7 +1553,7 @@
 
 .dash-sectorcard-mcap {
   color: var(--landing-ink);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1563,19 +1562,22 @@
 .dash-sectorcard-meter {
   grid-column: 2 / -1;
   display: block;
-  height: 2px;
-  background: color-mix(in srgb, var(--landing-ink) 8%, transparent);
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--landing-ink) 6%, transparent);
+  overflow: hidden;
 }
 
 .dash-sectorcard-meter-fill {
   display: block;
   height: 100%;
-  background: color-mix(in srgb, var(--landing-ink) 38%, transparent);
-  transition: background 0.16s ease;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--accent) 32%, transparent);
+  transition: background 0.2s ease;
 }
 
 .dash-sectorcard:hover .dash-sectorcard-meter-fill {
-  background: var(--landing-ink);
+  background: var(--accent);
 }
 
 /* Bottom grid */
@@ -1646,86 +1648,110 @@
   }
 }
 
-/* Market overview cards (indices, commodities, currency) */
-.overview-grid {
+/* Market snapshot — indices/commodities/currency as clean rows grouped in a
+   single bordered panel. Auto-fit columns fill the width so the panel never
+   leaves large dead space. */
+.snapshot-panel {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.overview-card {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-content: start;
-  gap: 2px 10px;
-  padding: 10px 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 40px;
   border: 1px solid var(--landing-line);
-  border-radius: 9px;
+  border-radius: 14px;
   background: var(--dash-card);
+  padding: 6px 22px;
   overflow: hidden;
 }
 
-.overview-label {
-  grid-column: 1 / -1;
-  color: var(--landing-muted);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+.snapshot-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px auto;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 14px;
+  border-top: 1px solid var(--landing-line);
 }
 
-.overview-value {
-  align-self: center;
+/* Top row (3 cols) sits flush with the panel's top padding — drop the divider
+   on the first three so only inter-row rules show. */
+.snapshot-row:nth-child(-n + 3) {
+  border-top: 0;
+}
+
+.snapshot-label {
+  min-width: 0;
+  overflow: hidden;
   color: var(--landing-ink);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.overview-change {
+.snapshot-spark {
+  width: 84px;
+  height: 26px;
+}
+
+.snapshot-spark.up {
+  stroke: var(--up);
+}
+
+.snapshot-spark.down {
+  stroke: var(--down);
+}
+
+.snapshot-figures {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+}
+
+.snapshot-value {
+  color: var(--landing-ink);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.snapshot-change {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  margin-top: 1px;
   font-size: 11.5px;
   font-weight: 600;
 }
 
-.overview-change.up {
+.snapshot-change.up {
   color: var(--up);
 }
 
-.overview-change.down {
+.snapshot-change.down {
   color: var(--down);
 }
 
-.overview-spark {
-  grid-row: 2 / 4;
-  grid-column: 2;
-  align-self: center;
-  width: 64px;
-  height: 26px;
-}
-
-.overview-spark.up {
-  stroke: var(--up);
-}
-
-.overview-spark.down {
-  stroke: var(--down);
-}
-
 @media (max-width: 900px) {
-  .overview-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .snapshot-panel {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+  }
+
+  /* Single column: only item 1 sits flush; restore dividers on 2 & 3. */
+  .snapshot-row:nth-child(2),
+  .snapshot-row:nth-child(3) {
+    border-top: 1px solid var(--landing-line);
   }
 }
 
-@media (max-width: 520px) {
-  .overview-grid {
-    grid-template-columns: minmax(0, 1fr);
+@media (max-width: 600px) {
+  .snapshot-panel {
+    padding: 6px 14px;
+  }
+
+  .snapshot-row {
+    gap: 12px;
+    padding: 13px 4px;
   }
 }
 
@@ -1759,9 +1785,7 @@
 }
 
 .breadth-block {
-  margin-top: 22px;
-  padding-top: 22px;
-  border-top: 1px solid var(--landing-line);
+  margin-top: 0;
 }
 
 .breadth-heading {
