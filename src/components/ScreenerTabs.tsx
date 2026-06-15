@@ -7,43 +7,12 @@ import { css } from "@/lib/css-module";
 import styles from "@/app/page.module.css";
 import { TAB_SCREENS, type ScreenCard } from "@/lib/data/screener-promo";
 
-const SPARK_W = 120;
-const SPARK_H = 40;
-
-function sparkPoints(spark: number[]): string {
-  if (spark.length < 2) {
-    return "";
-  }
-  const min = Math.min(...spark);
-  const max = Math.max(...spark);
-  const span = max - min || 1;
-  const step = SPARK_W / (spark.length - 1);
-  const pad = 4;
-  const usable = SPARK_H - pad * 2;
-
-  return spark
-    .map((point, i) => {
-      const x = i * step;
-      const y = pad + (1 - (point - min) / span) * usable;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
-}
-
 function ScreenTile({ card }: { card: ScreenCard }) {
   return (
     <Link href="/market/" className={css(styles, "screen-tile")}>
       <span className={css(styles, "screen-tile-name")}>{card.name}</span>
       <span className={css(styles, "screen-tile-rule")}>{card.rule}</span>
       <span className={css(styles, "screen-tile-count")}>{card.count} Stocks</span>
-      <svg
-        className={css(styles, `screen-tile-spark spark-${card.tone}`)}
-        viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <polyline points={sparkPoints(card.spark)} fill="none" strokeWidth={2} />
-      </svg>
     </Link>
   );
 }
