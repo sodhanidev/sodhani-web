@@ -3,6 +3,7 @@ import { Flame } from "lucide-react";
 
 import { css } from "@/lib/css-module";
 import styles from "@/app/page.module.css";
+import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { companyHref, formatIndianNumber, formatMetric } from "@/lib/data/format";
 import { VOLUME_SPURTS } from "@/lib/data/home-tables";
 
@@ -45,7 +46,13 @@ export function VolumeSpurtPanel() {
               className={css(styles, "spurt-row")}
               role="row"
             >
-              <span className={css(styles, "spurt-name")}>{row.name}</span>
+              <span className={css(styles, "spurt-stock")}>
+                <CompanyLogoMark code={row.code} name={row.name} size="sm" />
+                <span className={css(styles, "spurt-stock-id")}>
+                  <span className={css(styles, "spurt-name")}>{row.name}</span>
+                  <span className={css(styles, "spurt-ticker")}>{row.code}</span>
+                </span>
+              </span>
               <span className={css(styles, "numeric spurt-num")}>
                 {formatIndianNumber(row.volTodayLac, { dp: 2 })}
               </span>

@@ -189,16 +189,26 @@ export default function HomePage() {
                 Top by ROCE
               </span>
             </div>
-            <ul className={css(styles, "dash-rank-list")}>
-              {qualityLeaders.map((company) => (
+            <ul className={css(styles, "roce-list")}>
+              {qualityLeaders.map((company, i) => (
                 <li key={company.code}>
-                  <Link href={companyHref(company.code)} className={css(styles, "dash-rank-row")}>
-                    <span className={css(styles, "dash-rank-name")}>
-                      <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                      <span>{company.name}</span>
+                  <Link href={companyHref(company.code)} className={css(styles, "roce-row")}>
+                    <span className={css(styles, "roce-rank")}>{i + 1}</span>
+                    <CompanyLogoMark code={company.code} name={company.name} size="md" />
+                    <span className={css(styles, "roce-id")}>
+                      <span className={css(styles, "roce-name")}>{company.name}</span>
+                      <span className={css(styles, "roce-ticker")}>
+                        {company.code}
+                        {company.sector?.name ? ` · ${company.sector.name}` : ""}
+                      </span>
                     </span>
-                    <span className={css(styles, "numeric dash-rank-val up")}>
-                      {formatMetric(company.rocePct, "percent")}
+                    <span className={css(styles, "roce-figures")}>
+                      <span className={css(styles, "numeric roce-val")}>
+                        {formatMetric(company.rocePct, "percent")}
+                      </span>
+                      <span className={css(styles, "numeric roce-cmp")}>
+                        {formatMetric(company.cmp, "currency")}
+                      </span>
                     </span>
                   </Link>
                 </li>

@@ -1361,7 +1361,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-auto-rows: minmax(0, auto);
-  gap: 16px;
+  gap: 10px;
   grid-template-areas:
     "movers movers breadth news"
     "movers movers breadth news"
@@ -1373,8 +1373,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: 14px;
-  padding: 22px;
+  gap: 12px;
+  padding: 16px 18px;
   border: 1px solid var(--dash-elev-border);
   border-radius: 0;
   background: var(--dash-elev-bg);
@@ -1461,10 +1461,10 @@
 
 .spurt-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.8fr) repeat(4, minmax(0, 1fr));
   align-items: center;
   gap: 14px;
-  padding: 9px 0;
+  padding: 11px 0;
   border-bottom: 1px solid var(--landing-line);
   color: var(--landing-ink);
   text-decoration: none;
@@ -1483,6 +1483,20 @@
   text-transform: uppercase;
 }
 
+/* Stock cell: logo + name/ticker stack */
+.spurt-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.spurt-stock-id {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
 a.spurt-row:hover .spurt-name {
   color: var(--link-blue);
 }
@@ -1491,10 +1505,18 @@ a.spurt-row:hover .spurt-name {
   min-width: 0;
   overflow: hidden;
   font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-semibold);
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.14s ease;
+}
+
+.spurt-ticker {
+  overflow: hidden;
+  color: var(--landing-muted);
+  font-size: var(--fs-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .spurt-num {
@@ -1656,6 +1678,91 @@ a.spurt-row:hover .spurt-name {
 .dash-link-row:hover svg {
   color: var(--landing-ink);
   transform: translate(2px, -2px);
+}
+
+/* Top-by-ROCE: richer rows — rank · logo · name+ticker · ROCE+cmp */
+.roce-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.roce-list li {
+  display: flex;
+  flex: 1;
+}
+
+.roce-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--landing-line);
+  color: var(--landing-ink);
+  text-decoration: none;
+}
+
+.roce-list li:last-child .roce-row {
+  border-bottom: 0;
+}
+
+.roce-rank {
+  width: 16px;
+  color: var(--landing-muted);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fw-semibold);
+  text-align: center;
+}
+
+.roce-id {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.roce-name {
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.14s ease;
+}
+
+.roce-row:hover .roce-name {
+  color: var(--link-blue);
+}
+
+.roce-ticker {
+  overflow: hidden;
+  color: var(--landing-muted);
+  font-size: var(--fs-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roce-figures {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.roce-val {
+  color: var(--up);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+
+.roce-cmp {
+  color: var(--landing-muted);
+  font-size: var(--fs-2xs);
 }
 
 /* Sector cards — Groww-clean: elevated surfaces on a soft canvas, lift on hover */

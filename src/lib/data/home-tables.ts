@@ -20,9 +20,7 @@ export const VOLUME_SPURTS: VolumeSpurt[] = [
   { code: "GLENMARK", name: "Glenmark Pharma.", volTodayLac: 15.41, volAvgLac: 0.12, volTimes: 132.7, ltp: 2420.8, changePct: 18.52 },
   { code: "BIOCON", name: "Biocon", volTodayLac: 78.48, volAvgLac: 0.84, volTimes: 93.6, ltp: 363.3, changePct: 4.97 },
   { code: "LUPIN", name: "Lupin", volTodayLac: 59.33, volAvgLac: 1.61, volTimes: 36.8, ltp: 2310.9, changePct: -0.26 },
-  { code: "ZYDUSLIFE", name: "Zydus Lifesci.", volTodayLac: 6.08, volAvgLac: 0.19, volTimes: 31.3, ltp: 913.7, changePct: 10.28 },
-  { code: "ALKEM", name: "Alkem Lab", volTodayLac: 5.32, volAvgLac: 0.2, volTimes: 26.9, ltp: 5348.6, changePct: -7.65 },
-  { code: "AUROPHARMA", name: "Aurobindo Pharma", volTodayLac: 1.98, volAvgLac: 0.09, volTimes: 23.1, ltp: 1397.9, changePct: 1.04 }
+  { code: "ZYDUSLIFE", name: "Zydus Lifesci.", volTodayLac: 6.08, volAvgLac: 0.19, volTimes: 31.3, ltp: 913.7, changePct: 10.28 }
 ];
 
 export type ReportAction = "Buy" | "Sell" | "Hold" | "Accumulate" | "Initiating Coverage";
