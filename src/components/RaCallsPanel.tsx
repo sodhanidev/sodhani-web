@@ -9,9 +9,14 @@ function RaRow({ call }: { call: RaCall }) {
 
   return (
     <li className={css(styles, "ra-row")}>
-      <span className={css(styles, `ra-avatar ${call.tone}`)} aria-hidden="true">
-        {call.initials}
-      </span>
+      <img
+        className={css(styles, "ra-avatar")}
+        src={call.photo}
+        alt={call.analyst}
+        width={36}
+        height={36}
+        loading="lazy"
+      />
       <span className={css(styles, "ra-main")}>
         <span className={css(styles, "ra-analyst")}>{call.analyst}</span>
         <span className={css(styles, "ra-company")}>

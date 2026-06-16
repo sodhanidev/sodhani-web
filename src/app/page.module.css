@@ -2346,15 +2346,11 @@ a.spurt-row:hover .spurt-name {
 }
 
 .ra-avatar {
-  display: inline-grid;
   width: 36px;
   height: 36px;
-  place-items: center;
   border-radius: 50%;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  object-fit: cover;
+  border: 1px solid var(--landing-line);
 }
 
 .ra-avatar.blue {
