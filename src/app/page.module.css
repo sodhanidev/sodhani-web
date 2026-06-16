@@ -1364,8 +1364,9 @@
   gap: 16px;
   grid-template-areas:
     "movers movers breadth roce"
-    "movers movers breadth advisory"
-    "racalls racalls news advisory";
+    "movers movers breadth roce"
+    "spurt spurt spurt advisory"
+    "racalls racalls news news";
 }
 
 .bento-tile {
@@ -1412,6 +1413,10 @@
   grid-area: advisory;
 }
 
+.bento-spurt {
+  grid-area: spurt;
+}
+
 /* The movers tile owns its own head/tabs/list — drop the tile gap so it
    controls its own rhythm, and stretch the grid to fill the tall tile. */
 .bento-movers > .dash-movers {
@@ -1447,6 +1452,154 @@
   color: var(--landing-muted);
   font-size: var(--fs-xs);
   text-align: right;
+}
+
+/* Spurt-in-volume compact table (flat rows + dividers) */
+.spurt-table {
+  display: grid;
+}
+
+.spurt-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--landing-line);
+  color: var(--landing-ink);
+  text-decoration: none;
+}
+
+.spurt-row:last-child {
+  border-bottom: 0;
+}
+
+.spurt-head {
+  padding-top: 0;
+  color: var(--landing-muted);
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+a.spurt-row:hover .spurt-name {
+  color: var(--link-blue);
+}
+
+.spurt-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.14s ease;
+}
+
+.spurt-num {
+  font-size: var(--fs-sm);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.spurt-times {
+  color: var(--landing-ink);
+  font-weight: var(--fw-semibold);
+}
+
+.spurt-change.up {
+  color: var(--up);
+}
+
+.spurt-change.down {
+  color: var(--down);
+}
+
+/* Brokerage / research reports — full-width flat table */
+.reports-table {
+  display: grid;
+}
+
+.reports-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.reports-row:last-child {
+  border-bottom: 0;
+}
+
+.reports-head {
+  padding-top: 0;
+  color: var(--landing-muted);
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.reports-company {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--landing-ink);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reports-company:hover {
+  color: var(--link-blue);
+}
+
+.reports-action {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+}
+
+.reports-action.up {
+  color: var(--up);
+}
+
+.reports-action.down {
+  color: var(--down);
+}
+
+.reports-num {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  text-align: right;
+}
+
+.reports-broker,
+.reports-date {
+  color: var(--landing-muted);
+  font-size: var(--fs-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reports-doc-col {
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.reports-doc {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--landing-line);
+  border-radius: 6px;
+  color: var(--down);
 }
 
 /* Rank list (side column) + link list */
@@ -1727,12 +1880,14 @@
     gap: 28px;
   }
 
-  /* Bento: reflow to two columns, breadth + advisory keep their height */
+  /* Bento: reflow to two columns, breadth + advisory keep their height.
+     Spurt drops to a full-width row of its own. */
   .bento {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       "breadth breadth"
       "movers roce"
+      "spurt spurt"
       "racalls advisory"
       "news advisory";
   }
@@ -1748,17 +1903,20 @@
     padding: 26px 0;
   }
 
-  .dash-movers-grid {
+  .dash-movers-grid,
+  .bento-movers .dash-movers-grid {
     grid-template-columns: 1fr;
+    gap: 0;
   }
 
-  /* Bento: single-column stack on mobile */
+  /* Bento: single-column stack on mobile (every area once, incl. spurt) */
   .bento {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "breadth"
       "movers"
+      "breadth"
       "roce"
+      "spurt"
       "racalls"
       "news"
       "advisory";
@@ -1776,6 +1934,42 @@
   .dash-cta-secondary {
     flex: 1 1 auto;
     justify-content: center;
+  }
+
+  /* Spurt table: drop the "Vol (L)" column (2nd cell in head + body) so the
+     remaining four — Stock · ×Avg · LTP · Chg — get room. */
+  .spurt-row {
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .spurt-row > :nth-child(2) {
+    display: none;
+  }
+
+  /* Reports table: drop Broker (4th) + Date (5th) cells in head + body,
+     keep Company · Action · Target · Report. */
+  .reports-row {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 56px;
+    gap: 12px;
+  }
+
+  .reports-row > :nth-child(4),
+  .reports-row > :nth-child(5) {
+    display: none;
+  }
+}
+
+/* Tighter table tweak on very narrow phones */
+@media (max-width: 560px) {
+  .spurt-row {
+    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .reports-row {
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 50px;
+    gap: 10px;
   }
 }
 

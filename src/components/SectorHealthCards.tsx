@@ -149,7 +149,7 @@ export function SectorHealthCards({ sectors }: { sectors: IndustryNode[] }) {
   const cards = sectors.map(sectorHealth);
 
   return (
-    <section className={css(styles, "dash-section")}>
+    <section className={css(styles, "dash-section dash-section-flush")}>
       <div className={css(styles, "dash-section-head")}>
         <h2 className={css(styles, "dash-section-title")}>Browse by sector</h2>
         <Link className={css(styles, "dash-view-all")} href="/market/">

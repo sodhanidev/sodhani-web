@@ -12,6 +12,8 @@ import { MarketSnapshot } from "@/components/MarketSnapshot";
 import { PromoBanner } from "@/components/PromoBanner";
 import { NewsPanel } from "@/components/NewsPanel";
 import { AdvisoryCard } from "@/components/AdvisoryCard";
+import { VolumeSpurtPanel } from "@/components/VolumeSpurtPanel";
+import { ResearchReports } from "@/components/ResearchReports";
 import { RailScroller } from "@/components/RailScroller";
 import { SectorHealthCards } from "@/components/SectorHealthCards";
 
@@ -215,8 +217,15 @@ export default function HomePage() {
           <div className={css(styles, "bento-tile bento-advisory")}>
             <AdvisoryCard />
           </div>
+
+          <div className={css(styles, "bento-tile bento-spurt")}>
+            <VolumeSpurtPanel />
+          </div>
         </div>
       </section>
+
+      {/* Brokerage / research reports */}
+      <ResearchReports />
 
       {/* Browse by sector: per-sector health stats */}
       <SectorHealthCards sectors={sectors} />
