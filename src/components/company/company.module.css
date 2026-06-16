@@ -408,7 +408,7 @@
 .metric-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   row-gap: 26px;
-  column-gap: clamp(28px, 5vw, 88px);
+  column-gap: clamp(48px, 8vw, 140px);
 
 }
 

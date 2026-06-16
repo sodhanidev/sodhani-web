@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { css } from "@/lib/css-module";
 import styles from "@/app/page.module.css";
@@ -32,7 +33,12 @@ export function MarketMoversTabs({ gainers, losers }: MarketMoversTabsProps) {
 
   return (
     <div className={css(styles, "dash-movers")}>
-      <div className={css(styles, "dash-tabs")} role="tablist" aria-label="Market movers">
+      <div className={css(styles, "dash-movers-head")}>
+        <h2 className={css(styles, "dash-section-title")}>
+          <BarChart3 size={18} aria-hidden="true" />
+          Market movers
+        </h2>
+        <div className={css(styles, "dash-tabs")} role="tablist" aria-label="Market movers">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -45,6 +51,7 @@ export function MarketMoversTabs({ gainers, losers }: MarketMoversTabsProps) {
             {tab.label}
           </button>
         ))}
+        </div>
       </div>
 
       <div className={css(styles, "dash-movers-grid")}>

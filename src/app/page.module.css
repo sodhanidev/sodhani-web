@@ -1263,14 +1263,20 @@
   flex: 1;
 }
 
+/* Movers head: title + tabs share one row */
+.dash-movers-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
 /* Movers tabs */
 .dash-tabs {
   display: flex;
   width: fit-content;
-  margin-left: auto;
   gap: 2px;
-  margin-top: -6px;
-  margin-bottom: 14px;
   padding: 2px;
   border: 1px solid var(--landing-line);
   border-radius: 7px;
@@ -1414,66 +1420,55 @@
 }
 
 /* Sector cards — Groww-clean: elevated surfaces on a soft canvas, lift on hover */
-.dash-sector-grid {
+.sector-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
-  padding: 20px;
-  border-radius: 20px;
-  background: var(--landing-surface-soft);
 }
 
-.dash-sectorcard {
-  display: grid;
-  align-content: start;
-  gap: 18px;
-  padding: 20px 20px 18px;
-  border: 1px solid var(--dash-elev-border);
-  border-radius: 16px;
-  background: var(--dash-elev-bg);
-  box-shadow: var(--dash-elev-shadow);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease,
-    border-color 0.2s ease;
+/* Sector health card — mono figures, generous spacing, profit-breadth bar.
+   Numbers and the sector name share the --font-mono "key-metric" face. */
+.sector-card {
+  display: block;
+  padding: 24px 24px 26px;
+  border: 1px solid var(--landing-line);
+  border-radius: 4px;
+  background: var(--landing-bg);
+  color: var(--landing-ink);
+  text-decoration: none;
+  transition: border-color 0.14s ease;
 }
 
-.dash-sectorcard:hover {
-  transform: translateY(-3px);
-  border-color: transparent;
-  box-shadow: var(--dash-elev-shadow-hover);
+.sector-card:hover {
+  border-color: var(--landing-line-strong);
 }
 
-.dash-sectorcard-head {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+.sector-card-head {
+  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
+  margin-bottom: 28px;
 }
 
-.dash-sectorcard-icon {
+.sector-card-icon {
   display: grid;
-  width: 40px;
-  height: 40px;
   place-items: center;
-  border: 0;
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--accent) 12%, var(--landing-surface));
-  color: var(--accent);
-  transition: background 0.2s ease, color 0.2s ease;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid var(--landing-line);
+  border-radius: 5px;
+  background: var(--landing-surface-soft);
+  color: var(--link-blue);
 }
 
-.dash-sectorcard:hover .dash-sectorcard-icon {
-  background: var(--accent);
-  color: var(--landing-surface);
-}
-
-.dash-sectorcard-headtext {
+.sector-card-headtext {
   display: grid;
   gap: 3px;
   min-width: 0;
 }
 
-.dash-sectorcard-title {
-  min-width: 0;
+.sector-card-name {
   overflow: hidden;
   color: var(--landing-ink);
   font-size: 15px;
@@ -1483,101 +1478,135 @@
   white-space: nowrap;
 }
 
-.dash-sectorcard-count {
+.sector-card-count {
   color: var(--landing-muted);
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 
-.dash-sectorcard-go {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  align-self: start;
-  border-radius: 8px;
+.sector-card-go {
+  margin-left: auto;
+  flex-shrink: 0;
   color: var(--landing-muted);
-  transition: transform 0.18s ease, color 0.18s ease, background 0.18s ease;
+  transition: transform 0.18s ease, color 0.18s ease;
 }
 
-.dash-sectorcard:hover .dash-sectorcard-go {
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+.sector-card:hover .sector-card-go {
+  color: var(--landing-ink);
   transform: translate(2px, -2px);
 }
 
-.dash-sectorcard-list {
-  list-style: none;
+.sector-card-metrics {
   display: grid;
-  gap: 14px;
-  margin: 0;
-  padding: 0;
+  grid-template-columns: auto auto auto;
+  justify-content: space-between;
+  gap: 12px 18px;
 }
 
-/* Each company = name + value on one line, slim proportional meter beneath */
-.dash-sectorcard-row {
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 11px;
-  row-gap: 7px;
-}
-
-.dash-sectorcard-rank {
-  color: var(--landing-muted);
-  font-size: 11px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  opacity: 0.6;
-}
-
-.dash-sectorcard-co {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
+.sector-card-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   min-width: 0;
+}
+
+.sector-card-metric-val {
   color: var(--landing-ink);
-  font-size: 13.5px;
-  font-weight: 500;
-}
-
-.dash-sectorcard-co > :first-child {
-  border-radius: 7px;
-}
-
-.dash-sectorcard-coname {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dash-sectorcard-mcap {
-  color: var(--landing-ink);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
-.dash-sectorcard-meter {
-  grid-column: 2 / -1;
-  display: block;
-  height: 4px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--landing-ink) 6%, transparent);
-  overflow: hidden;
+.sector-card-metric-val.up {
+  color: var(--chart-up, #15a05a);
 }
 
-.dash-sectorcard-meter-fill {
+.sector-card-metric-val.down {
+  color: var(--chart-down, #e0414c);
+}
+
+.sector-card-metric-label {
+  color: var(--landing-muted);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sector-card-breadth-wrap {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--landing-line);
+}
+
+.sector-card-breadth-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sector-card-breadth-label {
+  color: var(--landing-muted);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sector-card-breadth-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sector-card-breadth-val .up {
+  color: var(--chart-up, #15a05a);
+}
+
+.sector-card-breadth-val .down {
+  color: var(--chart-down, #e0414c);
+}
+
+.sector-card-breadth {
+  display: flex;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--landing-surface-soft);
+}
+
+.sector-card-breadth-seg {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  background: color-mix(in srgb, var(--accent) 32%, transparent);
-  transition: background 0.2s ease;
 }
 
-.dash-sectorcard:hover .dash-sectorcard-meter-fill {
-  background: var(--accent);
+.sector-card-breadth-seg.adv {
+  background: var(--chart-up, #15a05a);
+}
+
+.sector-card-breadth-seg.unch {
+  background: var(--landing-muted-2);
+  opacity: 0.35;
+}
+
+.sector-card-breadth-seg.dec {
+  background: var(--chart-down, #e0414c);
+}
+
+.sector-card-breadth-cap {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 11px;
+  color: var(--landing-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Bottom grid */
@@ -1618,7 +1647,7 @@
     padding-left: 0;
   }
 
-  .dash-sector-grid {
+  .sector-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1633,7 +1662,7 @@
     grid-template-columns: 1fr;
   }
 
-  .dash-sector-grid {
+  .sector-grid {
     grid-template-columns: 1fr;
   }
 

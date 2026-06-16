@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Browse by sector — 5 designs</title>
+<style>
+  :root {
+    --bg: #050505;
+    --ink: #edf3f4;
+    --ink-strong: #f4f7f7;
+    --muted: #aab5bd;
+    --muted-2: #9aa8b3;
+    --line: #303b45;
+    --line-strong: #556372;
+    --surface: #101114;
+    --surface-soft: #17191d;
+    --blue: #3b82f6;
+    --up: #4dd382;
+    --down: #ff7078;
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --num: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --ink: #151923;
+    --ink-strong: #050505;
+    --muted: #667085;
+    --muted-2: #65717a;
+    --line: #e6e9ef;
+    --line-strong: #c7ced8;
+    --surface: #ffffff;
+    --surface-soft: #f7f8fa;
+    --blue: #0039ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    padding: 48px 32px 96px;
+    line-height: 1.4;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; }
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; margin: -48px -32px 40px; padding: 16px 32px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .toolbar h1 { font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+  .toolbar .hint { font-size: 12px; color: var(--muted); }
+  .theme-btn {
+    appearance: none; cursor: pointer;
+    background: var(--surface-soft); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px;
+    font-family: var(--font); font-size: 12px; font-weight: 600;
+    padding: 7px 14px;
+  }
+  .theme-btn:hover { border-color: var(--line-strong); }
+
+  .design { margin-bottom: 72px; }
+  .design-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 8px; padding-bottom: 14px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .design-num {
+    font-family: var(--num); font-size: 12px; font-weight: 700;
+    color: var(--blue); letter-spacing: 0.04em;
+  }
+  .design-name { font-size: 17px; font-weight: 700; letter-spacing: -0.015em; }
+  .design-desc { font-size: 13px; color: var(--muted); margin-bottom: 28px; max-width: 760px; }
+
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-head h2 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+  .view-all {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+    text-decoration: none; cursor: pointer;
+  }
+  .view-all:hover { color: var(--ink); }
+  .view-all svg { width: 14px; height: 14px; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 44px; }
+  @media (max-width: 900px) { .grid3 { grid-template-columns: 1fr; } }
+
+  /* shared logo chip */
+  .chip {
+    display: grid; place-items: center;
+    width: 26px; height: 26px; border-radius: 7px;
+    font-size: 12px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .chip.sm { width: 22px; height: 22px; border-radius: 6px; font-size: 10px; }
+  .c-blue { background: #2563eb; } .c-green { background: #16a34a; }
+  .c-amber { background: #d97706; } .c-rose { background: #e11d48; }
+  .c-violet { background: #7c3aed; } .c-cyan { background: #0891b2; }
+  .c-slate { background: #475569; } .c-pink { background: #db2777; }
+  .num { font-family: var(--num); font-variant-numeric: tabular-nums; }
+
+  /* ============ DESIGN 1: Flat Hairline (kept) ============ */
+  .d1-card { padding: 4px 2px; }
+  .d1-head { display: flex; align-items: center; gap: 12px; padding: 10px 6px 14px; }
+  .d1-sector-icon {
+    display: grid; place-items: center; width: 34px; height: 34px;
+    border-radius: 9px; background: var(--surface-soft);
+    border: 1px solid var(--line); color: var(--blue);
+  }
+  .d1-titlewrap { flex: 1; }
+  .d1-title { font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+  .d1-count { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .d1-go { color: var(--muted); }
+  .d1-row {
+    display: grid; grid-template-columns: 20px 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 11px 6px; border-top: 1px solid var(--line);
+    text-decoration: none; color: inherit;
+  }
+  .d1-row:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .d1-rank { font-family: var(--num); font-size: 11px; color: var(--muted-2); }
+  .d1-co { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .d1-coname { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .d1-mcap { font-family: var(--num); font-size: 13px; font-weight: 600; }
+
+  /* ============ DESIGN 2: Flat + inline bar under name ============ */
+  .d2-card { padding: 4px 2px; }
+  .d2-head { display: flex; align-items: center; gap: 12px; padding: 8px 4px 16px; }
+  .d2-icon {
+    display: grid; place-items: center; width: 32px; height: 32px;
+    border-radius: 9px; color: var(--blue);
+    background: color-mix(in srgb, var(--blue) 12%, transparent);
+  }
+  .d2-titlewrap { flex: 1; }
+  .d2-title { font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+  .d2-count { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .d2-go { color: var(--muted); }
+  .d2-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 6px 12px;
+    align-items: center; padding: 12px 4px;
+    border-top: 1px solid var(--line);
+    text-decoration: none; color: inherit;
+  }
+  .d2-row:hover .d2-coname { color: var(--blue); }
+  .d2-co { display: flex; align-items: center; gap: 10px; }
+  .d2-coname { font-size: 14px; font-weight: 550; transition: color .15s; }
+  .d2-mcap { font-family: var(--num); font-size: 13px; font-weight: 650; }
+  .d2-bar { grid-column: 1 / -1; height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 7%, transparent); overflow: hidden; }
+  .d2-fill { display: block; height: 100%; background: var(--blue); opacity: .85; }
+
+  /* ============ DESIGN 3: Two-column flat, rank as big ghost numeral ============ */
+  .d3-card { padding: 4px 2px; }
+  .d3-head { display: flex; align-items: center; gap: 11px; padding: 8px 4px 14px; }
+  .d3-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--surface-soft); border: 1px solid var(--line); color: var(--blue); }
+  .d3-titlewrap { flex: 1; }
+  .d3-title { font-size: 15px; font-weight: 650; }
+  .d3-count { font-size: 12px; color: var(--muted); }
+  .d3-go { color: var(--muted); }
+  .d3-row {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 12px 4px; border-top: 1px solid var(--line);
+    text-decoration: none; color: inherit;
+  }
+  .d3-row:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .d3-rank { font-family: var(--num); font-size: 20px; font-weight: 700; color: color-mix(in srgb, var(--ink) 18%, transparent); line-height: 1; width: 30px; }
+  .d3-mid { flex: 1; }
+  .d3-coname { font-size: 14px; font-weight: 600; }
+  .d3-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .d3-mcap { font-family: var(--num); font-size: 14px; font-weight: 650; align-self: center; }
+
+  /* ============ DESIGN 4: Flat, ticker-style with monospace alignment ============ */
+  .d4-card { padding: 4px 2px; }
+  .d4-head { display: flex; align-items: center; gap: 11px; padding: 8px 8px 12px; border-bottom: 2px solid var(--ink); }
+  .d4-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); }
+  .d4-titlewrap { flex: 1; }
+  .d4-title { font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; }
+  .d4-count { font-size: 11.5px; color: var(--muted); }
+  .d4-go { color: var(--muted); }
+  .d4-row {
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 10px 8px; border-bottom: 1px solid var(--line);
+    text-decoration: none; color: inherit; font-family: var(--num);
+  }
+  .d4-row:hover { background: color-mix(in srgb, var(--blue) 7%, transparent); }
+  .d4-tk { font-size: 11px; font-weight: 700; color: var(--muted-2); width: 22px; }
+  .d4-coname { font-family: var(--font); font-size: 13.5px; font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .d4-mcap { font-size: 13px; font-weight: 650; }
+
+  /* ============ DESIGN 5: Flat, name-led with right-rail mcap + share dot ============ */
+  .d5-card { padding: 4px 2px; }
+  .d5-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; padding: 8px 2px 14px; }
+  .d5-titlewrap { display: flex; align-items: center; gap: 11px; }
+  .d5-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--surface-soft); border: 1px solid var(--line); color: var(--blue); }
+  .d5-title { font-size: 15px; font-weight: 650; }
+  .d5-count { font-size: 12px; color: var(--muted); }
+  .d5-go { color: var(--muted); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+  .d5-go:hover { color: var(--ink); }
+  .d5-row {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 2px; border-top: 1px solid var(--line);
+    text-decoration: none; color: inherit;
+  }
+  .d5-row:hover { padding-left: 8px; }
+  .d5-row { transition: padding .15s ease; }
+  .d5-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+  .d5-coname { font-size: 14px; font-weight: 550; flex: 1; }
+  .d5-mcap { font-family: var(--num); font-size: 13px; font-weight: 600; }
+  .d5-share { font-family: var(--num); font-size: 11px; color: var(--muted-2); width: 34px; text-align: right; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toolbar">
+    <h1>Browse by sector — flat direction, 5 takes</h1>
+    <span class="hint">#1 kept, 4 new riffs</span>
+    <button class="theme-btn" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme==='dark'?'light':'dark'">Toggle theme</button>
+  </div>
+
+  <section class="design">
+    <div class="design-head"><span class="design-num">01</span><span class="design-name">Flat Hairline</span></div>
+    <p class="design-desc">The keeper. No inner boxes, free header, hairline rows, mcap right-aligned. Baseline for the rest.</p>
+    <div class="section-head"><h2>Browse by sector</h2><a class="view-all">All sectors <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="grid3" id="d1"></div>
+  </section>
+
+  <section class="design">
+    <div class="design-head"><span class="design-num">02</span><span class="design-name">Hairline + Hairthin Bar</span></div>
+    <p class="design-desc">Same flat rows, but a 3px mcap bar tucks under each name. Keeps the relative-size signal without boxing anything. Tinted icon, name turns blue on hover.</p>
+    <div class="section-head"><h2>Browse by sector</h2><a class="view-all">All sectors <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="grid3" id="d2"></div>
+  </section>
+
+  <section class="design">
+    <div class="design-head"><span class="design-num">03</span><span class="design-name">Ghost Rank Numerals</span></div>
+    <p class="design-desc">Drops the logo chip in the row; rank becomes a big faded numeral instead. Adds a small mcap-share subline. Quietest, most typographic.</p>
+    <div class="section-head"><h2>Browse by sector</h2><a class="view-all">All sectors <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="grid3" id="d3"></div>
+  </section>
+
+  <section class="design">
+    <div class="design-head"><span class="design-num">04</span><span class="design-name">Terminal Ticker</span></div>
+    <p class="design-desc">Bloomberg-ish. Thick rule under the header, monospace ticker codes, square rows. Most "pro tool" of the flat set.</p>
+    <div class="section-head"><h2>Browse by sector</h2><a class="view-all">All sectors <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="grid3" id="d4"></div>
+  </section>
+
+  <section class="design">
+    <div class="design-head"><span class="design-num">05</span><span class="design-name">Dot Rail + Slide</span></div>
+    <p class="design-desc">Logo replaced by a tiny accent dot, mcap paired with a right-aligned share %. Rows slide right on hover. Lightest chrome, most consumer-app.</p>
+    <div class="section-head"><h2>Browse by sector</h2><a class="view-all">All sectors <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="grid3" id="d5"></div>
+  </section>
+</div>
+
+<script>
+const SECTORS = [
+  { name: "Consumer Discretionary", count: "1,366",
+    cos: [["M","Maruti Suzuki","MARUTI","4,17,998","c-amber"],["T","Titan Company","TITAN","3,90,000","c-blue"],["M","M & M","M&M","3,84,928","c-blue"],["A","Avenue Super.","DMART","2,98,477","c-rose"]] },
+  { name: "Industrials", count: "1,018",
+    cos: [["L","Larsen & Toubro","LT","5,52,929","c-cyan"],["B","Bharat Electron","BEL","3,16,587","c-amber"],["H","Hind.Aeronautics","HAL","2,91,897","c-green"],["A","A B B","ABB","1,53,883","c-slate"]] },
+  { name: "Financial Services", count: "649",
+    cos: [["H","HDFC Bank","HDFCBANK","11,94,202","c-rose"],["S","SBI","SBIN","9,89,476","c-blue"],["I","ICICI Bank","ICICIBANK","9,09,675","c-amber"],["B","Bajaj Finance","BAJFINANCE","5,84,804","c-blue"]] },
+  { name: "Commodities", count: "551",
+    cos: [["U","UltraTech Cem.","ULTRACEMCO","3,40,497","c-amber"],["A","Adani Enterp.","ADANIENT","3,11,697","c-rose"],["J","JSW Steel","JSWSTEEL","3,09,240","c-green"],["T","Tata Steel","TATASTEEL","2,63,777","c-amber"]] },
+  { name: "Services", count: "519",
+    cos: [["A","Adani Ports","ADANIPORTS","3,73,933","c-green"],["I","Interglobe Aviat","INDIGO","1,66,216","c-blue"],["G","GMR Airports","GMRAIRPORT","1,01,915","c-amber"],["J","JSW Infrast","JSWINFRA","57,708","c-slate"]] },
+  { name: "Fast Moving Consumer Goods", count: "400",
+    cos: [["H","Hind. Unilever","HINDUNILVR","5,31,306","c-slate"],["I","ITC","ITC","3,95,555","c-blue"],["N","Nestle India","NESTLEIND","2,80,917","c-violet"],["V","Varun Beverages","VBL","1,74,256","c-rose"]] },
+];
+const ICON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>';
+const GO = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+const mc = v => '₹ ' + v + ' Cr.';
+const toNum = s => parseInt(s.replace(/,/g, ''), 10);
+
+document.getElementById('d1').innerHTML = SECTORS.map(s => `
+  <div class="d1-card">
+    <div class="d1-head"><span class="d1-sector-icon">${ICON}</span><span class="d1-titlewrap"><div class="d1-title">${s.name}</div><div class="d1-count">${s.count} companies</div></span><span class="d1-go">${GO}</span></div>
+    ${s.cos.map((c,i)=>`<a class="d1-row"><span class="d1-rank">${String(i+1).padStart(2,'0')}</span><span class="d1-co"><span class="chip sm ${c[4]}">${c[0]}</span><span class="d1-coname">${c[1]}</span></span><span class="d1-mcap">${mc(c[3])}</span></a>`).join('')}
+  </div>`).join('');
+
+document.getElementById('d2').innerHTML = SECTORS.map(s => {
+  const top = toNum(s.cos[0][3]);
+  return `<div class="d2-card">
+    <div class="d2-head"><span class="d2-icon">${ICON}</span><span class="d2-titlewrap"><div class="d2-title">${s.name}</div><div class="d2-count">${s.count} companies</div></span><span class="d2-go">${GO}</span></div>
+    ${s.cos.map(c=>`<a class="d2-row"><span class="d2-co"><span class="chip sm ${c[4]}">${c[0]}</span><span class="d2-coname">${c[1]}</span></span><span class="d2-mcap">${mc(c[3])}</span><span class="d2-bar"><span class="d2-fill" style="width:${Math.max(8,toNum(c[3])/top*100).toFixed(0)}%"></span></span></a>`).join('')}
+  </div>`;
+}).join('');
+
+document.getElementById('d3').innerHTML = SECTORS.map(s => {
+  const total = s.cos.reduce((a,c)=>a+toNum(c[3]),0);
+  return `<div class="d3-card">
+    <div class="d3-head"><span class="d3-icon">${ICON}</span><span class="d3-titlewrap"><div class="d3-title">${s.name}</div><div class="d3-count">${s.count} companies</div></span><span class="d3-go">${GO}</span></div>
+    ${s.cos.map((c,i)=>`<a class="d3-row"><span class="d3-rank">${i+1}</span><span class="d3-mid"><div class="d3-coname">${c[1]}</div><div class="d3-sub">${(toNum(c[3])/total*100).toFixed(0)}% of top-4 m-cap</div></span><span class="d3-mcap">${mc(c[3])}</span></a>`).join('')}
+  </div>`;
+}).join('');
+
+document.getElementById('d4').innerHTML = SECTORS.map(s => `
+  <div class="d4-card">
+    <div class="d4-head"><span class="d4-icon">${ICON}</span><span class="d4-titlewrap"><div class="d4-title">${s.name}</div><div class="d4-count">${s.count} companies</div></span><span class="d4-go">${GO}</span></div>
+    ${s.cos.map((c,i)=>`<a class="d4-row"><span class="d4-tk">${String(i+1).padStart(2,'0')}</span><span class="d4-coname" title="${c[2]}">${c[2]}</span><span class="d4-mcap">${mc(c[3])}</span></a>`).join('')}
+  </div>`).join('');
+
+document.getElementById('d5').innerHTML = SECTORS.map(s => {
+  const total = s.cos.reduce((a,c)=>a+toNum(c[3]),0);
+  return `<div class="d5-card">
+    <div class="d5-head"><span class="d5-titlewrap"><span class="d5-icon">${ICON}</span><span><div class="d5-title">${s.name}</div><div class="d5-count">${s.count} companies</div></span></span><a class="d5-go">All ${GO}</a></div>
+    ${s.cos.map(c=>`<a class="d5-row"><span class="d5-dot ${c[4]}" style="background:currentColor"></span><span class="d5-coname">${c[1]}</span><span class="d5-share">${(toNum(c[3])/total*100).toFixed(0)}%</span><span class="d5-mcap">${mc(c[3])}</span></a>`).join('')}
+  </div>`;
+}).join('');
+</script>
+</body>
+</html>

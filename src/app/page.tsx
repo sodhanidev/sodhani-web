@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BarChart3, Rocket, Trophy } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Rocket, Trophy } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
@@ -11,16 +11,15 @@ import { MarketSnapshot } from "@/components/MarketSnapshot";
 import { PromoBanner } from "@/components/PromoBanner";
 import { ScreenerInsights } from "@/components/ScreenerInsights";
 import { RailScroller } from "@/components/RailScroller";
-import { SectorIcon } from "@/components/SectorIcon";
+import { SectorHealthCards } from "@/components/SectorHealthCards";
 
-import { getCompanies, getTopCompaniesForNode, topCompanies } from "@/lib/data/companies";
+import { getCompanies, topCompanies } from "@/lib/data/companies";
 import { getIndustryData } from "@/lib/data/industry";
 import {
   candlestickToolHref,
   companyHref,
   formatIndianNumber,
-  formatMetric,
-  marketHref
+  formatMetric
 } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
@@ -75,11 +74,8 @@ export default function HomePage() {
 
   const sectors = [...roots]
     .filter((node) => node.companyCount > 0)
-    .sort((a, b) => b.companyCount - a.companyCount);
-  const sectorCards = sectors.slice(0, 6).map((node) => ({
-    node,
-    leaders: getTopCompaniesForNode(node.code, "marketCapCr", 4)
-  }));
+    .sort((a, b) => b.companyCount - a.companyCount)
+    .slice(0, 6);
 
   return (
     <main className={css(styles, "landing-page")}>
@@ -166,12 +162,6 @@ export default function HomePage() {
       {/* Market movers + quality leaders */}
       <section className={css(styles, "dash-section dash-two-col")}>
         <div className={css(styles, "dash-col-main")}>
-          <div className={css(styles, "dash-section-head")}>
-            <h2 className={css(styles, "dash-section-title")}>
-              <BarChart3 size={18} aria-hidden="true" />
-              Market movers
-            </h2>
-          </div>
           <MarketMoversTabs gainers={gainers} losers={losers} />
         </div>
 
@@ -200,62 +190,8 @@ export default function HomePage() {
         </aside>
       </section>
 
-      {/* Browse by sector cards */}
-      <section className={css(styles, "dash-section")}>
-        <div className={css(styles, "dash-section-head")}>
-          <h2 className={css(styles, "dash-section-title")}>Browse by sector</h2>
-          <Link className={css(styles, "dash-view-all")} href="/market/">
-            All sectors
-            <ArrowRight size={14} aria-hidden="true" />
-          </Link>
-        </div>
-        <div className={css(styles, "dash-sector-grid")}>
-          {sectorCards.map(({ node, leaders }) => {
-            const topMcap = leaders[0]?.marketCapCr ?? 0;
-            return (
-              <Link key={node.code} href={marketHref(node.path)} className={css(styles, "dash-sectorcard")}>
-                <div className={css(styles, "dash-sectorcard-head")}>
-                  <span className={css(styles, "dash-sectorcard-icon")} aria-hidden="true">
-                    <SectorIcon name={node.name} size={17} />
-                  </span>
-                  <span className={css(styles, "dash-sectorcard-headtext")}>
-                    <span className={css(styles, "dash-sectorcard-title")}>{node.name}</span>
-                    <span className={css(styles, "dash-sectorcard-count")}>
-                      {formatIndianNumber(node.companyCount)} companies
-                    </span>
-                  </span>
-                  <ArrowUpRight className={css(styles, "dash-sectorcard-go")} size={16} aria-hidden="true" />
-                </div>
-                <ol className={css(styles, "dash-sectorcard-list")}>
-                  {leaders.map((company, i) => {
-                    const pct = topMcap > 0 ? Math.max(6, (company.marketCapCr / topMcap) * 100) : 0;
-                    return (
-                      <li key={company.code} className={css(styles, "dash-sectorcard-row")}>
-                        <span className={css(styles, "numeric dash-sectorcard-rank")}>
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className={css(styles, "dash-sectorcard-co")}>
-                          <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                          <span className={css(styles, "dash-sectorcard-coname")}>{company.name}</span>
-                        </span>
-                        <span className={css(styles, "numeric dash-sectorcard-mcap")}>
-                          {formatMetric(company.marketCapCr, "crore")}
-                        </span>
-                        <span className={css(styles, "dash-sectorcard-meter")} aria-hidden="true">
-                          <span
-                            className={css(styles, "dash-sectorcard-meter-fill")}
-                            style={{ width: `${pct.toFixed(1)}%` }}
-                          />
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* Browse by sector: per-sector health stats */}
+      <SectorHealthCards sectors={sectors} />
 
       {/* Screener + market news + advisory */}
       <ScreenerInsights />
