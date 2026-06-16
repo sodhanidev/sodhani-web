@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Rocket, Trophy } from "lucide-react";
+import { Activity, ArrowRight, ArrowUpRight, Rocket, Trophy } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { MarketMoversTabs, type Mover } from "@/components/MarketMoversTabs";
-import { MarketOverview } from "@/components/MarketOverview";
+import { MarketBreadthPanel } from "@/components/MarketBreadthPanel";
+import { RaCallsPanel } from "@/components/RaCallsPanel";
 import { MarketSnapshot } from "@/components/MarketSnapshot";
 import { PromoBanner } from "@/components/PromoBanner";
-import { ScreenerInsights } from "@/components/ScreenerInsights";
+import { NewsPanel } from "@/components/NewsPanel";
+import { AdvisoryCard } from "@/components/AdvisoryCard";
 import { RailScroller } from "@/components/RailScroller";
 import { SectorHealthCards } from "@/components/SectorHealthCards";
 
@@ -156,45 +158,68 @@ export default function HomePage() {
         </RailScroller>
       </section>
 
-      {/* Market overview: breadth + sample RA calls */}
-      <MarketOverview />
-
-      {/* Market movers + quality leaders */}
-      <section className={css(styles, "dash-section dash-two-col")}>
-        <div className={css(styles, "dash-col-main")}>
-          <MarketMoversTabs gainers={gainers} losers={losers} />
+      {/* Market today: dense asymmetric bento of live market data */}
+      <section className={css(styles, "dash-section")}>
+        <div className={css(styles, "dash-section-head")}>
+          <h2 className={css(styles, "dash-section-title")}>
+            <Activity size={18} aria-hidden="true" />
+            Market today
+          </h2>
+          <Link className={css(styles, "dash-view-all")} href="/market/">
+            Full market
+            <ArrowRight size={14} aria-hidden="true" />
+          </Link>
         </div>
 
-        <aside className={css(styles, "dash-col-side")}>
-          <div className={css(styles, "dash-section-head")}>
-            <h2 className={css(styles, "dash-section-title")}>
-              <Trophy size={18} aria-hidden="true" />
-              Top by ROCE
-            </h2>
+        <div className={css(styles, "bento")}>
+          <div className={css(styles, "bento-tile bento-breadth")}>
+            <MarketBreadthPanel />
           </div>
-          <ul className={css(styles, "dash-rank-list")}>
-            {qualityLeaders.map((company) => (
-              <li key={company.code}>
-                <Link href={companyHref(company.code)} className={css(styles, "dash-rank-row")}>
-                  <span className={css(styles, "dash-rank-name")}>
-                    <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                    <span>{company.name}</span>
-                  </span>
-                  <span className={css(styles, "numeric dash-rank-val up")}>
-                    {formatMetric(company.rocePct, "percent")}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </aside>
+
+          <div className={css(styles, "bento-tile bento-movers")}>
+            <MarketMoversTabs gainers={gainers} losers={losers} />
+          </div>
+
+          <div className={css(styles, "bento-tile bento-roce")}>
+            <div className={css(styles, "bento-tile-head")}>
+              <span className={css(styles, "bento-eyebrow")}>
+                <Trophy size={14} aria-hidden="true" />
+                Top by ROCE
+              </span>
+            </div>
+            <ul className={css(styles, "dash-rank-list")}>
+              {qualityLeaders.map((company) => (
+                <li key={company.code}>
+                  <Link href={companyHref(company.code)} className={css(styles, "dash-rank-row")}>
+                    <span className={css(styles, "dash-rank-name")}>
+                      <CompanyLogoMark code={company.code} name={company.name} size="sm" />
+                      <span>{company.name}</span>
+                    </span>
+                    <span className={css(styles, "numeric dash-rank-val up")}>
+                      {formatMetric(company.rocePct, "percent")}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className={css(styles, "bento-tile bento-racalls")}>
+            <RaCallsPanel />
+          </div>
+
+          <div className={css(styles, "bento-tile bento-news")}>
+            <NewsPanel />
+          </div>
+
+          <div className={css(styles, "bento-tile bento-advisory")}>
+            <AdvisoryCard />
+          </div>
+        </div>
       </section>
 
       {/* Browse by sector: per-sector health stats */}
       <SectorHealthCards sectors={sectors} />
-
-      {/* Screener + market news + advisory */}
-      <ScreenerInsights />
 
       <SiteFooter />
     </main>

@@ -1236,40 +1236,24 @@
   transform: translateX(3px);
 }
 
-/* Two-column: movers + ranks */
-.dash-two-col {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-  gap: 0 40px;
-  align-items: stretch;
-}
-
-.dash-col-main,
-.dash-col-side {
-  min-width: 0;
-}
-
-/* Vertical rule splits the two columns (no boxes, just a line).
-   The list stretches to the row height so the rule runs the full
-   height of the section, not just the ROCE content. */
-.dash-col-side {
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid var(--landing-line);
-  padding-left: 40px;
-}
-
-.dash-col-side .dash-rank-list {
-  flex: 1;
-}
-
 /* Movers head: title + tabs share one row */
 .dash-movers-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* In the bento tile the movers title matches the lighter tile eyebrow scale */
+.bento-movers .dash-movers-head .dash-section-title {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+}
+
+.bento-movers .dash-movers-head .dash-section-title svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* Movers tabs */
@@ -1307,6 +1291,12 @@
 
 .dash-movers-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+/* Movers is the wide 2x2 bento tile — two columns fill the horizontal space */
+.bento-movers .dash-movers-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 28px;
 }
@@ -1358,9 +1348,105 @@
 }
 
 .dash-movers-note {
-  margin: 14px 0 0;
+  margin: auto 0 0;
+  padding-top: 12px;
   color: var(--landing-muted);
-  font-size: 12px;
+  font-size: var(--fs-xs);
+}
+
+/* ============================================================
+   Market-today bento: asymmetric tile grid of live market data
+   ============================================================ */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, auto);
+  gap: 16px;
+  grid-template-areas:
+    "movers movers breadth roce"
+    "movers movers breadth advisory"
+    "racalls racalls news advisory";
+}
+
+.bento-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--dash-elev-border);
+  border-radius: 0;
+  background: var(--dash-elev-bg);
+  box-shadow: var(--dash-elev-shadow);
+}
+
+/* Dark mode: sink the tiles below the page surface — blacker than the default
+   elevated surface (#101114) but not pure black — so they read as recessed.
+   Advisory keeps its blue gradient (set on .bento-advisory). */
+:global(:root[data-theme="dark"]) .bento-tile:not(.bento-advisory) {
+  background: #0b0c0e;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.bento-breadth {
+  grid-area: breadth;
+}
+
+.bento-movers {
+  grid-area: movers;
+}
+
+.bento-roce {
+  grid-area: roce;
+}
+
+.bento-racalls {
+  grid-area: racalls;
+}
+
+.bento-news {
+  grid-area: news;
+}
+
+.bento-advisory {
+  grid-area: advisory;
+}
+
+/* The movers tile owns its own head/tabs/list — drop the tile gap so it
+   controls its own rhythm, and stretch the grid to fill the tall tile. */
+.bento-movers > .dash-movers {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Shared tile header: eyebrow label + optional note/action on one row */
+.bento-tile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bento-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--landing-ink);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-normal);
+}
+
+.bento-eyebrow svg {
+  color: var(--landing-muted);
+}
+
+.bento-tile-note {
+  color: var(--landing-muted);
+  font-size: var(--fs-xs);
+  text-align: right;
 }
 
 /* Rank list (side column) + link list */
@@ -1636,15 +1722,19 @@
     width: calc(100% - 40px);
   }
 
-  .dash-two-col,
   .dash-bottom-grid {
     grid-template-columns: 1fr;
     gap: 28px;
   }
 
-  .dash-col-side {
-    border-left: 0;
-    padding-left: 0;
+  /* Bento: reflow to two columns, breadth + advisory keep their height */
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "breadth breadth"
+      "movers roce"
+      "racalls advisory"
+      "news advisory";
   }
 
   .sector-grid {
@@ -1660,6 +1750,18 @@
 
   .dash-movers-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Bento: single-column stack on mobile */
+  .bento {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "breadth"
+      "movers"
+      "roce"
+      "racalls"
+      "news"
+      "advisory";
   }
 
   .sector-grid {
@@ -1787,56 +1889,6 @@
 /* ============================================================
    Market overview board: indices + breadth (left) | RA calls (right)
    ============================================================ */
-.market-board {
-  display: grid;
-  grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
-  gap: 0 40px;
-  align-items: start;
-}
-
-.market-board-main,
-.ra-col {
-  min-width: 0;
-}
-
-/* Vertical rule between board and RA calls (matches dash-two-col). */
-.ra-col {
-  border-left: 1px solid var(--landing-line);
-  padding-left: 40px;
-}
-
-.market-board-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.breadth-block {
-  margin-top: 0;
-}
-
-.breadth-heading {
-  display: block;
-  margin-bottom: 12px;
-  color: var(--landing-ink);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* Breadth panel */
-.breadth-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 28px;
-}
-
-.breadth-main {
-  min-width: 0;
-}
-
 .breadth-bar {
   display: flex;
   width: 100%;
@@ -1864,8 +1916,8 @@
 
 .breadth-stats {
   display: flex;
-  gap: 34px;
-  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 16px 28px;
 }
 
 .breadth-stat {
@@ -1897,27 +1949,37 @@
   font-size: 12px;
 }
 
-/* VIX block, divider on its left */
+/* VIX block: full-width row inside the breadth tile, pushed to the bottom.
+   Text on the left, sparkline filling the right. */
 .breadth-vix {
   display: grid;
-  justify-items: end;
-  gap: 1px;
-  padding-left: 28px;
-  border-left: 1px solid var(--landing-line);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--landing-line);
+}
+
+.breadth-vix-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
 }
 
 .breadth-vix-label {
   color: var(--landing-muted);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
 }
 
 .breadth-vix-val {
   color: var(--landing-ink);
-  font-size: 26px;
-  font-weight: 700;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
   letter-spacing: -0.01em;
-  line-height: 1.05;
+  line-height: var(--lh-solid);
 }
 
 .breadth-vix-change {
@@ -1937,9 +1999,9 @@
 }
 
 .breadth-vix-spark {
-  width: 110px;
-  height: 30px;
-  margin-top: 4px;
+  width: 100%;
+  height: 34px;
+  justify-self: end;
 }
 
 .breadth-vix-spark.up {
@@ -1948,12 +2010,6 @@
 
 .breadth-vix-spark.down {
   stroke: var(--down);
-}
-
-.breadth-note {
-  margin: 18px 0 0;
-  color: var(--landing-muted);
-  font-size: 12px;
 }
 
 /* RA calls list */
@@ -2112,28 +2168,10 @@
   cursor: default;
 }
 
-@media (max-width: 1000px) {
-  .market-board {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  .ra-col {
-    border-left: 0;
-    padding-left: 0;
-  }
-}
-
 @media (max-width: 620px) {
-  .breadth-panel {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
   .breadth-vix {
-    justify-items: start;
-    padding-left: 0;
-    border-left: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
   }
 
   .breadth-stats {
@@ -2303,25 +2341,6 @@
   }
 }
 
-/* Screener + market news + advisory band */
-.screener-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
-  gap: 36px;
-  align-items: stretch;
-}
-
-.news-col {
-  padding-right: 36px;
-  border-right: 1px solid var(--landing-line);
-}
-
-.news-col {
-  display: grid;
-  gap: 16px;
-  min-width: 0;
-}
-
 /* Market news list */
 .news-list {
   display: grid;
@@ -2372,14 +2391,11 @@
   font-size: 12px;
 }
 
-/* Advisory promo card */
-.advisory-card {
-  display: grid;
-  align-content: start;
-  align-self: start;
+/* Advisory promo: the bento accent tile (blue gradient overrides tile chrome) */
+.bento-advisory {
+  justify-content: center;
   gap: 16px;
-  padding: 24px;
-  border-radius: 14px;
+  border-color: transparent;
   background: linear-gradient(160deg, #0a1a6b 0%, #0039ff 100%);
   color: #ffffff;
 }
@@ -2429,10 +2445,4 @@
 
 .advisory-cta:hover {
   transform: translateY(-1px);
-}
-
-@media (max-width: 1040px) {
-  .screener-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
