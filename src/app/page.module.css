@@ -1363,10 +1363,10 @@
   grid-auto-rows: minmax(0, auto);
   gap: 16px;
   grid-template-areas:
-    "movers movers breadth roce"
-    "movers movers breadth roce"
-    "spurt spurt spurt advisory"
-    "racalls racalls news news";
+    "movers movers breadth news"
+    "movers movers breadth news"
+    "racalls racalls roce roce"
+    "spurt spurt spurt advisory";
 }
 
 .bento-tile {
@@ -1523,9 +1523,9 @@ a.spurt-row:hover .spurt-name {
 
 .reports-row {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr) 64px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(0, 1.4fr) minmax(0, 1fr) 64px;
   align-items: center;
-  gap: 18px;
+  gap: 40px;
   padding: 14px 0;
   border-bottom: 1px solid var(--landing-line);
 }
@@ -1886,10 +1886,9 @@ a.spurt-row:hover .spurt-name {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       "breadth breadth"
-      "movers roce"
-      "spurt spurt"
-      "racalls advisory"
-      "news advisory";
+      "movers news"
+      "racalls roce"
+      "spurt advisory";
   }
 
   .sector-grid {
@@ -1915,10 +1914,10 @@ a.spurt-row:hover .spurt-name {
     grid-template-areas:
       "movers"
       "breadth"
+      "news"
+      "racalls"
       "roce"
       "spurt"
-      "racalls"
-      "news"
       "advisory";
   }
 
