@@ -1,13 +1,23 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, Layers, Factory, FlaskConical } from "lucide-react";
 
 import { css } from "@/lib/css-module";
-import { companyHref, formatIndianNumber } from "@/lib/data/format";
+import { companyHref, formatIndianNumber, marketHref } from "@/lib/data/format";
 import type { Company, IndustryNode } from "@/lib/data/types";
+import { COMPANY_LOGO_CODES } from "../company-logos";
 import styles from "./company.module.css";
+
+// One icon per hierarchy depth: sector → group → industry → leaf.
+const CRUMB_ICONS: ComponentType<{ size?: number; "aria-hidden"?: boolean }>[] = [
+  Globe,
+  Layers,
+  Factory,
+  FlaskConical
+];
 
 function stockInitial(company: Company): string {
   const match = company.name.match(/[A-Za-z0-9]/u);
@@ -99,9 +109,29 @@ export function RelatedStocks({
     <section className={css(styles, "related-stocks")} aria-labelledby="related-stocks-title">
       <div className={css(styles, "related-stocks-head")}>
         <h2 id="related-stocks-title">Peer Comparison</h2>
-        <p>
-          Compare {ticker} with peers from {source?.name ?? "the same category"}.
-        </p>
+        {source && source.names.length ? (
+          <nav className={css(styles, "peer-breadcrumb")} aria-label="Sector hierarchy">
+            {source.names.map((name, i) => {
+              const Icon = CRUMB_ICONS[i] ?? CRUMB_ICONS[CRUMB_ICONS.length - 1];
+
+              return (
+                <span className={css(styles, "peer-crumb-item")} key={source.path[i] ?? name}>
+                  {i > 0 ? (
+                    <ChevronRight className={css(styles, "peer-crumb-sep")} size={14} aria-hidden="true" />
+                  ) : null}
+                  <Link className={css(styles, "peer-crumb")} href={marketHref(source.path.slice(0, i + 1))}>
+                    <Icon size={15} aria-hidden={true} />
+                    {name}
+                  </Link>
+                </span>
+              );
+            })}
+          </nav>
+        ) : (
+          <p>
+            Compare {ticker} with peers from {source?.name ?? "the same category"}.
+          </p>
+        )}
       </div>
       <div className={css(styles, "related-stock-carousel")}>
         <div className={css(styles, "related-stock-rail")} ref={railRef}>
@@ -115,9 +145,20 @@ export function RelatedStocks({
                 key={`${company.code}-${company.leaf.code}`}
               >
                 <span className={css(styles, "related-stock-top")}>
-                  <span className={css(styles, "related-stock-logo")} aria-hidden="true">
-                    {stockInitial(company)}
-                  </span>
+                  {COMPANY_LOGO_CODES.has(company.code.toUpperCase()) ? (
+                    <img
+                      className={css(styles, "related-stock-logo related-stock-logo-img")}
+                      src={`/logos/${company.code.toUpperCase()}.svg`}
+                      alt={`${company.name} logo`}
+                      width={36}
+                      height={36}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className={css(styles, "related-stock-logo")} aria-hidden="true">
+                      {stockInitial(company)}
+                    </span>
+                  )}
                   <span className={css(styles, "related-stock-copy")}>
                     <span>
                       <strong>{company.name}</strong>
