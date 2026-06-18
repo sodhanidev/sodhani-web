@@ -517,15 +517,106 @@
 }
 
 .ratios-snapshot-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
   padding-top: 0;
   padding-bottom: 0;
 
 }
 
+.ratios-snapshot-head .financials-section-toggle {
+  width: auto;
+  flex: 0 0 auto;
+
+}
+
+.ratios-snapshot-head .financials-detail-heading h2,
 .financials-detail-heading.ratios-snapshot-head h2 {
   margin: 0;
   font-size: var(--fs-xl);
   line-height: var(--lh-heading);
+
+}
+
+.sc-toggle-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+
+}
+
+/* Toggle sits right of the title, not pushed to the far edge.
+   Combined selector beats .section-title-row's space-between. */
+.sc-title-row,
+.section-title-row.sc-title-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+
+}
+
+.sc-title-row h2,
+.sc-title-group h2 {
+  margin: 0;
+
+}
+
+.sc-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+}
+
+.sc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 7px;
+  background: var(--surface-elevated, rgba(148, 163, 184, 0.12));
+
+}
+
+.sc-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  cursor: default;
+  font: inherit;
+  font-size: var(--fs-sm, 13px);
+  font-weight: var(--fw-semibold, 600);
+  line-height: 1;
+  padding: 0;
+  white-space: nowrap;
+  transition: background 140ms ease, color 140ms ease;
+
+}
+
+.sc-toggle-btn:hover {
+  color: var(--text);
+
+}
+
+.sc-toggle-btn.is-active {
+  background: #3b82f6;
+  color: #fff;
+
+}
+
+.sc-toggle-btn:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 1px;
 
 }
 
@@ -3421,6 +3512,31 @@
 
 }
 
+/* Statement header: collapse button + S/C toggle + meta on one row. */
+.financials-statement-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+}
+
+.financials-statement-collapse {
+  width: auto;
+  flex: 0 0 auto;
+
+}
+
+.financials-statement-head .sc-toggle-row {
+  flex: 0 0 auto;
+
+}
+
+.financials-statement-meta {
+  margin: 0 0 0 auto;
+  text-align: right;
+
+}
+
 .financials-section-toggle h2 {
   display: flex;
   align-items: center;
@@ -3431,9 +3547,9 @@
 .financials-section-toggle .collapse-caret,
 .ownership-section-toggle .collapse-caret {
   color: var(--ink);
-  border-left-width: 11px;
-  border-top-width: 8px;
-  border-bottom-width: 8px;
+  border-left-width: 10.45px;
+  border-top-width: 7.6px;
+  border-bottom-width: 7.6px;
 
 }
 
@@ -3625,9 +3741,9 @@
   width: 0;
   height: 0;
   flex: 0 0 auto;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-  border-left: 6px solid currentColor;
+  border-top: 3.8px solid transparent;
+  border-bottom: 3.8px solid transparent;
+  border-left: 5.7px solid currentColor;
   color: var(--muted);
   transition: transform 150ms ease, color 140ms ease;
 

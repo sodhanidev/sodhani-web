@@ -98,9 +98,9 @@ export function RelatedStocks({
   return (
     <section className={css(styles, "related-stocks")} aria-labelledby="related-stocks-title">
       <div className={css(styles, "related-stocks-head")}>
-        <h2 id="related-stocks-title">Related stocks</h2>
+        <h2 id="related-stocks-title">Peer Comparison</h2>
         <p>
-          Check out other names from {source?.name ?? "the same category"} as {ticker}.
+          Compare {ticker} with peers from {source?.name ?? "the same category"}.
         </p>
       </div>
       <div className={css(styles, "related-stock-carousel")}>
@@ -139,7 +139,7 @@ export function RelatedStocks({
           })}
         </div>
         <button
-          aria-label="Scroll related stocks left"
+          aria-label="Scroll peers left"
           className={css(styles, "related-stock-scroll-button is-left")}
           disabled={!canScrollBack}
           type="button"
@@ -148,7 +148,7 @@ export function RelatedStocks({
           <ChevronLeft size={22} strokeWidth={2.4} aria-hidden="true" />
         </button>
         <button
-          aria-label="Scroll related stocks right"
+          aria-label="Scroll peers right"
           className={css(styles, "related-stock-scroll-button is-right")}
           disabled={!canScrollForward}
           type="button"

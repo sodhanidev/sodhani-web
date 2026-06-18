@@ -7,6 +7,8 @@ import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
 import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
+import { InfoTooltip } from "./InfoTooltip";
+import { ScToggle, type ScMode } from "./ScToggle";
 import {
   ANNUAL_RESULT_PERIODS,
   QUARTERLY_RESULT_PERIODS,
@@ -198,13 +200,23 @@ function FinancialRows({ periods, rows }: { periods: string[]; rows: FinRow[] })
   );
 }
 
+const SC_TOOLTIP =
+  "Standalone covers the parent company alone. Consolidated includes its subsidiaries — the standard view for valuation.";
+
+function hasAnyTable(s: Stock) {
+  return hasTable(s.quarterly) || hasTable(s.profitLoss) || hasTable(s.balanceSheet) || hasTable(s.cashFlows);
+}
+
 function StatementSection({
   id,
   kicker,
   meta,
   periods,
   rows,
-  title
+  title,
+  scMode,
+  onScChange,
+  showToggle
 }: {
   id: string;
   kicker: string;
@@ -212,26 +224,37 @@ function StatementSection({
   periods: string[];
   rows: FinRow[];
   title: string;
+  scMode: ScMode;
+  onScChange: (mode: ScMode) => void;
+  showToggle: boolean;
 }) {
   const [open, setOpen] = useState(true);
 
   return (
     <section className={css(styles, "financials-statement-section")} id={id}>
-      <button
-        aria-expanded={open}
-        className={css(styles, "financials-detail-heading financials-section-toggle")}
-        onClick={() => setOpen((value) => !value)}
-        type="button"
-      >
-        <div>
-          <span>{kicker}</span>
-          <h2>
-            <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
-            {title}
-          </h2>
-        </div>
-        <p>{meta}</p>
-      </button>
+      <div className={css(styles, "financials-detail-heading financials-statement-head")}>
+        <button
+          aria-expanded={open}
+          className={css(styles, "financials-section-toggle financials-statement-collapse")}
+          onClick={() => setOpen((value) => !value)}
+          type="button"
+        >
+          <div>
+            <span>{kicker}</span>
+            <h2>
+              <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
+              {title}
+            </h2>
+          </div>
+        </button>
+        {showToggle ? (
+          <div className={css(styles, "sc-toggle-row")}>
+            <ScToggle value={scMode} onChange={onScChange} ariaLabel={`${title} standalone or consolidated`} />
+            <InfoTooltip>{SC_TOOLTIP}</InfoTooltip>
+          </div>
+        ) : null}
+        <p className={css(styles, "financials-statement-meta")}>{meta}</p>
+      </div>
       {open ? (
         <div className={css(styles, "financials-table-card")}>
           <div className={css(styles, "financials-table-wrap")}>
@@ -255,20 +278,23 @@ function StatementSection({
   );
 }
 
-export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
-  const [incomeMode, setIncomeMode] = useState<PeriodMode>(hasTable(stock.quarterly) ? "quarterly" : "yearly");
-  const hasIncome = hasTable(stock.quarterly) || hasTable(stock.profitLoss);
+export function FinancialsDetailsClient({ stock, consolidated }: { stock: Stock; consolidated?: Stock }) {
+  const hasConsolidated = Boolean(consolidated && hasAnyTable(consolidated));
+  const [scMode, setScMode] = useState<ScMode>("standalone");
+  const active = scMode === "consolidated" && consolidated ? consolidated : stock;
+  const [incomeMode, setIncomeMode] = useState<PeriodMode>(hasTable(active.quarterly) ? "quarterly" : "yearly");
+  const hasIncome = hasTable(active.quarterly) || hasTable(active.profitLoss);
   const incomeModes = [
-    hasTable(stock.quarterly) ? { key: "quarterly" as const, label: "Quarterly" } : null,
-    hasTable(stock.profitLoss) ? { key: "yearly" as const, label: "Annual" } : null
+    hasTable(active.quarterly) ? { key: "quarterly" as const, label: "Quarterly" } : null,
+    hasTable(active.profitLoss) ? { key: "yearly" as const, label: "Annual" } : null
   ].filter((item): item is { key: PeriodMode; label: string } => Boolean(item));
   const activeIncomeMode = incomeModes.some((item) => item.key === incomeMode) ? incomeMode : incomeModes[0]?.key ?? "yearly";
   const incomeTable = limitTablePeriods(
-    getTableForTab(stock, "income", activeIncomeMode),
+    getTableForTab(active, "income", activeIncomeMode),
     activeIncomeMode === "quarterly" ? QUARTERLY_RESULT_PERIODS : ANNUAL_RESULT_PERIODS
   );
-  const balanceSheet = limitTablePeriods(stock.balanceSheet, ANNUAL_RESULT_PERIODS);
-  const cashFlows = limitTablePeriods(stock.cashFlows, ANNUAL_RESULT_PERIODS);
+  const balanceSheet = limitTablePeriods(active.balanceSheet, ANNUAL_RESULT_PERIODS);
+  const cashFlows = limitTablePeriods(active.cashFlows, ANNUAL_RESULT_PERIODS);
   const statementSections = [
     hasIncome
       ? {
@@ -279,7 +305,7 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           title: activeIncomeMode === "quarterly" ? "Quarterly Results" : "Annual Results"
         }
       : null,
-    hasTable(stock.balanceSheet)
+    hasTable(active.balanceSheet)
       ? {
           id: "balance-sheet",
           mode: "yearly" as const,
@@ -288,7 +314,7 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           title: "Balance Sheet"
         }
       : null,
-    hasTable(stock.cashFlows)
+    hasTable(active.cashFlows)
       ? {
           id: "cash-flow",
           mode: "yearly" as const,
@@ -389,6 +415,9 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
             periods={getTableDisplayPeriods(item.table)}
             rows={item.table.rows}
             title={item.title}
+            scMode={scMode}
+            onScChange={setScMode}
+            showToggle={hasConsolidated}
           />
         ))}
       </section>

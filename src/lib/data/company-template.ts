@@ -1,6 +1,11 @@
 import { getCompanies, getCompanyByCode, getCompaniesForNode } from "./companies";
 import { getNodeByCode } from "./industry";
-import { getAvailableStockCodes, getPricePoints, getStock } from "./stocks";
+import {
+  getAvailableStockCodes,
+  getPricePoints,
+  getStock,
+  getStockConsolidated
+} from "./stocks";
 import type {
   Company,
   IndustryNode,
@@ -18,6 +23,9 @@ export type CompanyPageModel = {
   peerSource?: IndustryNode;
   prices: PricePoint[];
   stock: Stock;
+  // Consolidated variant; absent when the API has no consolidated data for the
+  // ticker. `stock` is always the standalone view.
+  stockConsolidated?: Stock;
 };
 
 export function getCompanyTemplateCodes() {
@@ -152,6 +160,7 @@ export async function getCompanyPageModel(code: string): Promise<CompanyPageMode
     peers: related.peers,
     peerSource: related.source,
     prices: getPricePoints(code),
-    stock: stockData
+    stock: stockData,
+    stockConsolidated: getStockConsolidated(code)
   };
 }

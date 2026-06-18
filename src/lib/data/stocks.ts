@@ -8,9 +8,31 @@ import type { FinRow, FinancialTable, PricePoint, Stock } from "./types";
 const STOCK_DIR = path.join(process.cwd(), "stock_page");
 let availableStockCodesCache: string[] | null = null;
 const stockCache = new Map<string, Stock | undefined>();
+const consolidatedStockCache = new Map<string, Stock | undefined>();
 const pricePointsCache = new Map<string, PricePoint[]>();
 
 type RawFinRow = Record<string, string | boolean | RawFinRow[] | undefined>;
+
+type RawStock = {
+  ticker?: string;
+  url?: string;
+  overview?: { company_name?: string; current_price?: string; about?: string };
+  key_metrics?: Record<string, string>;
+  pros_cons?: { pros?: string[]; cons?: string[] };
+  quarterly?: RawFinRow[];
+  profit_loss?: RawFinRow[];
+  balance_sheet?: RawFinRow[];
+  cash_flows?: RawFinRow[];
+  ratios?: RawFinRow[];
+  shareholding?: { table_1?: RawFinRow[]; table_2?: RawFinRow[] };
+  investors?: Stock["investors"];
+  documents?: {
+    announcements?: Stock["documents"]["announcements"];
+    annual_reports?: Stock["documents"]["annualReports"];
+    credit_ratings?: Stock["documents"]["creditRatings"];
+    concalls?: Stock["documents"]["concalls"];
+  };
+};
 
 function normalizeFinRows(rows: RawFinRow[]): FinancialTable {
   const [header, ...body] = rows;
@@ -54,22 +76,10 @@ export function getAvailableStockCodes(): string[] {
   return availableStockCodesCache;
 }
 
-export function getStock(code: string): Stock | undefined {
-  const cacheKey = code.toUpperCase();
-  if (stockCache.has(cacheKey)) {
-    return stockCache.get(cacheKey);
-  }
-
-  const lower = code.toLowerCase();
-  const file = path.join(STOCK_DIR, `${lower}.json`);
-  if (!fs.existsSync(file)) {
-    stockCache.set(cacheKey, undefined);
-    return undefined;
-  }
-
-  const raw = JSON.parse(fs.readFileSync(file, "utf8"));
-
-  const stock = {
+// Map a raw on-disk JSON object (snake_case, screener shape) into a Stock.
+// Shared by the standalone and consolidated loaders.
+function buildStockFromRaw(raw: RawStock, code: string): Stock {
+  return {
     ticker: String(raw.ticker ?? code).toUpperCase(),
     sourceUrl: String(raw.url ?? ""),
     overview: {
@@ -99,9 +109,49 @@ export function getStock(code: string): Stock | undefined {
       concalls: raw.documents?.concalls ?? []
     }
   };
+}
 
-  stockCache.set(cacheKey, stock);
+// Read + normalize one on-disk stock JSON, with caching. Returns undefined if
+// the file is absent.
+function loadStockFile(
+  cache: Map<string, Stock | undefined>,
+  cacheKey: string,
+  file: string,
+  code: string
+): Stock | undefined {
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey);
+  }
+  if (!fs.existsSync(file)) {
+    cache.set(cacheKey, undefined);
+    return undefined;
+  }
+  const raw = JSON.parse(fs.readFileSync(file, "utf8")) as RawStock;
+  const stock = buildStockFromRaw(raw, code);
+  cache.set(cacheKey, stock);
   return stock;
+}
+
+export function getStock(code: string): Stock | undefined {
+  const lower = code.toLowerCase();
+  return loadStockFile(
+    stockCache,
+    code.toUpperCase(),
+    path.join(STOCK_DIR, `${lower}.json`),
+    code
+  );
+}
+
+// Consolidated variant, written to {code}.consolidated.json by the prefetch
+// script. Absent for tickers the API has no consolidated data for.
+export function getStockConsolidated(code: string): Stock | undefined {
+  const lower = code.toLowerCase();
+  return loadStockFile(
+    consolidatedStockCache,
+    code.toUpperCase(),
+    path.join(STOCK_DIR, `${lower}.consolidated.json`),
+    code
+  );
 }
 
 export function getPricePoints(code: string): PricePoint[] {
