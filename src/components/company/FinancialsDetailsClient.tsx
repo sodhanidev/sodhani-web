@@ -7,8 +7,8 @@ import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
 import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
-import { InfoTooltip } from "./InfoTooltip";
 import { ScToggle, type ScMode } from "./ScToggle";
+import { PeriodStepper, usePeriodOrder } from "./PeriodStepper";
 import {
   ANNUAL_RESULT_PERIODS,
   QUARTERLY_RESULT_PERIODS,
@@ -124,20 +124,6 @@ function getCellTone(label: string, value: string) {
   return directionalRow ? "financials-positive" : "";
 }
 
-function getPeriodLabel(table: FinancialTable, mode?: PeriodMode) {
-  if (mode === "quarterly") {
-    const years = table.periods.length / 4;
-    const yearLabel = Number.isInteger(years) ? `${years} years` : `${formatIndianNumber(years, { dp: 1 })} years`;
-    return `${table.periods.length} quarters · ${yearLabel}`;
-  }
-
-  if (mode === "yearly") {
-    return `${table.periods.length} years`;
-  }
-
-  return `${table.periods.length} periods`;
-}
-
 function FinancialRow({
   child = false,
   periods,
@@ -200,9 +186,6 @@ function FinancialRows({ periods, rows }: { periods: string[]; rows: FinRow[] })
   );
 }
 
-const SC_TOOLTIP =
-  "Standalone covers the parent company alone. Consolidated includes its subsidiaries — the standard view for valuation.";
-
 function hasAnyTable(s: Stock) {
   return hasTable(s.quarterly) || hasTable(s.profitLoss) || hasTable(s.balanceSheet) || hasTable(s.cashFlows);
 }
@@ -210,7 +193,6 @@ function hasAnyTable(s: Stock) {
 function StatementSection({
   id,
   kicker,
-  meta,
   periods,
   rows,
   title,
@@ -220,7 +202,6 @@ function StatementSection({
 }: {
   id: string;
   kicker: string;
-  meta: string;
   periods: string[];
   rows: FinRow[];
   title: string;
@@ -229,6 +210,8 @@ function StatementSection({
   showToggle: boolean;
 }) {
   const [open, setOpen] = useState(true);
+  const periodOrder = usePeriodOrder();
+  const visiblePeriods = periodOrder.order(periods);
 
   return (
     <section className={css(styles, "financials-statement-section")} id={id}>
@@ -248,12 +231,9 @@ function StatementSection({
           </div>
         </button>
         {showToggle ? (
-          <div className={css(styles, "sc-toggle-row")}>
-            <ScToggle value={scMode} onChange={onScChange} ariaLabel={`${title} standalone or consolidated`} />
-            <InfoTooltip>{SC_TOOLTIP}</InfoTooltip>
-          </div>
+          <ScToggle value={scMode} onChange={onScChange} ariaLabel={`${title} standalone or consolidated`} />
         ) : null}
-        <p className={css(styles, "financials-statement-meta")}>{meta}</p>
+        {open ? <PeriodStepper reversed={periodOrder.reversed} onToggle={periodOrder.toggle} /> : null}
       </div>
       {open ? (
         <div className={css(styles, "financials-table-card")}>
@@ -262,13 +242,13 @@ function StatementSection({
               <thead>
                 <tr>
                   <th>Particulars</th>
-                  {periods.map((period) => (
+                  {visiblePeriods.map((period) => (
                     <th key={period}>{period}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                <FinancialRows periods={periods} rows={rows} />
+                <FinancialRows periods={visiblePeriods} rows={rows} />
               </tbody>
             </table>
           </div>
@@ -411,7 +391,6 @@ export function FinancialsDetailsClient({ stock, consolidated }: { stock: Stock;
             id={item.id}
             key={item.id}
             kicker={item.tab.kicker}
-            meta={`${getPeriodLabel(item.table, item.mode)} · latest ${getLatestPeriod(item.table)}`}
             periods={getTableDisplayPeriods(item.table)}
             rows={item.table.rows}
             title={item.title}

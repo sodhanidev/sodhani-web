@@ -5,13 +5,10 @@ import { useState } from "react";
 import { css } from "@/lib/css-module";
 import type { FinancialTable } from "@/lib/data/types";
 import styles from "./company.module.css";
-import { InfoTooltip } from "./InfoTooltip";
 import { ScToggle, type ScMode } from "./ScToggle";
+import { PeriodStepper, usePeriodOrder } from "./PeriodStepper";
 
 const RATIO_PERIODS = 7;
-
-const SC_TOOLTIP =
-  "Standalone covers the parent company alone. Consolidated includes its subsidiaries — the standard view for valuation.";
 
 function rowHasValues(row: FinancialTable["rows"][number], periods: string[]) {
   return periods.some((period) => row.values[period]);
@@ -33,12 +30,13 @@ export function FinancialRatiosSnapshot({
   const [open, setOpen] = useState(true);
 
   const active = mode === "consolidated" && consolidatedRatios ? consolidatedRatios : annualRatios;
+  const periodOrder = usePeriodOrder();
 
   if (!hasTable(active)) {
     return null;
   }
 
-  const displayPeriods = active.periods.slice(-RATIO_PERIODS).reverse();
+  const displayPeriods = periodOrder.order(active.periods.slice(-RATIO_PERIODS).reverse());
   const rows = active.rows.filter((row) => rowHasValues(row, displayPeriods));
 
   if (!displayPeriods.length || !rows.length) {
@@ -62,11 +60,9 @@ export function FinancialRatiosSnapshot({
           </div>
         </button>
         {hasConsolidated ? (
-          <div className={css(styles, "sc-toggle-row")}>
-            <ScToggle value={mode} onChange={setMode} ariaLabel="Ratios standalone or consolidated" />
-            <InfoTooltip>{SC_TOOLTIP}</InfoTooltip>
-          </div>
+          <ScToggle value={mode} onChange={setMode} ariaLabel="Ratios standalone or consolidated" />
         ) : null}
+        {open ? <PeriodStepper reversed={periodOrder.reversed} onToggle={periodOrder.toggle} /> : null}
       </div>
       {open ? (
         <div className={css(styles, "financials-table-card")}>
