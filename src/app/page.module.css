@@ -1365,8 +1365,8 @@
   grid-template-areas:
     "movers movers breadth news"
     "movers movers breadth news"
-    "racalls racalls roce roce"
-    "spurt spurt spurt advisory";
+    "racalls racalls racalls advisory"
+    "spurt spurt roce roce";
 }
 
 .bento-tile {
@@ -1994,8 +1994,8 @@ a.spurt-row:hover .spurt-name {
     grid-template-areas:
       "breadth breadth"
       "movers news"
-      "racalls roce"
-      "spurt advisory";
+      "racalls advisory"
+      "spurt roce";
   }
 
   .sector-grid {
