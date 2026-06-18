@@ -12,6 +12,9 @@ export const COMPANY_LOGO_CODES: ReadonlySet<string> = new Set([
   "BAJFINANCE",
   "BHARTIARTL",
   "BIOCON",
+  "CIPLA",
+  "DIVISLAB",
+  "DRREDDY",
   "GLENMARK",
   "HDFCBANK",
   "ICICIBANK",
@@ -22,5 +25,6 @@ export const COMPANY_LOGO_CODES: ReadonlySet<string> = new Set([
   "RELIANCE",
   "SBIN",
   "TCS",
+  "TORNTPHARM",
   "ZYDUSLIFE"
 ]);
