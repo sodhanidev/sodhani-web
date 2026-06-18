@@ -17,9 +17,6 @@ import type { FinRow, FinancialTable } from "@/lib/data/types";
 // FinancialPerformance component until this gets revisited.
 type PeriodMode = "yearly" | "quarterly";
 
-const SC_TOOLTIP =
-  "Standalone covers the parent company alone. Consolidated includes its subsidiaries — the standard view for valuation.";
-
 type ChartMetric = {
   key: string;
   label: string;
@@ -595,10 +592,7 @@ export function FinancialPerformanceExperimental({
         <div className={css(styles, "sc-title-group")}>
           <h2>Financial Performance</h2>
           {hasConsolidated ? (
-            <div className={css(styles, "sc-toggle-row")}>
-              <ScToggle value={scMode} onChange={setScMode} ariaLabel="Financials standalone or consolidated" />
-              <InfoTooltip>{SC_TOOLTIP}</InfoTooltip>
-            </div>
+            <ScToggle value={scMode} onChange={setScMode} ariaLabel="Financials standalone or consolidated" />
           ) : null}
         </div>
         <Link className={css(styles, "shareholding-detail-link financial-detail-link")} href={companyFinancialsHref(ticker)}>
