@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, ArrowRight, ArrowUpRight, Rocket, Trophy } from "lucide-react";
+import { Activity, ArrowRight, ArrowUpRight, Rocket } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
@@ -10,9 +10,7 @@ import { MarketBreadthPanel } from "@/components/MarketBreadthPanel";
 import { RaCallsPanel } from "@/components/RaCallsPanel";
 import { MarketSnapshot } from "@/components/MarketSnapshot";
 import { PromoBanner } from "@/components/PromoBanner";
-import { NewsPanel } from "@/components/NewsPanel";
 import { AdvisoryCard } from "@/components/AdvisoryCard";
-import { VolumeSpurtPanel } from "@/components/VolumeSpurtPanel";
 import { ResearchReports } from "@/components/ResearchReports";
 import { RailScroller } from "@/components/RailScroller";
 import { SectorHealthCards } from "@/components/SectorHealthCards";
@@ -37,8 +35,8 @@ function toMover(company: Company): Mover {
 }
 
 // Profit growth off a tiny base produces absurd figures (a company going from
-// ₹0.1Cr to ₹100Cr profit reads as +99,900%). Rank movers only among companies
-// with a real profit base and a believable variance band so the numbers look honest.
+// Rs 0.1Cr to Rs 100Cr profit reads as +99,900%). Rank movers only among
+// companies with a real profit base and a believable variance band.
 const MOVER_MIN_PROFIT_CR = 100;
 const MOVER_MAX_ABS_PCT = 150;
 
@@ -74,7 +72,6 @@ export default function HomePage() {
   const featured = topCompanies(companies, "marketCapCr", 8);
   const gainers = topGainers(companies, 10).map(toMover);
   const losers = topLosers(companies, 10).map(toMover);
-  const qualityLeaders = topCompanies(companies, "rocePct", 6);
 
   const sectors = [...roots]
     .filter((node) => node.companyCount > 0)
@@ -92,7 +89,7 @@ export default function HomePage() {
             Indian company in one place
           </h1>
           <p className={css(styles, "dash-hero-sub")}>
-            Screen, compare, and dig into financials, ratios, and shareholding — all from fast,
+            Screen, compare, and dig into financials, ratios, and shareholding, all from fast,
             static data.
           </p>
           <div className={css(styles, "dash-hero-cta")}>
@@ -110,9 +107,6 @@ export default function HomePage() {
 
       {/* Market snapshot: indices, commodities, currency */}
       <MarketSnapshot />
-
-      {/* SEBI RA promo banner */}
-      <PromoBanner />
 
       {/* Explore & analyze stocks rail */}
       <section className={css(styles, "dash-section")}>
@@ -160,6 +154,9 @@ export default function HomePage() {
         </RailScroller>
       </section>
 
+      {/* SEBI RA promo banner */}
+      <PromoBanner />
+
       {/* Market today: dense asymmetric bento of live market data */}
       <section className={css(styles, "dash-section")}>
         <div className={css(styles, "dash-section-head")}>
@@ -182,54 +179,12 @@ export default function HomePage() {
             <MarketMoversTabs gainers={gainers} losers={losers} />
           </div>
 
-          <div className={css(styles, "bento-tile bento-roce")}>
-            <div className={css(styles, "bento-tile-head")}>
-              <span className={css(styles, "bento-eyebrow")}>
-                <Trophy size={14} aria-hidden="true" />
-                Top by ROCE
-              </span>
-            </div>
-            <ul className={css(styles, "roce-list")}>
-              {qualityLeaders.map((company, i) => (
-                <li key={company.code}>
-                  <Link href={companyHref(company.code)} className={css(styles, "roce-row")}>
-                    <span className={css(styles, "roce-rank")}>{i + 1}</span>
-                    <CompanyLogoMark code={company.code} name={company.name} size="md" />
-                    <span className={css(styles, "roce-id")}>
-                      <span className={css(styles, "roce-name")}>{company.name}</span>
-                      <span className={css(styles, "roce-ticker")}>
-                        {company.code}
-                        {company.sector?.name ? ` · ${company.sector.name}` : ""}
-                      </span>
-                    </span>
-                    <span className={css(styles, "roce-figures")}>
-                      <span className={css(styles, "numeric roce-val")}>
-                        {formatMetric(company.rocePct, "percent")}
-                      </span>
-                      <span className={css(styles, "numeric roce-cmp")}>
-                        {formatMetric(company.cmp, "currency")}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           <div className={css(styles, "bento-tile bento-racalls")}>
             <RaCallsPanel />
           </div>
 
-          <div className={css(styles, "bento-tile bento-news")}>
-            <NewsPanel />
-          </div>
-
           <div className={css(styles, "bento-tile bento-advisory")}>
             <AdvisoryCard />
-          </div>
-
-          <div className={css(styles, "bento-tile bento-spurt")}>
-            <VolumeSpurtPanel />
           </div>
         </div>
       </section>
