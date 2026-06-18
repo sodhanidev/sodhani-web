@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Browse by sector — health cards</title>
+<style>
+  :root {
+    --bg: #000000; --ink: #f2f5f6; --muted: #9aa5ad; --muted-2: #828d95;
+    --line: #23272b; --line-strong: #3a4046; --surface: #000000; --surface-soft: #0c0e10;
+    --blue: #3b82f6; --up: #4dd382; --down: #ff7078;
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --num: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  [data-theme="light"] {
+    --bg: #ffffff; --ink: #0b0d10; --muted: #5d6b76; --muted-2: #76828c;
+    --line: #e7e9ec; --line-strong: #cfd4d9; --surface: #ffffff; --surface-soft: #ffffff;
+    --blue: #0039ff; --up: #15a05a; --down: #e0414c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; padding: 48px 32px 96px; line-height: 1.4; }
+  .wrap { max-width: 1240px; margin: 0 auto; }
+  .toolbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: -48px -32px 40px; padding: 16px 32px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .toolbar h1 { font-size: 15px; font-weight: 650; }
+  .theme-btn { appearance: none; cursor: pointer; background: var(--surface-soft); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; font-family: var(--font); font-size: 12px; font-weight: 600; padding: 7px 14px; }
+  .theme-btn:hover { border-color: var(--line-strong); }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .section-head h2 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+  .view-all { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; cursor: pointer; }
+  .view-all:hover { color: var(--ink); }
+  .view-all svg { width: 14px; height: 14px; }
+  .up { color: var(--up); } .down { color: var(--down); }
+
+  .statgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 900px) { .statgrid { grid-template-columns: 1fr; } }
+  .stat-card { border: 1px solid var(--line); border-radius: 4px; background: var(--surface); padding: 24px 24px 26px; text-decoration: none; color: inherit; display: block; transition: border-color .14s; }
+  .stat-card:hover { border-color: var(--line-strong); }
+  .stat-top { display: flex; align-items: center; gap: 13px; margin-bottom: 28px; }
+  .stat-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 5px; background: var(--surface-soft); border: 1px solid var(--line); color: var(--blue); flex-shrink: 0; }
+  .stat-name { font-family: var(--num); font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat-co { font-family: var(--num); font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .stat-go { margin-left: auto; color: var(--muted-2); }
+
+  /* numbers use the mono "key-metric" font */
+  .stat-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat-metric { display: flex; flex-direction: column; gap: 7px; }
+  .stat-metric .v { font-family: var(--num); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .stat-metric .l { font-family: var(--num); font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+
+  .stat-breadth-wrap { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .stat-breadth-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .stat-breadth-label { font-family: var(--num); font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-breadth-val { font-family: var(--num); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-breadth { display: flex; height: 5px; border-radius: 999px; overflow: hidden; background: var(--surface-soft); }
+  .stat-breadth .adv { background: var(--up); } .stat-breadth .dec { background: var(--down); } .stat-breadth .unch { background: var(--muted-2); opacity: .35; }
+  .stat-breadth-cap { display: flex; justify-content: space-between; font-family: var(--num); font-size: 10px; color: var(--muted); margin-top: 11px; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toolbar">
+    <h1>Browse by sector — health cards (real-data fields)</h1>
+    <button class="theme-btn" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme==='dark'?'light':'dark'">Toggle theme</button>
+  </div>
+
+  <div class="section-head"><h2>Browse by sector</h2><a class="view-all">All sectors <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+  <div class="statgrid" id="statgrid"></div>
+</div>
+
+<script>
+// Real, derivable fields only: total m-cap (sum marketCapCr), weighted P/E (calculatePeForNode),
+// avg profit growth (mean profitVarPct), profit breadth (count profitVarPct >/< 0).
+// Values below are illustrative; the component computes them from src/lib/data.
+const S = [
+  { key:"financial",   name:"Financial Services",      cos:649,  mcapCr:4820000, pe:18.4, growth:14.2, adv:61, dec:33 },
+  { key:"discretionary",name:"Consumer Discretionary", cos:1366, mcapCr:1890000, pe:32.1, growth:9.6,  adv:52, dec:41 },
+  { key:"commodities", name:"Commodities",             cos:551,  mcapCr:1640000, pe:14.8, growth:6.1,  adv:34, dec:59 },
+  { key:"industrials", name:"Industrials",             cos:1018, mcapCr:1510000, pe:41.7, growth:21.5, adv:68, dec:27 },
+  { key:"fmcg",        name:"Fast Moving Consumer Goods",cos:400, mcapCr:1380000, pe:46.2, growth:8.3,  adv:45, dec:48 },
+  { key:"services",    name:"Services",                cos:519,  mcapCr:990000,  pe:28.9, growth:17.8, adv:57, dec:36 },
+];
+
+// ---- Bespoke category icons: 24-grid, stroke 1.5, round caps/joins, currentColor ----
+const ICONS = {
+  // classical bank facade — pediment, columns, plinth
+  financial: `<path d="M3.2 9.4 12 4l8.8 5.4"/><path d="M5 9.6v7.6M9.4 9.6v7.6M14.6 9.6v7.6M19 9.6v7.6"/><path d="M3.6 17.4h16.8"/><path d="M2.8 20h18.4"/>`,
+  // shopping bag with rounded handle
+  discretionary: `<path d="M5.6 8.2h12.8l-.95 11.1a1.2 1.2 0 0 1-1.2 1.1H7.75a1.2 1.2 0 0 1-1.2-1.1L5.6 8.2Z"/><path d="M8.7 8.2V6.6a3.3 3.3 0 0 1 6.6 0v1.6"/>`,
+  // stacked bullion bars — pyramid
+  commodities: `<rect x="3.6" y="14.4" width="16.8" height="4.4" rx="1"/><rect x="6.2" y="9.6" width="11.6" height="4.4" rx="1"/><rect x="8.8" y="4.8" width="6.4" height="4.4" rx="1"/>`,
+  // factory — sawtooth roof, chimney, ground
+  industrials: `<path d="M3 20.2V10.4l4.4 2.7V10.4l4.4 2.7V10.4l4.4 2.7"/><path d="M16.2 13.1V5.2h3.4v15"/><path d="M3 20.2h18"/><path d="M6.4 16.6v1.4M10.8 16.6v1.4"/>`,
+  // shopping cart
+  fmcg: `<path d="M3 4.2h2.1l2.25 11.1a1.2 1.2 0 0 0 1.18.96h8.4a1.2 1.2 0 0 0 1.17-.93L20.7 8.2H6.1"/><circle cx="9.3" cy="19.4" r="1.25"/><circle cx="17.2" cy="19.4" r="1.25"/>`,
+  // cog / settings — services
+  services: `<circle cx="12" cy="12" r="3.1"/><path d="M12 2.6v3.1M12 18.3v3.1M2.6 12h3.1M18.3 12h3.1M5.1 5.1l2.2 2.2M16.7 16.7l2.2 2.2M18.9 5.1l-2.2 2.2M7.3 16.7l-2.2 2.2"/>`,
+};
+const svg = body => `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const GO = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M7 17L17 7M9 7h8v8"/></svg>`;
+
+const crore = n => n>=100000 ? '₹'+(n/100000).toFixed(2)+' L Cr' : '₹'+(n/1000).toFixed(0)+'K Cr';
+
+document.getElementById('statgrid').innerHTML = S.map(s=>{
+  const unch = 100-s.adv-s.dec;
+  return `<a class="stat-card">
+    <div class="stat-top">
+      <span class="stat-icon">${svg(ICONS[s.key])}</span>
+      <span><div class="stat-name">${s.name}</div><div class="stat-co">${s.cos.toLocaleString()} companies</div></span>
+      <span class="stat-go">${GO}</span>
+    </div>
+    <div class="stat-metrics">
+      <div class="stat-metric"><span class="v">${crore(s.mcapCr)}</span><span class="l">M-cap</span></div>
+      <div class="stat-metric"><span class="v">${s.pe.toFixed(1)}</span><span class="l">P / E</span></div>
+      <div class="stat-metric"><span class="v ${s.growth>=0?'up':'down'}">${s.growth>0?'+':''}${s.growth.toFixed(1)}%</span><span class="l">Profit gr.</span></div>
+    </div>
+    <div class="stat-breadth-wrap">
+      <div class="stat-breadth-head"><span class="stat-breadth-label">Profit breadth</span><span class="stat-breadth-val"><span class="up">${s.adv}</span> / <span class="down">${s.dec}</span></span></div>
+      <div class="stat-breadth"><span class="adv" style="width:${s.adv}%"></span><span class="unch" style="width:${unch}%"></span><span class="dec" style="width:${s.dec}%"></span></div>
+      <div class="stat-breadth-cap"><span>${s.adv}% advancing</span><span>${s.dec}% declining</span></div>
+    </div>
+  </a>`;
+}).join('');
+</script>
+</body>
+</html>

@@ -1,25 +1,27 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BarChart3, Rocket, Trophy } from "lucide-react";
+import { Activity, ArrowRight, ArrowUpRight, Rocket } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./page.module.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { CompanyLogoMark } from "@/components/CompanyLogoMark";
 import { MarketMoversTabs, type Mover } from "@/components/MarketMoversTabs";
-import { MarketOverview } from "@/components/MarketOverview";
+import { MarketBreadthPanel } from "@/components/MarketBreadthPanel";
+import { RaCallsPanel } from "@/components/RaCallsPanel";
+import { MarketSnapshot } from "@/components/MarketSnapshot";
 import { PromoBanner } from "@/components/PromoBanner";
-import { ScreenerInsights } from "@/components/ScreenerInsights";
+import { AdvisoryCard } from "@/components/AdvisoryCard";
+import { ResearchReports } from "@/components/ResearchReports";
 import { RailScroller } from "@/components/RailScroller";
-import { SectorIcon } from "@/components/SectorIcon";
+import { SectorHealthCards } from "@/components/SectorHealthCards";
 
-import { getCompanies, getTopCompaniesForNode, topCompanies } from "@/lib/data/companies";
+import { getCompanies, topCompanies } from "@/lib/data/companies";
 import { getIndustryData } from "@/lib/data/industry";
 import {
   candlestickToolHref,
   companyHref,
   formatIndianNumber,
-  formatMetric,
-  marketHref
+  formatMetric
 } from "@/lib/data/format";
 import type { Company } from "@/lib/data/types";
 
@@ -33,8 +35,8 @@ function toMover(company: Company): Mover {
 }
 
 // Profit growth off a tiny base produces absurd figures (a company going from
-// ₹0.1Cr to ₹100Cr profit reads as +99,900%). Rank movers only among companies
-// with a real profit base and a believable variance band so the numbers look honest.
+// Rs 0.1Cr to Rs 100Cr profit reads as +99,900%). Rank movers only among
+// companies with a real profit base and a believable variance band.
 const MOVER_MIN_PROFIT_CR = 100;
 const MOVER_MAX_ABS_PCT = 150;
 
@@ -70,15 +72,11 @@ export default function HomePage() {
   const featured = topCompanies(companies, "marketCapCr", 8);
   const gainers = topGainers(companies, 10).map(toMover);
   const losers = topLosers(companies, 10).map(toMover);
-  const qualityLeaders = topCompanies(companies, "rocePct", 6);
 
   const sectors = [...roots]
     .filter((node) => node.companyCount > 0)
-    .sort((a, b) => b.companyCount - a.companyCount);
-  const sectorCards = sectors.slice(0, 6).map((node) => ({
-    node,
-    leaders: getTopCompaniesForNode(node.code, "marketCapCr", 4)
-  }));
+    .sort((a, b) => b.companyCount - a.companyCount)
+    .slice(0, 6);
 
   return (
     <main className={css(styles, "landing-page")}>
@@ -91,7 +89,7 @@ export default function HomePage() {
             Indian company in one place
           </h1>
           <p className={css(styles, "dash-hero-sub")}>
-            Screen, compare, and dig into financials, ratios, and shareholding — all from fast,
+            Screen, compare, and dig into financials, ratios, and shareholding, all from fast,
             static data.
           </p>
           <div className={css(styles, "dash-hero-cta")}>
@@ -106,6 +104,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Market snapshot: indices, commodities, currency */}
+      <MarketSnapshot />
 
       {/* Explore & analyze stocks rail */}
       <section className={css(styles, "dash-section")}>
@@ -156,88 +157,43 @@ export default function HomePage() {
       {/* SEBI RA promo banner */}
       <PromoBanner />
 
-      {/* Market overview: indices + breadth + sample RA calls */}
-      <MarketOverview />
-
-      {/* Market movers + quality leaders */}
-      <section className={css(styles, "dash-section dash-two-col")}>
-        <div className={css(styles, "dash-col-main")}>
-          <div className={css(styles, "dash-section-head")}>
-            <h2 className={css(styles, "dash-section-title")}>
-              <BarChart3 size={18} aria-hidden="true" />
-              Market movers
-            </h2>
-          </div>
-          <MarketMoversTabs gainers={gainers} losers={losers} />
-        </div>
-
-        <aside className={css(styles, "dash-col-side")}>
-          <div className={css(styles, "dash-section-head")}>
-            <h2 className={css(styles, "dash-section-title")}>
-              <Trophy size={18} aria-hidden="true" />
-              Top by ROCE
-            </h2>
-          </div>
-          <ul className={css(styles, "dash-rank-list")}>
-            {qualityLeaders.map((company) => (
-              <li key={company.code}>
-                <Link href={companyHref(company.code)} className={css(styles, "dash-rank-row")}>
-                  <span className={css(styles, "dash-rank-name")}>
-                    <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                    <span>{company.name}</span>
-                  </span>
-                  <span className={css(styles, "numeric dash-rank-val up")}>
-                    {formatMetric(company.rocePct, "percent")}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </aside>
-      </section>
-
-      {/* Browse by sector cards */}
+      {/* Market today: dense asymmetric bento of live market data */}
       <section className={css(styles, "dash-section")}>
         <div className={css(styles, "dash-section-head")}>
-          <h2 className={css(styles, "dash-section-title")}>Browse by sector</h2>
+          <h2 className={css(styles, "dash-section-title")}>
+            <Activity size={18} aria-hidden="true" />
+            Market today
+          </h2>
           <Link className={css(styles, "dash-view-all")} href="/market/">
-            All sectors
+            Full market
             <ArrowRight size={14} aria-hidden="true" />
           </Link>
         </div>
-        <div className={css(styles, "dash-sector-grid")}>
-          {sectorCards.map(({ node, leaders }) => (
-            <Link key={node.code} href={marketHref(node.path)} className={css(styles, "dash-sectorcard")}>
-              <div className={css(styles, "dash-sectorcard-head")}>
-                <span className={css(styles, "dash-sectorcard-icon")} aria-hidden="true">
-                  <SectorIcon name={node.name} size={16} />
-                </span>
-                <span className={css(styles, "dash-sectorcard-title")}>{node.name}</span>
-                <ArrowUpRight size={15} aria-hidden="true" />
-              </div>
-              <span className={css(styles, "dash-sectorcard-count")}>
-                {formatIndianNumber(node.companyCount)} companies
-              </span>
-              <ul className={css(styles, "dash-sectorcard-list")}>
-                {leaders.map((company) => (
-                  <li key={company.code}>
-                    <span className={css(styles, "dash-sectorcard-co")}>
-                      <CompanyLogoMark code={company.code} name={company.name} size="sm" />
-                      <span>{company.name}</span>
-                    </span>
-                    <span className={css(styles, "numeric dash-sectorcard-mcap")}>
-                      {formatMetric(company.marketCapCr, "crore")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Link>
-          ))}
+
+        <div className={css(styles, "bento")}>
+          <div className={css(styles, "bento-tile bento-breadth")}>
+            <MarketBreadthPanel />
+          </div>
+
+          <div className={css(styles, "bento-tile bento-movers")}>
+            <MarketMoversTabs gainers={gainers} losers={losers} />
+          </div>
+
+          <div className={css(styles, "bento-tile bento-racalls")}>
+            <RaCallsPanel />
+          </div>
+
+          <div className={css(styles, "bento-tile bento-advisory")}>
+            <AdvisoryCard />
+          </div>
         </div>
       </section>
 
-      {/* Screener + market news + advisory */}
-      <ScreenerInsights />
+      {/* Brokerage / research reports */}
+      <ResearchReports />
+
+      {/* Browse by sector: per-sector health stats */}
+      <SectorHealthCards sectors={sectors} />
 
       <SiteFooter />
     </main>

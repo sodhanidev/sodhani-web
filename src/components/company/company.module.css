@@ -40,6 +40,7 @@
 .stock-layout {
   width: min(var(--company-page-max, 1800px), calc(100% - var(--company-page-gutter, 16px) - var(--company-page-gutter, 16px)));
   margin: 28px auto 0;
+  padding-inline: 104px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 28px;
@@ -85,9 +86,9 @@
   padding: 0 14px;
   color: color-mix(in srgb, var(--ink) 82%, var(--muted));
   font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 720;
-  line-height: 1;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
   overflow: hidden;
   overflow-wrap: anywhere;
   text-align: center;
@@ -207,9 +208,9 @@
   background: #c6a557;
   color: white;
   font-family: var(--font-sans);
-  font-size: 23px;
-  font-weight: 800;
-  line-height: 1;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-black);
+  line-height: var(--lh-solid);
 
 }
 
@@ -218,9 +219,9 @@
   margin: 0 0 6px;
   color: var(--stock-title);
   font-size: clamp(21px, 1.9vw, 30px);
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.1;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-display);
 
 }
 
@@ -250,8 +251,8 @@
   background: var(--stock-chip-bg);
   padding: 0 8px;
   color: var(--ink);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -309,7 +310,7 @@
   border-radius: 6px;
   padding: 0 8px;
   color: var(--link-blue);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   overflow-wrap: anywhere;
   white-space: normal;
 
@@ -345,24 +346,24 @@
   font-family: var(--font-sans);
   color: var(--price-ink);
   font-size: clamp(30px, 2.8vw, 42px);
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
 
 }
 
 .price-currency {
   color: var(--price-currency);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
 
 }
 
 .quote-time {
   margin: 4px 0 0;
   color: var(--quote-time);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -392,7 +393,7 @@
   border-radius: 5px;
   background: transparent;
   padding: 3px 8px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
 
 }
 
@@ -407,7 +408,7 @@
 .metric-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   row-gap: 26px;
-  column-gap: clamp(28px, 5vw, 88px);
+  column-gap: clamp(48px, 8vw, 140px);
 
 }
 
@@ -429,10 +430,10 @@
 .metric-label {
   color: color-mix(in srgb, var(--muted) 84%, var(--ink));
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-caps);
+  line-height: var(--lh-heading);
   text-transform: uppercase;
 
 }
@@ -444,9 +445,9 @@
   border-radius: 4px;
   padding: 0 4px;
   font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 760;
-  line-height: 1;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
   white-space: nowrap;
 
 }
@@ -467,10 +468,10 @@
   min-width: 0;
   overflow-wrap: anywhere;
   font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 400;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-regular);
   font-variant-numeric: tabular-nums;
-  line-height: 1.2;
+  line-height: var(--lh-heading);
 
 }
 
@@ -478,9 +479,9 @@
   margin-top: 4px;
   color: var(--muted);
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.2;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-heading);
 
 }
 
@@ -523,8 +524,8 @@
 
 .financials-detail-heading.ratios-snapshot-head h2 {
   margin: 0;
-  font-size: 24px;
-  line-height: 1.2;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-heading);
 
 }
 
@@ -575,7 +576,7 @@
   min-width: 0;
   overflow-wrap: anywhere;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: var(--fs-base);
   font-variant-numeric: tabular-nums;
 
 }
@@ -597,7 +598,7 @@
 .listing-data-note a {
   width: fit-content;
   color: var(--accent-2);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 
 }
 
@@ -647,19 +648,19 @@
 
 .chart-stats span {
   color: var(--chart-muted);
-  font-size: 12px;
-  line-height: 1.2;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-heading);
 
 }
 
 .chart-stats strong {
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--chart-ink);
-  font-size: 15px;
-  letter-spacing: 0;
-  line-height: 1.2;
+  font-size: var(--fs-base);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-heading);
 
 }
 
@@ -709,9 +710,9 @@
   color: var(--chart-range-ink);
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
   padding: 0 10px 0 12px;
   text-align: left;
 
@@ -774,8 +775,8 @@
   color: var(--chart-muted);
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
   padding: 0 10px;
   text-align: left;
   white-space: nowrap;
@@ -802,19 +803,19 @@
   align-items: center;
   gap: 10px;
   color: var(--chart-strong);
-  font-size: 18px;
+  font-size: var(--fs-lg);
 
 }
 
 .chart-titleline strong {
-  font-size: 22px;
+  font-size: var(--fs-xl);
 
 }
 
 .chart-subtitle {
   color: var(--chart-muted);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
 
 }
 
@@ -827,7 +828,7 @@
   background: var(--chart-logo-bg);
   color: var(--chart-logo-ink);
   font-family: var(--font-sans);
-  font-weight: 800;
+  font-weight: var(--fw-black);
 
 }
 
@@ -878,9 +879,9 @@
   align-items: center;
   margin: 0 0 8px;
   color: var(--chart-muted);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.2;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
 
 }
 
@@ -1050,7 +1051,7 @@
   color: #ffffff;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.22);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   padding: 10px 12px;
   text-align: center;
   transform: translate(12px, -50%);
@@ -1069,17 +1070,17 @@
 }
 
 .chart-tooltip-price {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-heading);
 
 }
 
 .chart-tooltip-meta {
   color: rgba(255, 255, 255, 0.68);
-  font-size: 11px;
-  font-weight: 450;
-  line-height: 1.25;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-heading);
   white-space: nowrap;
 
 }
@@ -1104,8 +1105,8 @@
   border-radius: 0;
   background: transparent;
   color: color-mix(in srgb, var(--chart-range-ink) 72%, transparent);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
   padding: 0 10px;
   white-space: nowrap;
 
@@ -1144,10 +1145,10 @@
     0 2px 8px color-mix(in srgb, #1e3a8a 32%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
   font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 650;
-  letter-spacing: 0.01em;
-  line-height: 1;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
   padding: 0 16px;
   transition:
     background 150ms ease,
@@ -1208,10 +1209,10 @@
 .candlestick-header-code {
   margin: 4px 0 0 3px;
   color: #B7B0A7;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  line-height: 1;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
 
 }
 
@@ -1222,8 +1223,8 @@
   gap: 7px;
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
 
 }
 
@@ -1249,9 +1250,9 @@
   gap: 8px;
   margin: 0 0 0 auto;
   color: var(--accent);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
@@ -1275,9 +1276,9 @@
   margin: 0;
   color: var(--stock-title);
   font-size: clamp(28px, 3.6vw, 50px);
-  font-weight: 520;
-  letter-spacing: 0;
-  line-height: 0.98;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-display);
 
 }
 
@@ -1285,8 +1286,8 @@
   max-width: 680px;
   margin: 10px 0 0;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
 
 }
 
@@ -1299,9 +1300,9 @@
 
 .candlestick-search label {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
@@ -1382,7 +1383,7 @@
 
 .candlestick-results span {
   overflow: hidden;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   text-overflow: ellipsis;
   white-space: nowrap;
 
@@ -1391,8 +1392,8 @@
 .candlestick-results small,
 .candlestick-no-results {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
 
 }
 
@@ -1434,9 +1435,9 @@
 
 .candlestick-symbol span {
   color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 680;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
@@ -1445,9 +1446,9 @@
   min-width: 0;
   overflow: hidden;
   color: var(--ink);
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-heading);
   text-overflow: ellipsis;
   white-space: nowrap;
 
@@ -1469,16 +1470,16 @@
 
 .candlestick-stat-row span {
   color: var(--muted);
-  font-size: 11px;
-  line-height: 1.2;
+  font-size: var(--fs-2xs);
+  line-height: var(--lh-heading);
 
 }
 
 .candlestick-stat-row strong {
   color: var(--ink);
-  font-size: 13px;
-  font-weight: 480;
-  line-height: 1.2;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-heading);
 
 }
 
@@ -1529,10 +1530,10 @@
   z-index: 4;
   border-radius: 1px;
   color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 400;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-regular);
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: var(--lh-solid);
   padding: 3px 5px;
   pointer-events: none;
   transform: translateY(-50%);
@@ -1567,17 +1568,17 @@
 
 :global(.ohlc-tooltip-price) {
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 520;
-  line-height: 1.12;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-heading);
 
 }
 
 :global(.ohlc-tooltip-date) {
   color: rgba(255, 255, 255, 0.66);
-  font-size: 11px;
-  font-weight: 450;
-  line-height: 1.2;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-heading);
   white-space: nowrap;
 
 }
@@ -1595,18 +1596,18 @@
 
 :global(.ohlc-tooltip-grid span) {
   color: rgba(255, 255, 255, 0.58);
-  font-size: 10.5px;
-  font-weight: 650;
-  line-height: 1.1;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-display);
   text-align: left;
 
 }
 
 :global(.ohlc-tooltip-grid b) {
   color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 520;
-  line-height: 1.1;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-display);
   text-align: right;
 
 }
@@ -1689,7 +1690,7 @@
 .peer-name {
   min-width: 0;
   overflow: hidden;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   text-overflow: ellipsis;
   white-space: nowrap;
 
@@ -1908,8 +1909,8 @@
   color: var(--muted);
   padding: 0 10px;
   font: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   cursor: pointer;
   transition:
     background 160ms ease,
@@ -1950,8 +1951,8 @@
 
 .shareholding-bar-label {
   color: color-mix(in srgb, var(--ink) 80%, var(--muted));
-  font-size: 17px;
-  font-weight: 500;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -1966,8 +1967,8 @@
 .shareholding-bar-line strong {
   min-width: 72px;
   color: color-mix(in srgb, var(--ink) 84%, var(--muted));
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
   text-align: right;
 
 }
@@ -2007,8 +2008,8 @@
   color: var(--ink);
   padding: 0;
   font: inherit;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   text-decoration: none;
 
@@ -2049,10 +2050,10 @@
   align-items: center;
   gap: 2px;
   color: var(--ink);
-  font-size: clamp(22px, 1.7vw, 24px);
-  font-weight: 560;
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
 
 }
 
@@ -2084,10 +2085,10 @@
   gap: 6px;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(16px, 1.35vw, 18px);
-  font-weight: 560;
-  letter-spacing: 0;
-  line-height: 1.15;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-heading);
 
 }
 
@@ -2109,9 +2110,9 @@
   color: var(--bg);
   cursor: help;
   font: inherit;
-  font-size: 11px;
-  font-weight: 560;
-  line-height: 1;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-solid);
   padding: 0;
 
 }
@@ -2128,10 +2129,10 @@
   border-radius: 4px;
   background: var(--ink);
   color: var(--bg);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 1.4;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-body);
   opacity: 0;
   padding: 9px 10px;
   pointer-events: none;
@@ -2166,10 +2167,10 @@
   color: var(--ink);
   cursor: default;
   font: inherit;
-  font-size: 13px;
-  font-weight: 430;
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
   padding: 0 9px;
   transition:
     background 140ms ease,
@@ -2180,7 +2181,7 @@
 .financial-period-toggle button.active {
   background: var(--ink);
   color: var(--bg);
-  font-weight: 450;
+  font-weight: var(--fw-regular);
 
 }
 
@@ -2217,10 +2218,10 @@
   display: grid;
   align-content: space-between;
   color: var(--ink);
-  font-size: 12px;
-  font-weight: 420;
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
   white-space: nowrap;
 
 }
@@ -2484,10 +2485,10 @@
 .financial-combo-label {
   align-self: end;
   color: var(--ink);
-  font-size: 12px;
-  font-weight: 420;
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
   text-align: center;
 
 }
@@ -2498,10 +2499,10 @@
   justify-content: center;
   gap: 12px 20px;
   color: color-mix(in srgb, var(--ink) 58%, var(--muted));
-  font-size: 12px;
-  font-weight: 410;
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
 
 }
 
@@ -2581,10 +2582,10 @@
   justify-content: center;
   gap: 10px 18px;
   color: color-mix(in srgb, var(--ink) 68%, var(--muted));
-  font-size: 12px;
-  font-weight: 430;
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
 
 }
 
@@ -2675,8 +2676,8 @@
   color: var(--muted);
   padding: 0 17px;
   font: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   transition:
     background 150ms ease,
     color 150ms ease;
@@ -2716,9 +2717,9 @@
 
 .financial-chart-summary > div > span {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-black);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
@@ -2751,23 +2752,23 @@
 
 .financial-legend-row small {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-black);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
 
 .financial-legend-row strong {
   color: var(--ink);
-  font-size: 15px;
+  font-size: var(--fs-base);
 
 }
 
 .financial-legend-row em {
   font-style: normal;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-black);
 
 }
 
@@ -2786,7 +2787,7 @@
   display: grid;
   align-content: space-between;
   color: color-mix(in srgb, var(--muted) 74%, transparent);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   text-align: right;
 
 }
@@ -2926,9 +2927,9 @@
 .related-stocks-head h2 {
   margin: 0;
   color: var(--heading-strong);
-  font-size: clamp(20px, 1.55vw, 24px);
-  letter-spacing: 0;
-  line-height: 1;
+  font-size: var(--fs-xl);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-solid);
 
 }
 
@@ -2936,8 +2937,8 @@
   max-width: 760px;
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.2;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-heading);
 
 }
 
@@ -3067,8 +3068,8 @@
   border-radius: 50%;
   background: color-mix(in srgb, var(--surface-2) 62%, transparent);
   color: var(--heading-strong);
-  font-size: 18px;
-  font-weight: 680;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
 
 }
 
@@ -3090,9 +3091,9 @@
 .related-stock-copy strong {
   overflow: hidden;
   color: var(--ink);
-  font-size: 15px;
-  font-weight: 650;
-  line-height: 1.15;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
   text-overflow: ellipsis;
   white-space: nowrap;
 
@@ -3111,9 +3112,9 @@
 .related-stock-copy small {
   overflow: hidden;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.25;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -3124,9 +3125,9 @@
   display: inline-flex;
   align-items: baseline;
   color: var(--ink);
-  font-size: 18px;
-  font-weight: 620;
-  line-height: 1;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
 
 }
 
@@ -3139,17 +3140,17 @@
 
 .related-stock-price small {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: 0.02em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-normal);
 
 }
 
 .related-stock-change {
   display: block;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-solid);
 
 }
 
@@ -3171,9 +3172,9 @@
 .financial-bar-label {
   grid-column: 1 / -1;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 25px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
   text-align: center;
   white-space: nowrap;
 
@@ -3201,9 +3202,9 @@
 
 .financial-growth-grid span {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.13em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-black);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
@@ -3230,12 +3231,12 @@
 
 .financial-growth-grid dt {
   color: color-mix(in srgb, var(--ink) 78%, var(--muted));
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 
 }
 
 .financial-growth-grid dd {
-  font-weight: 800;
+  font-weight: var(--fw-black);
 
 }
 
@@ -3274,9 +3275,9 @@
   margin: 0;
   color: var(--stock-title);
   font-size: clamp(26px, 3vw, 40px);
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.04;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-display);
 
 }
 
@@ -3284,17 +3285,17 @@
   max-width: 680px;
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.35;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-body);
 
 }
 
 .financials-unit-note {
   margin: 0 0 3px;
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   text-align: right;
   white-space: nowrap;
 
@@ -3342,16 +3343,16 @@
   background: transparent;
   color: var(--ink);
   padding: 0 15px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
 
 }
 
 .financials-jump-nav small {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -3378,8 +3379,8 @@
 .financials-period-toggle button {
   min-height: 30px;
   padding: 0 13px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -3394,18 +3395,18 @@
 
 .financials-detail-heading span {
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
 
 }
 
 .financials-detail-heading h2 {
   margin: 2px 0 0;
   color: var(--ink);
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.18;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
 
 }
 
@@ -3463,8 +3464,8 @@
 .financials-detail-heading p {
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   white-space: nowrap;
 
 }
@@ -3508,8 +3509,8 @@
   border-collapse: separate;
   border-spacing: 0;
   color: var(--ink);
-  font-size: 15px;
-  line-height: 1.25;
+  font-size: var(--fs-base);
+  line-height: var(--lh-heading);
 
 }
 
@@ -3550,9 +3551,9 @@
   background: var(--bg);
   border-bottom: 1px solid color-mix(in srgb, var(--line) 42%, transparent);
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
   text-transform: none;
 
 }
@@ -3603,7 +3604,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 
 }
 
@@ -3612,7 +3613,7 @@
   width: 12px;
   justify-content: center;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
 
 }
@@ -3645,7 +3646,7 @@
   background: transparent;
   color: inherit;
   font: inherit;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   padding: 0;
   cursor: pointer;
   text-align: left;
@@ -3665,7 +3666,7 @@
 .financials-table tr.is-child .financials-particular {
   padding-left: 26px;
   color: color-mix(in srgb, var(--ink) 68%, var(--muted));
-  font-weight: 450;
+  font-weight: var(--fw-regular);
 
 }
 
@@ -3695,7 +3696,7 @@
 .investor-period-block h3 {
   margin: 0;
   color: var(--ink);
-  font-size: 15px;
+  font-size: var(--fs-base);
 
 }
 
@@ -3722,7 +3723,7 @@
   gap: 14px;
   padding: 0 14px;
   color: var(--ink);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   list-style: none;
 
 }
@@ -3734,8 +3735,8 @@
 
 .investor-count {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
 
 }
@@ -3794,8 +3795,8 @@
   gap: 7px;
   margin-bottom: 18px;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
   text-decoration: none;
 
 }
@@ -3810,9 +3811,9 @@
 .ownership-eyebrow {
   margin: 0 0 8px;
   color: var(--ownership-accent-strong);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
 
 }
@@ -3822,9 +3823,9 @@
   margin: 0;
   color: var(--stock-title);
   font-size: clamp(26px, 3vw, 40px);
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.04;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  line-height: var(--lh-display);
 
 }
 
@@ -3832,17 +3833,17 @@
   max-width: 640px;
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.35;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-body);
 
 }
 
 .ownership-unit-note {
   margin: 0 0 3px;
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   text-align: right;
   white-space: nowrap;
 
@@ -3890,17 +3891,17 @@
   background: transparent;
   color: var(--ink);
   padding: 0 14px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
   text-decoration: none;
 
 }
 
 .ownership-jump-nav small {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -3941,26 +3942,26 @@
 
 .ownership-section-heading span {
   color: var(--ownership-accent-strong);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
 
 }
 
 .ownership-section-heading h2 {
   margin: 2px 0 0;
   color: var(--ink);
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.18;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
 
 }
 
 .ownership-section-heading p {
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   white-space: nowrap;
 
 }
@@ -4004,8 +4005,8 @@
   border-collapse: separate;
   border-spacing: 0;
   color: var(--ink);
-  font-size: 15px;
-  line-height: 1.25;
+  font-size: var(--fs-base);
+  line-height: var(--lh-heading);
 
 }
 
@@ -4038,9 +4039,9 @@
   z-index: 4;
   background: var(--bg);
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
   text-transform: none;
 
 }
@@ -4085,7 +4086,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 
 }
 
@@ -4094,7 +4095,7 @@
   width: 12px;
   justify-content: center;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
 
 }
@@ -4107,7 +4108,7 @@
   background: transparent;
   color: inherit;
   font: inherit;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   padding: 0;
   cursor: pointer;
   text-align: left;
@@ -4127,7 +4128,7 @@
 .ownership-table tr.is-child .ownership-particular {
   padding-left: 26px;
   color: var(--muted);
-  font-weight: 450;
+  font-weight: var(--fw-regular);
 
 }
 
@@ -4153,16 +4154,16 @@
 .ownership-investor-card-head h3 {
   margin: 0;
   color: var(--ink);
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.18;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
 
 }
 
 .ownership-investor-card-head span {
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
 
 }
 
@@ -4198,9 +4199,9 @@
   gap: 2px;
   margin: 0;
   color: var(--heading-strong);
-  font-size: clamp(20px, 1.55vw, 24px);
-  line-height: 1;
-  letter-spacing: 0;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-solid);
+  letter-spacing: var(--ls-normal);
 
 }
 
@@ -4238,9 +4239,9 @@
   color: var(--ink);
   cursor: pointer;
   font-family: inherit;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-solid);
   text-decoration: none;
   transition: color 160ms ease;
 
@@ -4296,6 +4297,7 @@
 }
 
 .stock-layout {
+    padding-inline: 24px;
     grid-template-columns: 1fr;
 
 }
@@ -4375,10 +4377,15 @@
 
 }
 
+.stock-layout {
+    padding-inline: 12px;
+
+}
+
 .company-section-link {
     min-height: 42px;
     padding: 0 14px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
 
 }
 
@@ -4422,7 +4429,7 @@
 
 .ticker-select {
     min-height: 26px;
-    font-size: 12px;
+    font-size: var(--fs-xs);
 
 }
 
@@ -4433,7 +4440,7 @@
 }
 
 .quote-time {
-    font-size: 11px;
+    font-size: var(--fs-2xs);
 
 }
 
@@ -4460,12 +4467,12 @@
 }
 
 .related-stocks-head h2 {
-    font-size: 21px;
+    font-size: var(--fs-xl);
 
 }
 
 .related-stocks-head p {
-    font-size: 12px;
+    font-size: var(--fs-xs);
 
 }
 
@@ -4501,7 +4508,7 @@
 }
 
 .financial-overview-title {
-    font-size: 24px;
+    font-size: var(--fs-xl);
 
 }
 
@@ -4524,14 +4531,14 @@
 
 .financial-mini-chart-head h3 {
     gap: 6px;
-    font-size: 17px;
+    font-size: var(--fs-lg);
 
 }
 
 .financial-help button {
     width: 17px;
     height: 17px;
-    font-size: 11px;
+    font-size: var(--fs-2xs);
 
 }
 
@@ -4557,7 +4564,7 @@
     min-height: 26px;
     border-radius: 5px;
     padding: 0 9px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
 
 }
 
@@ -4587,7 +4594,7 @@
 .financial-left-axis,
   .financial-right-axis {
     bottom: 36px;
-    font-size: 12px;
+    font-size: var(--fs-xs);
 
 }
 
@@ -4622,7 +4629,7 @@
 
 .financial-combo-label,
   .financial-combo-legend {
-    font-size: 12px;
+    font-size: var(--fs-xs);
 
 }
 
@@ -4664,7 +4671,7 @@
     flex: 1 1 0;
     min-width: 0;
     min-height: 42px;
-    font-size: 15px;
+    font-size: var(--fs-base);
 
 }
 
@@ -4683,7 +4690,7 @@
 .chart-view-trigger {
     width: 100%;
     min-height: 50px;
-    font-size: 18px;
+    font-size: var(--fs-lg);
     padding: 0 18px;
 
 }
@@ -4722,7 +4729,7 @@
 
 .candlestick-header h1 {
     font-size: clamp(32px, 12vw, 48px);
-    line-height: 1;
+    line-height: var(--lh-solid);
 
 }
 
@@ -4845,7 +4852,7 @@
 .shareholding-period-tabs button {
     min-height: 31px;
     padding: 0 10px;
-    font-size: 14px;
+    font-size: var(--fs-sm);
 
 }
 
@@ -4956,7 +4963,7 @@
 }
 
 .documents-heading h2 {
-    font-size: 21px;
+    font-size: var(--fs-xl);
 
 }
 }

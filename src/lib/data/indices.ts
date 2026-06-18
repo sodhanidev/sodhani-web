@@ -106,6 +106,14 @@ export const MARKET_OVERVIEW: MarketQuoteGroup[] = [
         changePct: -0.08,
         dp: 2,
         spark: [83.5, 83.48, 83.46, 83.49, 83.45, 83.44, 83.43, 83.42]
+      },
+      {
+        id: "eurinr",
+        label: "EUR / INR",
+        value: 90.18,
+        changePct: 0.12,
+        dp: 2,
+        spark: [89.9, 89.98, 90.05, 90.01, 90.09, 90.12, 90.15, 90.18]
       }
     ]
   }

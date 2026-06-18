@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
 
 import { AppNav } from "@/components/AppNav";
 import { TickerTape } from "@/components/TickerTape";
 
 import "./globals.css";
+import "./tremor.css";
 
 const themeScript = `
 (() => {
@@ -115,6 +116,12 @@ const inter = Inter({
   display: "swap"
 });
 
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono-geist",
+  display: "swap"
+});
+
 export const metadata: Metadata = {
   title: "SAFEedge",
   description: "Static Indian equity research browser powered by local Screener-style data.",
@@ -129,7 +136,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className={inter.variable} lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html
+      className={`${inter.variable} ${geistMono.variable}`}
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body>
         <Script
           dangerouslySetInnerHTML={{ __html: themeScript }}

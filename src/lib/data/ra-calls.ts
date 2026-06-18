@@ -9,8 +9,10 @@ import { getCompanies } from "./companies";
 export type RaCall = {
   id: string;
   analyst: string;
-  /** Initials shown in the avatar bubble. */
+  /** Initials, used as the avatar image alt fallback. */
   initials: string;
+  /** Avatar portrait path under /public. */
+  photo: string;
   /** Avatar bubble background colour. */
   tone: "blue" | "violet" | "teal" | "amber" | "rose";
   company: string;
@@ -31,6 +33,7 @@ export const RA_CALLS: RaCall[] = [
     id: "ra-hdfcbank",
     analyst: "Amit Kumar",
     initials: "AK",
+    photo: "/avatars/amit-kumar.jpg",
     tone: "blue",
     company: "HDFC Bank",
     action: "BUY",
@@ -43,6 +46,7 @@ export const RA_CALLS: RaCall[] = [
     id: "ra-tcs",
     analyst: "Priya Sharma",
     initials: "PS",
+    photo: "/avatars/priya-sharma.jpg",
     tone: "violet",
     company: "Tata Consultancy Services",
     action: "BUY",
@@ -55,6 +59,7 @@ export const RA_CALLS: RaCall[] = [
     id: "ra-reliance",
     analyst: "Vivek Raj",
     initials: "VR",
+    photo: "/avatars/vivek-raj.jpg",
     tone: "teal",
     company: "Reliance Industries",
     action: "BUY",
@@ -67,6 +72,7 @@ export const RA_CALLS: RaCall[] = [
     id: "ra-infosys",
     analyst: "Neha Patel",
     initials: "NP",
+    photo: "/avatars/neha-patel.jpg",
     tone: "amber",
     company: "Infosys Limited",
     action: "BUY",
@@ -79,6 +85,7 @@ export const RA_CALLS: RaCall[] = [
     id: "ra-icicibank",
     analyst: "Saurabh Singh",
     initials: "SS",
+    photo: "/avatars/saurabh-singh.jpg",
     tone: "rose",
     company: "ICICI Bank",
     action: "BUY",

@@ -13,8 +13,14 @@ export function PromoBanner() {
             Are you a SEBI <span>Registered Analyst?</span>
           </h2>
           <p className={css(styles, "promo-banner-sub")}>
-            Join the RA Hub and reach thousands of investors.
+            Join the RA Hub and reach thousands of investors actively
+            looking for SEBI-registered guidance.
           </p>
+          <ul className={css(styles, "promo-banner-perks")}>
+            <li>Verified analyst profile</li>
+            <li>Direct investor leads</li>
+            <li>Performance analytics</li>
+          </ul>
           <Link className={css(styles, "promo-banner-cta")} href="/market/">
             Join Now
             <ArrowRight size={18} aria-hidden="true" />

@@ -1,6 +1,30 @@
 :root {
   --font-sans: var(--font-inter), "Inter", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-geist, ui-monospace), "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --search-font: GrowwSans, NotoSans, "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Type scale (company page; app-wide adoption later). Theme-independent. */
+  --fs-2xs: 11px;   /* eyebrows, tiny caps labels, tooltips, axes */
+  --fs-xs: 12px;    /* meta, table th, legends, badges */
+  --fs-sm: 13px;    /* body-sm, controls, links, pills */
+  --fs-base: 15px;  /* body, table cells, card titles */
+  --fs-lg: 18px;    /* sub-headings, metric value, logos */
+  --fs-xl: 22px;    /* section h2 */
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  --lh-solid: 1;      /* single-line: buttons, labels, prices */
+  --lh-display: 1.05; /* hero h1 / price clamps */
+  --lh-heading: 1.2;  /* section h2, sub-heads, metric values */
+  --lh-body: 1.55;    /* paragraphs, help text */
+
+  --ls-normal: 0;
+  --ls-caps: 0.08em;  /* uppercase eyebrow/label text */
+
   --bg: #ffffff;
   --surface: #ffffff;
   --surface-2: #f6f7f9;
