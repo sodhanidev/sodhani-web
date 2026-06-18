@@ -3512,11 +3512,14 @@
 
 }
 
-/* Statement header: collapse button + S/C toggle + meta on one row. */
+/* Statement header: collapse button + S/C toggle hug the title on the left,
+   meta pushed to the far right. Override .financials-detail-heading's
+   space-between, which would otherwise center the middle child (the toggle). */
 .financials-statement-head {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: flex-start;
+  gap: 12px;
 
 }
 
