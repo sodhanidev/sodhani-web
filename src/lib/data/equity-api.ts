@@ -3,7 +3,18 @@
 // be written straight to disk and read back by the existing loader.
 
 export const EQUITY_API_BASE =
-  "https://server-production-8226.up.railway.app/equity";
+  "https://server-production-8226.up.railway.app/api/equity";
+
+// Build the query-param URL the API now expects:
+//   /api/equity?code=SUNPHARMA[&consolidated=true]
+// The `code` must be uppercase — lowercase codes 404.
+function equityUrl(code: string, consolidated: boolean): string {
+  const params = new URLSearchParams({ code: code.toUpperCase() });
+  if (consolidated) {
+    params.set("consolidated", "true");
+  }
+  return `${EQUITY_API_BASE}?${params.toString()}`;
+}
 
 // Loosely typed: we only touch a few fields and pass the rest through verbatim
 // so the on-disk shape is preserved for getStock().
@@ -19,8 +30,7 @@ export type RawEquity = Record<string, unknown> & {
  * non-200 response.
  */
 export async function fetchEquityRaw(code: string): Promise<RawEquity | undefined> {
-  const url = `${EQUITY_API_BASE}/${code.toUpperCase()}`;
-  const res = await fetch(url);
+  const res = await fetch(equityUrl(code, false));
   if (!res.ok) {
     return undefined;
   }
@@ -34,8 +44,7 @@ export async function fetchEquityRaw(code: string): Promise<RawEquity | undefine
 export async function fetchEquityConsolidatedRaw(
   code: string
 ): Promise<RawEquity | undefined> {
-  const url = `${EQUITY_API_BASE}/${code.toUpperCase()}/consolidated`;
-  const res = await fetch(url);
+  const res = await fetch(equityUrl(code, true));
   if (!res.ok) {
     return undefined;
   }

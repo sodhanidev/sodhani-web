@@ -1,11 +1,6 @@
 import { getCompanies, getCompanyByCode, getCompaniesForNode } from "./companies";
 import { getNodeByCode } from "./industry";
-import {
-  getAvailableStockCodes,
-  getPricePoints,
-  getStock,
-  getStockConsolidated
-} from "./stocks";
+import { getPricePoints, getStock, getStockConsolidated } from "./stocks";
 import type {
   Company,
   IndustryNode,
@@ -27,10 +22,6 @@ export type CompanyPageModel = {
   // ticker. `stock` is always the standalone view.
   stockConsolidated?: Stock;
 };
-
-export function getCompanyTemplateCodes() {
-  return getAvailableStockCodes();
-}
 
 function getRelatedCompaniesForNode(company: Company, node: IndustryNode): Company[] {
   return getCompaniesForNode(node)
@@ -142,7 +133,7 @@ function getMarketCapCategory(company: Company): string | undefined {
 }
 
 export async function getCompanyPageModel(code: string): Promise<CompanyPageModel | undefined> {
-  const stockData = getStock(code);
+  const stockData = await getStock(code);
   if (!stockData) {
     return undefined;
   }
@@ -161,6 +152,6 @@ export async function getCompanyPageModel(code: string): Promise<CompanyPageMode
     peerSource: related.source,
     prices: getPricePoints(code),
     stock: stockData,
-    stockConsolidated: getStockConsolidated(code)
+    stockConsolidated: await getStockConsolidated(code)
   };
 }

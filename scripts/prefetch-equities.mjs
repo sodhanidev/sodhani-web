@@ -19,7 +19,18 @@ import path from "node:path";
 import process from "node:process";
 
 const EQUITY_API_BASE =
-  "https://server-production-8226.up.railway.app/equity";
+  "https://server-production-8226.up.railway.app/api/equity";
+
+// Build the query-param URL the API now expects:
+//   /api/equity?code=SUNPHARMA[&consolidated=true]
+// The `code` must be uppercase — lowercase codes 404.
+function equityUrl(code, consolidated) {
+  const params = new URLSearchParams({ code: code.toUpperCase() });
+  if (consolidated) {
+    params.set("consolidated", "true");
+  }
+  return `${EQUITY_API_BASE}?${params.toString()}`;
+}
 const ROOT = process.cwd();
 const STOCK_DIR = path.join(ROOT, "stock_page");
 const COMPANY_FILE = path.join(ROOT, "category_wise", "companies.csv");
@@ -106,7 +117,7 @@ function readTickersFromCsv() {
 // --- Fetch + sanitize (mirrors src/lib/data/equity-api.ts) -----------------
 
 async function fetchEquityRaw(code) {
-  const res = await fetch(`${EQUITY_API_BASE}/${code.toUpperCase()}`);
+  const res = await fetch(equityUrl(code, false));
   if (!res.ok) {
     return undefined;
   }
@@ -115,7 +126,7 @@ async function fetchEquityRaw(code) {
 
 // Consolidated variant. API only has it for some tickers -> undefined on 404.
 async function fetchEquityConsolidatedRaw(code) {
-  const res = await fetch(`${EQUITY_API_BASE}/${code.toUpperCase()}/consolidated`);
+  const res = await fetch(equityUrl(code, true));
   if (!res.ok) {
     return undefined;
   }

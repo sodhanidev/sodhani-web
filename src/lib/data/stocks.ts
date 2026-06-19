@@ -2,13 +2,23 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { parseCsvRows, rowsToObjects } from "./csv";
+import {
+  fetchEquityConsolidatedRaw,
+  fetchEquityRaw,
+  sanitizeEquityRaw
+} from "./equity-api";
 import { parseNumericCell } from "./format";
 import type { FinRow, FinancialTable, PricePoint, Stock } from "./types";
 
 const STOCK_DIR = path.join(process.cwd(), "stock_page");
 let availableStockCodesCache: string[] | null = null;
+// Disk-read caches (committed files; misses cached too). Kept separate from the
+// API caches so a disk MISS never short-circuits the live-API fallback.
 const stockCache = new Map<string, Stock | undefined>();
 const consolidatedStockCache = new Map<string, Stock | undefined>();
+// Live-API result caches (memoized per runtime; 404 -> undefined cached).
+const apiStockCache = new Map<string, Stock | undefined>();
+const apiConsolidatedCache = new Map<string, Stock | undefined>();
 const pricePointsCache = new Map<string, PricePoint[]>();
 
 type RawFinRow = Record<string, string | boolean | RawFinRow[] | undefined>;
@@ -132,7 +142,10 @@ function loadStockFile(
   return stock;
 }
 
-export function getStock(code: string): Stock | undefined {
+// Sync, disk-only standalone read. Returns undefined when no committed file
+// exists for the ticker. Used by the candlestick pages, which pair stock data
+// with the on-disk {code}_chart_data.csv (the API serves no price data).
+export function getStockFromDisk(code: string): Stock | undefined {
   const lower = code.toLowerCase();
   return loadStockFile(
     stockCache,
@@ -142,16 +155,49 @@ export function getStock(code: string): Stock | undefined {
   );
 }
 
-// Consolidated variant, written to {code}.consolidated.json by the prefetch
-// script. Absent for tickers the API has no consolidated data for.
-export function getStockConsolidated(code: string): Stock | undefined {
+// Disk-first, then live API. Committed files (e.g. RELIANCE) win and act as an
+// API-outage fallback; everything else is fetched on demand and memoized.
+// Wrapped by Next's ISR cache at the page level (revalidate). 404 -> undefined.
+export async function getStock(code: string): Promise<Stock | undefined> {
+  const fromDisk = getStockFromDisk(code);
+  if (fromDisk) {
+    return fromDisk;
+  }
+
+  const cacheKey = code.toUpperCase();
+  if (apiStockCache.has(cacheKey)) {
+    return apiStockCache.get(cacheKey);
+  }
+
+  const raw = await fetchEquityRaw(code);
+  const stock = raw ? buildStockFromRaw(sanitizeEquityRaw(raw) as RawStock, code) : undefined;
+  apiStockCache.set(cacheKey, stock);
+  return stock;
+}
+
+// Consolidated variant. Disk file {code}.consolidated.json wins, else live API
+// (?consolidated=true). Absent for tickers the API has no consolidated data for.
+export async function getStockConsolidated(code: string): Promise<Stock | undefined> {
   const lower = code.toLowerCase();
-  return loadStockFile(
+  const fromDisk = loadStockFile(
     consolidatedStockCache,
     code.toUpperCase(),
     path.join(STOCK_DIR, `${lower}.consolidated.json`),
     code
   );
+  if (fromDisk) {
+    return fromDisk;
+  }
+
+  const cacheKey = code.toUpperCase();
+  if (apiConsolidatedCache.has(cacheKey)) {
+    return apiConsolidatedCache.get(cacheKey);
+  }
+
+  const raw = await fetchEquityConsolidatedRaw(code);
+  const stock = raw ? buildStockFromRaw(sanitizeEquityRaw(raw) as RawStock, code) : undefined;
+  apiConsolidatedCache.set(cacheKey, stock);
+  return stock;
 }
 
 export function getPricePoints(code: string): PricePoint[] {

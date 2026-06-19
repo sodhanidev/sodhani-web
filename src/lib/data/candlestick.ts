@@ -1,4 +1,4 @@
-import { getAvailableStockCodes, getPricePoints, getStock } from "./stocks";
+import { getAvailableStockCodes, getPricePoints, getStockFromDisk } from "./stocks";
 import type { PricePoint } from "./types";
 
 export type CandlestickSeries = {
@@ -18,7 +18,7 @@ export function getCandlestickCodes(): string[] {
 }
 
 export function getCandlestickSeries(code: string): CandlestickSeries | undefined {
-  const stock = getStock(code);
+  const stock = getStockFromDisk(code);
   const points = getPricePoints(code);
 
   if (!stock || !points.length) {
