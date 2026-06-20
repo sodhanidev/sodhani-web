@@ -2815,3 +2815,17 @@ a.spurt-row:hover .spurt-name {
 .advisory-cta:hover {
   transform: translateY(-1px);
 }
+
+/* Mobile: the panels use flex: 1 1 0 + min-height: 0 to split the bento tile's
+   height when it's pinned to the racalls tile on desktop. On mobile the tile is
+   auto-height, so a 0 flex-basis collapses each panel to ~0 and its centered
+   content overflows and overlaps neighboring tiles. Size panels to content.
+   NOTE: this override must live AFTER the base .advisory-panel rule above —
+   equal specificity means source order decides, and a media query adds none. */
+@media (max-width: 760px) {
+  .advisory-panel {
+    min-height: auto;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+  }
+}
