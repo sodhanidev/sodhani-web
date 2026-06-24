@@ -5,6 +5,8 @@ import { useState } from "react";
 import { css } from "@/lib/css-module";
 import type { FinancialTable } from "@/lib/data/types";
 import styles from "./company.module.css";
+import { ScToggle, type ScMode } from "./ScToggle";
+import { PeriodStepper, usePeriodOrder } from "./PeriodStepper";
 
 const RATIO_PERIODS = 7;
 
@@ -16,45 +18,52 @@ function hasTable(table: FinancialTable) {
   return table.periods.length > 0 && table.rows.length > 0;
 }
 
-export function FinancialRatiosSnapshot({ annualRatios }: { annualRatios: FinancialTable }) {
-  if (!hasTable(annualRatios)) {
+export function FinancialRatiosSnapshot({
+  annualRatios,
+  consolidatedRatios
+}: {
+  annualRatios: FinancialTable;
+  consolidatedRatios?: FinancialTable;
+}) {
+  const hasConsolidated = Boolean(consolidatedRatios && hasTable(consolidatedRatios));
+  const [mode, setMode] = useState<ScMode>("standalone");
+  const [open, setOpen] = useState(true);
+
+  const active = mode === "consolidated" && consolidatedRatios ? consolidatedRatios : annualRatios;
+  const periodOrder = usePeriodOrder();
+
+  if (!hasTable(active)) {
     return null;
   }
 
-  const displayPeriods = annualRatios.periods.slice(-RATIO_PERIODS).reverse();
-  const rows = annualRatios.rows.filter((row) => rowHasValues(row, displayPeriods));
+  const displayPeriods = periodOrder.order(active.periods.slice(-RATIO_PERIODS).reverse());
+  const rows = active.rows.filter((row) => rowHasValues(row, displayPeriods));
 
   if (!displayPeriods.length || !rows.length) {
     return null;
   }
 
-  return <RatiosSection displayPeriods={displayPeriods} rows={rows} />;
-}
-
-function RatiosSection({
-  displayPeriods,
-  rows
-}: {
-  displayPeriods: string[];
-  rows: FinancialTable["rows"];
-}) {
-  const [open, setOpen] = useState(true);
-
   return (
     <section className={css(styles, "ratios-snapshot")} aria-labelledby="financial-ratios-heading">
-      <button
-        aria-expanded={open}
-        className={css(styles, "financials-detail-heading ratios-snapshot-head financials-section-toggle")}
-        onClick={() => setOpen((value) => !value)}
-        type="button"
-      >
-        <div>
-          <h2 id="financial-ratios-heading">
-            <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
-            Ratios
-          </h2>
-        </div>
-      </button>
+      <div className={css(styles, "ratios-snapshot-head sc-title-row")}>
+        <button
+          aria-expanded={open}
+          className={css(styles, "financials-detail-heading financials-section-toggle")}
+          onClick={() => setOpen((value) => !value)}
+          type="button"
+        >
+          <div>
+            <h2 id="financial-ratios-heading">
+              <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
+              Ratios
+            </h2>
+          </div>
+        </button>
+        {hasConsolidated ? (
+          <ScToggle value={mode} onChange={setMode} ariaLabel="Ratios standalone or consolidated" />
+        ) : null}
+        {open ? <PeriodStepper reversed={periodOrder.reversed} onToggle={periodOrder.toggle} /> : null}
+      </div>
       {open ? (
         <div className={css(styles, "financials-table-card")}>
           <div className={css(styles, "financials-table-wrap ratios-snapshot-wrap")}>

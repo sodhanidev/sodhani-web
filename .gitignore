@@ -7,6 +7,15 @@ node_modules/
 .env*
 !.env.example
 .DS_Store
+.vscode/
+tsconfig.tsbuildinfo
+# Generated equity cache: prefetched from the equity API at build time.
+# Keep the committed source files tracked; ignore everything else fetched in.
+stock_page/*.json
+stock_page/*.consolidated.json
+!stock_page/reliance.json
+!stock_page/sunpharma.json
+!stock_page/tmpv.json
 AGENTS.md
 CLAUDE.md
 index.html

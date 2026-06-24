@@ -5,21 +5,12 @@ import styles from "./company.module.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
-import { OwnershipSection } from "@/components/company/OwnershipSection";
-import { ShareholdingRows } from "@/components/company/ShareholdingRows";
+import { InvestorDetailsSection, ShareholdingTable } from "@/components/company/ShareholdingTables";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import { companyHref, limitTablePeriods } from "@/lib/data/format";
 import type { FinancialTable, Stock } from "@/lib/data/types";
 
 type InvestorGroups = Stock["investors"]["quarterly"];
-
-const categoryLabels: Record<string, string> = {
-  promoters: "Promoters",
-  foreign_institutions: "Foreign Institutions",
-  domestic_institutions: "Domestic Institutions",
-  government: "Government",
-  public: "Public"
-};
 
 function hasTable(table: FinancialTable) {
   return table.periods.length > 0 && table.rows.length > 0;
@@ -27,10 +18,6 @@ function hasTable(table: FinancialTable) {
 
 function hasInvestorGroups(groups: InvestorGroups) {
   return Object.values(groups).some((holders) => Object.keys(holders).length > 0);
-}
-
-function getCategoryLabel(category: string) {
-  return categoryLabels[category] ?? category.replace(/_/gu, " ");
 }
 
 function getLatestTableValue(table: FinancialTable, label: string) {
@@ -55,156 +42,6 @@ function countInvestorHolders(investors: Stock["investors"]) {
 
 function countInvestorGroupHolders(groups: InvestorGroups) {
   return Object.values(groups).reduce((sum, holders) => sum + Object.keys(holders).length, 0);
-}
-
-function getInvestorPeriods(groups: InvestorGroups, preferredPeriods: string[]) {
-  const seen = new Set<string>();
-
-  Object.values(groups).forEach((holders) => {
-    Object.values(holders).forEach((values) => {
-      Object.keys(values).forEach((period) => seen.add(period));
-    });
-  });
-
-  const ordered = preferredPeriods.filter((period) => seen.has(period));
-  const extras = Array.from(seen).filter((period) => !ordered.includes(period));
-  return [...ordered, ...extras];
-}
-
-function formatInvestorValue(value: string | undefined) {
-  if (!value) {
-    return "-";
-  }
-
-  if (value.includes("%")) {
-    return value;
-  }
-
-  return /^-?[\d,.]+$/u.test(value) ? `${value}%` : value;
-}
-
-function ShareholdingTable({
-  id,
-  kicker,
-  table,
-  title
-}: {
-  id: string;
-  kicker: string;
-  table: FinancialTable;
-  title: string;
-}) {
-  if (!hasTable(table)) {
-    return null;
-  }
-
-  return (
-    <OwnershipSection
-      id={id}
-      kicker={kicker}
-      meta={`${table.periods.length} periods · latest ${getLatestPeriod(table)}`}
-      title={title}
-    >
-      <div className={css(styles, "ownership-table-card")}>
-        <div className={css(styles, "ownership-table-wrap")}>
-          <table className={css(styles, "ownership-table")}>
-            <thead>
-              <tr>
-                <th>Particulars</th>
-                {table.periods.map((period) => (
-                  <th key={period}>{period}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <ShareholdingRows periods={table.periods} rows={table.rows} />
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </OwnershipSection>
-  );
-}
-
-function InvestorCategoryCard({
-  category,
-  holders,
-  periods
-}: {
-  category: string;
-  holders: Record<string, Record<string, string>>;
-  periods: string[];
-}) {
-  const holderRows = Object.entries(holders);
-
-  if (!holderRows.length) {
-    return null;
-  }
-
-  return (
-    <article className={css(styles, "ownership-investor-card")}>
-      <div className={css(styles, "ownership-investor-card-head")}>
-        <h3>{getCategoryLabel(category)}</h3>
-        <span>{holderRows.length} holders</span>
-      </div>
-      <div className={css(styles, "ownership-table-card")}>
-        <div className={css(styles, "ownership-table-wrap")}>
-          <table className={css(styles, "ownership-table ownership-investor-table")}>
-            <thead>
-              <tr>
-                <th>Holder</th>
-                {periods.map((period) => (
-                  <th key={period}>{period}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {holderRows.map(([holder, values], index) => (
-                <tr className={css(styles, index === 0 ? "is-highlighted" : "")} key={holder}>
-                  <td>{holder}</td>
-                  {periods.map((period) => (
-                    <td className={css(styles, "numeric")} key={`${holder}-${period}`}>
-                      {formatInvestorValue(values[period])}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function InvestorDetailsSection({
-  groups,
-  id,
-  preferredPeriods,
-  title
-}: {
-  groups: InvestorGroups;
-  id: string;
-  preferredPeriods: string[];
-  title: string;
-}) {
-  const categories = Object.entries(groups).filter(([, holders]) => Object.keys(holders).length > 0);
-
-  if (!categories.length) {
-    return null;
-  }
-
-  const periods = getInvestorPeriods(groups, preferredPeriods);
-
-  return (
-    <OwnershipSection id={id} kicker="Investor Holding" meta={`${periods.length} periods`} title={title}>
-      <div className={css(styles, "ownership-investor-list")}>
-        {categories.map(([category, holders]) => (
-          <InvestorCategoryCard category={category} holders={holders} key={category} periods={periods} />
-        ))}
-      </div>
-    </OwnershipSection>
-  );
 }
 
 export function ShareholdingDetailsView({ model }: { model: CompanyPageModel }) {

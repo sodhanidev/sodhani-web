@@ -1,12 +1,14 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
+import { InfoTooltip } from "./InfoTooltip";
+import { ScToggle, type ScMode } from "./ScToggle";
 import { companyFinancialsHref, formatIndianNumber, parseNumericCell } from "@/lib/data/format";
 import type { FinRow, FinancialTable } from "@/lib/data/types";
 
@@ -296,46 +298,6 @@ function lineSegments(points: ChartPoint[], scale: Scale | null, metric: ChartLi
   }));
 }
 
-function InfoTooltip({ children }: { children: string }) {
-  const tooltipRef = useRef<HTMLSpanElement>(null);
-
-  // Keep the centered tooltip inside the viewport: measure on open and nudge
-  // it horizontally via --tip-shift so it never overflows either edge.
-  const clampToViewport = useCallback(() => {
-    const tooltip = tooltipRef.current;
-
-    if (!tooltip) {
-      return;
-    }
-
-    const margin = 8;
-    tooltip.style.setProperty("--tip-shift", "0px");
-
-    const rect = tooltip.getBoundingClientRect();
-    let shift = 0;
-
-    if (rect.right > window.innerWidth - margin) {
-      shift = window.innerWidth - margin - rect.right;
-    } else if (rect.left < margin) {
-      shift = margin - rect.left;
-    }
-
-    if (shift !== 0) {
-      tooltip.style.setProperty("--tip-shift", `${Math.round(shift)}px`);
-    }
-  }, []);
-
-  return (
-    <span className={css(styles, "financial-help")} onMouseEnter={clampToViewport} onFocus={clampToViewport}>
-      <button aria-label={children} type="button">
-        ?
-      </button>
-      <span className={css(styles, "financial-help-tooltip")} ref={tooltipRef} role="tooltip">
-        {children}
-      </span>
-    </span>
-  );
-}
 
 function FinancialMiniChart({
   activeMode,
@@ -570,7 +532,8 @@ export function FinancialPerformanceExperimental({
   id,
   quarterly,
   ticker,
-  yearly
+  yearly,
+  consolidated
 }: {
   balanceSheet: FinancialTable;
   cashFlows: FinancialTable;
@@ -578,24 +541,33 @@ export function FinancialPerformanceExperimental({
   quarterly: FinancialTable;
   ticker: string;
   yearly: FinancialTable;
+  consolidated?: {
+    balanceSheet: FinancialTable;
+    cashFlows: FinancialTable;
+    quarterly: FinancialTable;
+    yearly: FinancialTable;
+  };
 }) {
   const showDebtCoverageChart = false;
   const [performanceMode, setPerformanceMode] = useState<PeriodMode>(hasTable(yearly) ? "yearly" : "quarterly");
   const [debtMode, setDebtMode] = useState<PeriodMode>("yearly");
+  const [scMode, setScMode] = useState<ScMode>("standalone");
+
+  const active = scMode === "consolidated" && consolidated ? consolidated : { balanceSheet, cashFlows, quarterly, yearly };
 
   const performanceDatasets = useMemo(
     () => ({
-      yearly: getPerformanceSeries(yearly),
-      quarterly: getPerformanceSeries(quarterly)
+      yearly: getPerformanceSeries(active.yearly),
+      quarterly: getPerformanceSeries(active.quarterly)
     }),
-    [quarterly, yearly]
+    [active.quarterly, active.yearly]
   );
   const debtDatasets = useMemo(
     () => ({
-      yearly: getDebtSeries(balanceSheet, cashFlows),
+      yearly: getDebtSeries(active.balanceSheet, active.cashFlows),
       quarterly: []
     }),
-    [balanceSheet, cashFlows]
+    [active.balanceSheet, active.cashFlows]
   );
 
   const resolvedPerformanceMode = performanceDatasets[performanceMode].length
@@ -609,10 +581,20 @@ export function FinancialPerformanceExperimental({
     return null;
   }
 
+  const hasConsolidated = Boolean(
+    consolidated &&
+      (hasTable(consolidated.yearly) || hasTable(consolidated.quarterly))
+  );
+
   return (
     <section className={css(styles, `financial-overview${id ? " section-anchor" : ""}`)} id={id}>
       <div className={css(styles, "section-title-row financial-performance-head")}>
-        <h2>Financial Performance</h2>
+        <div className={css(styles, "sc-title-group")}>
+          <h2>Financial Performance</h2>
+          {hasConsolidated ? (
+            <ScToggle value={scMode} onChange={setScMode} ariaLabel="Financials standalone or consolidated" />
+          ) : null}
+        </div>
         <Link className={css(styles, "shareholding-detail-link financial-detail-link")} href={companyFinancialsHref(ticker)}>
           All Financials
           <ChevronRight size={15} aria-hidden="true" />

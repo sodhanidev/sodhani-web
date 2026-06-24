@@ -7,6 +7,8 @@ import { css } from "@/lib/css-module";
 import styles from "./company.module.css";
 
 import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
+import { ScToggle, type ScMode } from "./ScToggle";
+import { PeriodStepper, usePeriodOrder } from "./PeriodStepper";
 import {
   ANNUAL_RESULT_PERIODS,
   QUARTERLY_RESULT_PERIODS,
@@ -122,20 +124,6 @@ function getCellTone(label: string, value: string) {
   return directionalRow ? "financials-positive" : "";
 }
 
-function getPeriodLabel(table: FinancialTable, mode?: PeriodMode) {
-  if (mode === "quarterly") {
-    const years = table.periods.length / 4;
-    const yearLabel = Number.isInteger(years) ? `${years} years` : `${formatIndianNumber(years, { dp: 1 })} years`;
-    return `${table.periods.length} quarters · ${yearLabel}`;
-  }
-
-  if (mode === "yearly") {
-    return `${table.periods.length} years`;
-  }
-
-  return `${table.periods.length} periods`;
-}
-
 function FinancialRow({
   child = false,
   periods,
@@ -198,40 +186,55 @@ function FinancialRows({ periods, rows }: { periods: string[]; rows: FinRow[] })
   );
 }
 
+function hasAnyTable(s: Stock) {
+  return hasTable(s.quarterly) || hasTable(s.profitLoss) || hasTable(s.balanceSheet) || hasTable(s.cashFlows);
+}
+
 function StatementSection({
   id,
   kicker,
-  meta,
   periods,
   rows,
-  title
+  title,
+  scMode,
+  onScChange,
+  showToggle
 }: {
   id: string;
   kicker: string;
-  meta: string;
   periods: string[];
   rows: FinRow[];
   title: string;
+  scMode: ScMode;
+  onScChange: (mode: ScMode) => void;
+  showToggle: boolean;
 }) {
   const [open, setOpen] = useState(true);
+  const periodOrder = usePeriodOrder();
+  const visiblePeriods = periodOrder.order(periods);
 
   return (
     <section className={css(styles, "financials-statement-section")} id={id}>
-      <button
-        aria-expanded={open}
-        className={css(styles, "financials-detail-heading financials-section-toggle")}
-        onClick={() => setOpen((value) => !value)}
-        type="button"
-      >
-        <div>
-          <span>{kicker}</span>
-          <h2>
-            <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
-            {title}
-          </h2>
-        </div>
-        <p>{meta}</p>
-      </button>
+      <div className={css(styles, "financials-detail-heading financials-statement-head")}>
+        <button
+          aria-expanded={open}
+          className={css(styles, "financials-section-toggle financials-statement-collapse")}
+          onClick={() => setOpen((value) => !value)}
+          type="button"
+        >
+          <div>
+            <span>{kicker}</span>
+            <h2>
+              <span className={css(styles, `collapse-caret${open ? " is-open" : ""}`)} aria-hidden="true" />
+              {title}
+            </h2>
+          </div>
+        </button>
+        {showToggle ? (
+          <ScToggle value={scMode} onChange={onScChange} ariaLabel={`${title} standalone or consolidated`} />
+        ) : null}
+        {open ? <PeriodStepper reversed={periodOrder.reversed} onToggle={periodOrder.toggle} /> : null}
+      </div>
       {open ? (
         <div className={css(styles, "financials-table-card")}>
           <div className={css(styles, "financials-table-wrap")}>
@@ -239,13 +242,13 @@ function StatementSection({
               <thead>
                 <tr>
                   <th>Particulars</th>
-                  {periods.map((period) => (
+                  {visiblePeriods.map((period) => (
                     <th key={period}>{period}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                <FinancialRows periods={periods} rows={rows} />
+                <FinancialRows periods={visiblePeriods} rows={rows} />
               </tbody>
             </table>
           </div>
@@ -255,20 +258,23 @@ function StatementSection({
   );
 }
 
-export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
-  const [incomeMode, setIncomeMode] = useState<PeriodMode>(hasTable(stock.quarterly) ? "quarterly" : "yearly");
-  const hasIncome = hasTable(stock.quarterly) || hasTable(stock.profitLoss);
+export function FinancialsDetailsClient({ stock, consolidated }: { stock: Stock; consolidated?: Stock }) {
+  const hasConsolidated = Boolean(consolidated && hasAnyTable(consolidated));
+  const [scMode, setScMode] = useState<ScMode>("standalone");
+  const active = scMode === "consolidated" && consolidated ? consolidated : stock;
+  const [incomeMode, setIncomeMode] = useState<PeriodMode>(hasTable(active.quarterly) ? "quarterly" : "yearly");
+  const hasIncome = hasTable(active.quarterly) || hasTable(active.profitLoss);
   const incomeModes = [
-    hasTable(stock.quarterly) ? { key: "quarterly" as const, label: "Quarterly" } : null,
-    hasTable(stock.profitLoss) ? { key: "yearly" as const, label: "Annual" } : null
+    hasTable(active.quarterly) ? { key: "quarterly" as const, label: "Quarterly" } : null,
+    hasTable(active.profitLoss) ? { key: "yearly" as const, label: "Annual" } : null
   ].filter((item): item is { key: PeriodMode; label: string } => Boolean(item));
   const activeIncomeMode = incomeModes.some((item) => item.key === incomeMode) ? incomeMode : incomeModes[0]?.key ?? "yearly";
   const incomeTable = limitTablePeriods(
-    getTableForTab(stock, "income", activeIncomeMode),
+    getTableForTab(active, "income", activeIncomeMode),
     activeIncomeMode === "quarterly" ? QUARTERLY_RESULT_PERIODS : ANNUAL_RESULT_PERIODS
   );
-  const balanceSheet = limitTablePeriods(stock.balanceSheet, ANNUAL_RESULT_PERIODS);
-  const cashFlows = limitTablePeriods(stock.cashFlows, ANNUAL_RESULT_PERIODS);
+  const balanceSheet = limitTablePeriods(active.balanceSheet, ANNUAL_RESULT_PERIODS);
+  const cashFlows = limitTablePeriods(active.cashFlows, ANNUAL_RESULT_PERIODS);
   const statementSections = [
     hasIncome
       ? {
@@ -279,7 +285,7 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           title: activeIncomeMode === "quarterly" ? "Quarterly Results" : "Annual Results"
         }
       : null,
-    hasTable(stock.balanceSheet)
+    hasTable(active.balanceSheet)
       ? {
           id: "balance-sheet",
           mode: "yearly" as const,
@@ -288,7 +294,7 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
           title: "Balance Sheet"
         }
       : null,
-    hasTable(stock.cashFlows)
+    hasTable(active.cashFlows)
       ? {
           id: "cash-flow",
           mode: "yearly" as const,
@@ -385,10 +391,12 @@ export function FinancialsDetailsClient({ stock }: { stock: Stock }) {
             id={item.id}
             key={item.id}
             kicker={item.tab.kicker}
-            meta={`${getPeriodLabel(item.table, item.mode)} · latest ${getLatestPeriod(item.table)}`}
             periods={getTableDisplayPeriods(item.table)}
             rows={item.table.rows}
             title={item.title}
+            scMode={scMode}
+            onScChange={setScMode}
+            showToggle={hasConsolidated}
           />
         ))}
       </section>

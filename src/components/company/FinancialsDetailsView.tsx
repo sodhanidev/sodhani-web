@@ -5,7 +5,7 @@ import type { CompanyPageModel } from "@/lib/data/company-template";
 export function FinancialsDetailsView({ model }: { model: CompanyPageModel }) {
   return (
     <>
-      <FinancialsDetailsClient stock={model.stock} />
+      <FinancialsDetailsClient stock={model.stock} consolidated={model.stockConsolidated} />
       <SiteFooter className="company-footer" />
     </>
   );

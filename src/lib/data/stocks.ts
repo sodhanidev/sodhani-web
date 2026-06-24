@@ -2,15 +2,47 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { parseCsvRows, rowsToObjects } from "./csv";
+import {
+  fetchEquityConsolidatedRaw,
+  fetchEquityRaw,
+  sanitizeEquityRaw
+} from "./equity-api";
 import { parseNumericCell } from "./format";
 import type { FinRow, FinancialTable, PricePoint, Stock } from "./types";
 
 const STOCK_DIR = path.join(process.cwd(), "stock_page");
 let availableStockCodesCache: string[] | null = null;
+// Disk-read caches (committed files; misses cached too). Kept separate from the
+// API caches so a disk MISS never short-circuits the live-API fallback.
 const stockCache = new Map<string, Stock | undefined>();
+const consolidatedStockCache = new Map<string, Stock | undefined>();
+// Live-API result caches (memoized per runtime; 404 -> undefined cached).
+const apiStockCache = new Map<string, Stock | undefined>();
+const apiConsolidatedCache = new Map<string, Stock | undefined>();
 const pricePointsCache = new Map<string, PricePoint[]>();
 
 type RawFinRow = Record<string, string | boolean | RawFinRow[] | undefined>;
+
+type RawStock = {
+  ticker?: string;
+  url?: string;
+  overview?: { company_name?: string; current_price?: string; about?: string };
+  key_metrics?: Record<string, string>;
+  pros_cons?: { pros?: string[]; cons?: string[] };
+  quarterly?: RawFinRow[];
+  profit_loss?: RawFinRow[];
+  balance_sheet?: RawFinRow[];
+  cash_flows?: RawFinRow[];
+  ratios?: RawFinRow[];
+  shareholding?: { table_1?: RawFinRow[]; table_2?: RawFinRow[] };
+  investors?: Stock["investors"];
+  documents?: {
+    announcements?: Stock["documents"]["announcements"];
+    annual_reports?: Stock["documents"]["annualReports"];
+    credit_ratings?: Stock["documents"]["creditRatings"];
+    concalls?: Stock["documents"]["concalls"];
+  };
+};
 
 function normalizeFinRows(rows: RawFinRow[]): FinancialTable {
   const [header, ...body] = rows;
@@ -54,22 +86,10 @@ export function getAvailableStockCodes(): string[] {
   return availableStockCodesCache;
 }
 
-export function getStock(code: string): Stock | undefined {
-  const cacheKey = code.toUpperCase();
-  if (stockCache.has(cacheKey)) {
-    return stockCache.get(cacheKey);
-  }
-
-  const lower = code.toLowerCase();
-  const file = path.join(STOCK_DIR, `${lower}.json`);
-  if (!fs.existsSync(file)) {
-    stockCache.set(cacheKey, undefined);
-    return undefined;
-  }
-
-  const raw = JSON.parse(fs.readFileSync(file, "utf8"));
-
-  const stock = {
+// Map a raw on-disk JSON object (snake_case, screener shape) into a Stock.
+// Shared by the standalone and consolidated loaders.
+function buildStockFromRaw(raw: RawStock, code: string): Stock {
+  return {
     ticker: String(raw.ticker ?? code).toUpperCase(),
     sourceUrl: String(raw.url ?? ""),
     overview: {
@@ -99,8 +119,84 @@ export function getStock(code: string): Stock | undefined {
       concalls: raw.documents?.concalls ?? []
     }
   };
+}
 
-  stockCache.set(cacheKey, stock);
+// Read + normalize one on-disk stock JSON, with caching. Returns undefined if
+// the file is absent.
+function loadStockFile(
+  cache: Map<string, Stock | undefined>,
+  cacheKey: string,
+  file: string,
+  code: string
+): Stock | undefined {
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey);
+  }
+  if (!fs.existsSync(file)) {
+    cache.set(cacheKey, undefined);
+    return undefined;
+  }
+  const raw = JSON.parse(fs.readFileSync(file, "utf8")) as RawStock;
+  const stock = buildStockFromRaw(raw, code);
+  cache.set(cacheKey, stock);
+  return stock;
+}
+
+// Sync, disk-only standalone read. Returns undefined when no committed file
+// exists for the ticker. Used by the candlestick pages, which pair stock data
+// with the on-disk {code}_chart_data.csv (the API serves no price data).
+export function getStockFromDisk(code: string): Stock | undefined {
+  const lower = code.toLowerCase();
+  return loadStockFile(
+    stockCache,
+    code.toUpperCase(),
+    path.join(STOCK_DIR, `${lower}.json`),
+    code
+  );
+}
+
+// Disk-first, then live API. Committed files (e.g. RELIANCE) win and act as an
+// API-outage fallback; everything else is fetched on demand and memoized.
+// Wrapped by Next's ISR cache at the page level (revalidate). 404 -> undefined.
+export async function getStock(code: string): Promise<Stock | undefined> {
+  const fromDisk = getStockFromDisk(code);
+  if (fromDisk) {
+    return fromDisk;
+  }
+
+  const cacheKey = code.toUpperCase();
+  if (apiStockCache.has(cacheKey)) {
+    return apiStockCache.get(cacheKey);
+  }
+
+  const raw = await fetchEquityRaw(code);
+  const stock = raw ? buildStockFromRaw(sanitizeEquityRaw(raw) as RawStock, code) : undefined;
+  apiStockCache.set(cacheKey, stock);
+  return stock;
+}
+
+// Consolidated variant. Disk file {code}.consolidated.json wins, else live API
+// (?consolidated=true). Absent for tickers the API has no consolidated data for.
+export async function getStockConsolidated(code: string): Promise<Stock | undefined> {
+  const lower = code.toLowerCase();
+  const fromDisk = loadStockFile(
+    consolidatedStockCache,
+    code.toUpperCase(),
+    path.join(STOCK_DIR, `${lower}.consolidated.json`),
+    code
+  );
+  if (fromDisk) {
+    return fromDisk;
+  }
+
+  const cacheKey = code.toUpperCase();
+  if (apiConsolidatedCache.has(cacheKey)) {
+    return apiConsolidatedCache.get(cacheKey);
+  }
+
+  const raw = await fetchEquityConsolidatedRaw(code);
+  const stock = raw ? buildStockFromRaw(sanitizeEquityRaw(raw) as RawStock, code) : undefined;
+  apiConsolidatedCache.set(cacheKey, stock);
   return stock;
 }
 

@@ -11,7 +11,8 @@ import { StockChart } from "@/components/StockChart";
 import { StockHeader } from "@/components/StockHeader";
 import { FinancialPerformanceExperimental } from "@/components/company/FinancialPerformanceExperimental";
 import { FinancialRatiosSnapshot } from "@/components/company/FinancialRatiosSnapshot";
-import { MetricCardGrid, type MetricCardItem } from "@/components/company/MetricCardGrid";
+import { type MetricCardItem } from "@/components/company/MetricCardGrid";
+import { KeyMetricsSection } from "@/components/company/KeyMetricsSection";
 import { RelatedStocks } from "@/components/company/RelatedStocks";
 import type { CompanyPageModel } from "@/lib/data/company-template";
 import {
@@ -135,8 +136,8 @@ function formatPriceRange(range: { high: number; low: number }) {
   return `${formatPriceForMetric(range.high)} / ${formatPriceForMetric(range.low)}`;
 }
 
-function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
-  const { industryPe, marketCapCategory, prices, stock } = model;
+function buildKeyMetrics(model: CompanyPageModel, stock: Stock): KeyMetricItem[] {
+  const { industryPe, marketCapCategory, prices } = model;
   const metrics: KeyMetricItem[] = [];
 
   const addDirectMetric = (label: string, sourceKey: string) => {
@@ -254,9 +255,12 @@ function buildKeyMetrics(model: CompanyPageModel): KeyMetricItem[] {
 }
 
 export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
-  const { prices, stock } = model;
+  const { prices, stock, stockConsolidated } = model;
   const hasChart = prices.length > 0;
-  const keyMetrics = buildKeyMetrics(model);
+  const keyMetrics = buildKeyMetrics(model, stock);
+  const keyMetricsConsolidated = stockConsolidated
+    ? buildKeyMetrics(model, stockConsolidated)
+    : undefined;
   const hasKeyMetrics = keyMetrics.length > 0;
   const hasPros = stock.prosCons.pros.length > 0;
   const hasCons = stock.prosCons.cons.length > 0;
@@ -302,16 +306,14 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
         <section className={css(styles, "stock-layout")}>
           <div className={css(styles, "stock-main")}>
             {hasKeyMetrics ? (
-              <section className={css(styles, "panel section-anchor")} id="key-metrics">
-                <div className={css(styles, "section-title-row")}>
-                  <h2>Key Metrics</h2>
-                </div>
-                <MetricCardGrid className="panel-pad" items={keyMetrics} />
-              </section>
+              <KeyMetricsSection standalone={keyMetrics} consolidated={keyMetricsConsolidated} />
             ) : null}
 
             {hasRatios ? (
-              <FinancialRatiosSnapshot annualRatios={stock.ratios} />
+              <FinancialRatiosSnapshot
+                annualRatios={stock.ratios}
+                consolidatedRatios={stockConsolidated?.ratios}
+              />
             ) : null}
 
             {hasProsCons ? (
@@ -361,6 +363,16 @@ export function CompanyPageTemplate({ model }: { model: CompanyPageModel }) {
                 quarterly={stock.quarterly}
                 ticker={stock.ticker}
                 yearly={stock.profitLoss}
+                consolidated={
+                  stockConsolidated
+                    ? {
+                        balanceSheet: stockConsolidated.balanceSheet,
+                        cashFlows: stockConsolidated.cashFlows,
+                        quarterly: stockConsolidated.quarterly,
+                        yearly: stockConsolidated.profitLoss
+                      }
+                    : undefined
+                }
               />
             ) : null}
 
