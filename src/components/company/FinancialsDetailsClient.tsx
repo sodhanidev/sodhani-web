@@ -282,7 +282,7 @@ export function FinancialsDetailsClient({ stock, consolidated }: { stock: Stock;
           mode: activeIncomeMode,
           table: incomeTable,
           tab: financialTabs[0],
-          title: activeIncomeMode === "quarterly" ? "Quarterly Results" : "Annual Results"
+          title: "Profit & Loss"
         }
       : null,
     hasTable(active.balanceSheet)
