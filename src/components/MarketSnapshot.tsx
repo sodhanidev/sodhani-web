@@ -33,7 +33,10 @@ function SnapshotRow({ quote }: { quote: MarketQuote }) {
 }
 
 export function MarketSnapshot() {
-  const quotes = getMarketOverview().flatMap((group) => group.quotes);
+  // Landing page shows a trimmed snapshot; the full set lives on /market.
+  const quotes = getMarketOverview()
+    .flatMap((group) => group.quotes)
+    .slice(0, 9);
 
   return (
     <section className={css(styles, "dash-section")}>

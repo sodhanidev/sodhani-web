@@ -31,6 +31,17 @@
 
 }
 
+/* Full-bleed variant: break out of a width-capped, side-padded page shell so
+   the footer spans the viewport instead of floating inset. Used on /market. */
+.footer-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+
+}
+
 :root[data-theme="dark"] .landing-footer {
   border-top: 1px solid var(--landing-line);
   box-shadow: none;

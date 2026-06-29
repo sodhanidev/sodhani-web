@@ -7,10 +7,11 @@ import styles from "@/components/market.module.css";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LazyMarketTable } from "@/components/LazyMarketTable";
 import { MetricRail } from "@/components/MetricRail";
-import { SectorCard } from "@/components/SectorCard";
-import { CompanyLogoMark } from "@/components/CompanyLogoMark";
-import { getCompanies, getCompaniesForNode, getTopCompaniesForNode, topCompanies } from "@/lib/data/companies";
-import { companyHref, formatIndianNumber, formatMetric, marketHref } from "@/lib/data/format";
+import { IndexBoard } from "@/components/IndexBoard";
+import { SectorHealthCards } from "@/components/SectorHealthCards";
+import { SiteFooter } from "@/components/SiteFooter";
+import { getCompanies, getCompaniesForNode, topCompanies } from "@/lib/data/companies";
+import { formatIndianNumber, formatMetric, marketHref } from "@/lib/data/format";
 import { getIndustryData, getNodeByPath } from "@/lib/data/industry";
 import type { Company } from "@/lib/data/types";
 
@@ -94,48 +95,6 @@ function MetricStat({
   );
 }
 
-function changeTone(value: number | null) {
-  if (value === null) {
-    return "flat";
-  }
-
-  return value >= 0 ? "up" : "down";
-}
-
-function changeText(value: number | null) {
-  if (value === null) {
-    return "-";
-  }
-
-  return `${value >= 0 ? "▲" : "▼"} ${formatIndianNumber(Math.abs(value), { dp: 2 })}%`;
-}
-
-function MostBoughtStocks({ companies }: { companies: Company[] }) {
-  return (
-    <section className={css(styles, "market-showcase-section market-stock-strip")} aria-labelledby="most-bought-title">
-      <div className={css(styles, "market-section-head")}>
-        <div>
-          <h1 id="most-bought-title">Most-bought Stocks</h1>
-          <p>Popular large-cap names from the current Indian equity universe.</p>
-        </div>
-      </div>
-      <div className={css(styles, "market-stock-grid")}>
-        {companies.map((company) => (
-          <Link className={css(styles, "market-stock-tile")} href={companyHref(company.code)} key={company.code}>
-            <CompanyLogoMark code={company.code} name={company.name} size="lg" />
-            <span className={css(styles, "market-stock-copy")}>
-              <strong>{company.name}</strong>
-              <span className={css(styles, `market-change ${changeTone(company.profitVarPct)}`)}>
-                {changeText(company.profitVarPct)}
-              </span>
-            </span>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export function generateStaticParams() {
   getCompanies();
   const params: { slug?: string[] }[] = [{ slug: [] }];
@@ -174,30 +133,35 @@ export default async function MarketPage({ params }: PageProps) {
 
   if (parsed.pathParts.length === 0) {
     const totalCompanies = roots.reduce((sum, node) => sum + node.companyCount, 0);
-    const leaders = topCompanies(allCompanies, "marketCapCr", 10);
+    const sectors = [...roots].filter((node) => node.companyCount > 0);
+    const tableCompanies = topCompanies(allCompanies, "marketCapCr", 50);
 
     return (
       <main className={css(styles, "shell page-stack market-page-shell")}>
-        <MostBoughtStocks companies={leaders} />
-        <section className={css(styles, "market-showcase-section market-themes-section")} aria-labelledby="themes-title">
+        <section className={css(styles, "market-overview-head")}>
+          <div className={css(styles, "eyebrow")}>Markets</div>
+          <h1>Indian market overview</h1>
+          <p className={css(styles, "lede")}>
+            Indices, commodities, and {formatIndianNumber(totalCompanies)} companies across{" "}
+            {formatIndianNumber(sectors.length)} sectors.
+          </p>
+        </section>
+
+        <IndexBoard />
+
+        <SectorHealthCards sectors={sectors} />
+
+        <section className={css(styles, "market-table-section")} aria-labelledby="companies-title">
           <div className={css(styles, "market-section-head")}>
             <div>
-              <h2 id="themes-title">Trending Themes</h2>
-              <p>
-                {formatIndianNumber(totalCompanies)} companies across {formatIndianNumber(roots.length)} sectors.
-              </p>
+              <h2 id="companies-title">Top companies</h2>
+              <p>The 50 largest by market cap. Open any sector for its full list.</p>
             </div>
           </div>
-          <div className={css(styles, "grid sector-grid")}>
-            {roots.map((node) => (
-              <SectorCard
-                key={node.code}
-                leaders={getTopCompaniesForNode(node.code, "marketCapCr", 2)}
-                node={node}
-              />
-            ))}
-          </div>
+          <LazyMarketTable companies={tableCompanies} initialPage={1} pageSize={PAGE_SIZE} />
         </section>
+
+        <SiteFooter className="footer-bleed" />
       </main>
     );
   }
