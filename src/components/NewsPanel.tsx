@@ -3,30 +3,38 @@ import { ArrowRight, Newspaper } from "lucide-react";
 
 import { css } from "@/lib/css-module";
 import styles from "@/app/page.module.css";
-import { MARKET_NEWS } from "@/lib/data/screener-promo";
+import { getAllNews } from "@/lib/data/news";
 
-// Market news list, rendered as bento-tile content. Split out of ScreenerInsights.
+// Latest Inc42 startup news, rendered as bento-tile content. Split out of
+// ScreenerInsights. Reads the committed snapshot (exports/inc42_news.json).
 export function NewsPanel() {
+  const items = getAllNews().slice(0, 5);
+
   return (
     <>
       <div className={css(styles, "bento-tile-head")}>
-        <span className={css(styles, "bento-eyebrow")}>Market news &amp; insights</span>
-        <Link className={css(styles, "dash-view-all")} href="/market/">
+        <span className={css(styles, "bento-eyebrow")}>Startup news &amp; insights</span>
+        <Link className={css(styles, "dash-view-all")} href="/news/">
           View all
           <ArrowRight size={14} aria-hidden="true" />
         </Link>
       </div>
       <ul className={css(styles, "news-list")}>
-        {MARKET_NEWS.map((item) => (
-          <li key={item.id}>
-            <Link href="/market/" className={css(styles, "news-row")}>
+        {items.map((item) => (
+          <li key={item.slug}>
+            <Link href={`/news/${item.slug}/`} className={css(styles, "news-row")}>
               <span className={css(styles, "news-thumb")} aria-hidden="true">
-                <Newspaper size={18} />
+                {item.thumbnailUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.thumbnailUrl} alt="" loading="lazy" />
+                ) : (
+                  <Newspaper size={18} />
+                )}
               </span>
               <span className={css(styles, "news-copy")}>
-                <span className={css(styles, "news-headline")}>{item.headline}</span>
+                <span className={css(styles, "news-headline")}>{item.title}</span>
                 <span className={css(styles, "news-meta")}>
-                  {item.source} · {item.ago}
+                  Inc42{item.publishedDate ? ` · ${item.publishedDate}` : ""}
                 </span>
               </span>
             </Link>

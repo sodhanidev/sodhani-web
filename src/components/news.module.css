@@ -1,0 +1,177 @@
+/* /news — Inc42 startup news. Flat cards, hairline borders, airy whitespace.
+   Surfaces use theme tokens. */
+
+.news-head {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.news-head h1 {
+  margin: 2px 0 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.news-head .lede {
+  max-width: 640px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ---- Card grid ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--muted);
+  transform: translateY(-2px);
+}
+
+.thumb {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  object-fit: cover;
+  background: var(--line);
+  display: block;
+}
+
+.thumb-fallback {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  background: var(--line);
+  color: var(--muted);
+}
+
+.card-body {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 14px 16px 16px;
+}
+
+.tag {
+  justify-self: start;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.card-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ---- Detail page ---- */
+.article {
+  max-width: 720px;
+  display: grid;
+  gap: 18px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.article h1 {
+  margin: 0;
+  font-size: clamp(26px, 3.6vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.hero {
+  width: 100%;
+  border-radius: 12px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--line);
+}
+
+.body p {
+  margin: 0 0 16px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.excerpt-note {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: start;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.source-link:hover {
+  border-color: var(--muted);
+}
