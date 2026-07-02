@@ -1125,36 +1125,107 @@
 
 }
 
-/* Index board: dense grid-table — every quote a tight bordered cell, packed
-   auto-fit so many fit in little space. Flat, square, hairline matrix. */
+/* Index board: grouped hairline matrices. Indices (real NSE data, clickable),
+   then commodities and currency (static snapshots). Each block is a tight
+   bordered grid — flat, square, tabular. */
 .index-board {
   display: grid;
-  gap: 8px;
+  gap: 22px;
   min-width: 0;
+}
+
+.idx-block {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.idx-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.idx-block-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.idx-block-link {
+  color: var(--link-blue);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.idx-block-link:hover {
+  text-decoration: underline;
 }
 
 .idx-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   min-width: 0;
-  /* Hairline matrix: the gap shows the border colour through, so every cell
-     reads as a boxed grid square without doubling borders. */
-  gap: 1px;
-  border: 1px solid var(--line);
-  background: var(--line);
+  /* Hairlines come from each cell's right+bottom border (container carries
+     top+left). No background-bleed trick, so an unfilled trailing cell just
+     shows the surface — never a grey block — at any column count. */
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
 }
 
 .idx-cell {
   display: grid;
-  align-content: center;
-  gap: 3px;
+  align-content: start;
+  gap: 5px;
   min-width: 0;
   background: var(--surface);
-  padding: 8px 12px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
 }
 
 .idx-cell:hover {
   background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+/* Clickable index cell: just the shared cell background shift on hover. */
+.idx-link {
+  color: var(--ink);
+  transition: background 140ms ease;
+}
+
+/* Advances/declines breadth bar under each index level. */
+.idx-breadth {
+  display: flex;
+  height: 4px;
+  margin-top: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.idx-breadth span {
+  display: block;
+  height: 100%;
+}
+
+.idx-breadth-adv {
+  background: var(--up);
+}
+
+.idx-breadth-dec {
+  background: var(--down);
+}
+
+.idx-breadth-unch {
+  background: color-mix(in srgb, var(--muted) 40%, var(--surface));
 }
 
 .idx-label {

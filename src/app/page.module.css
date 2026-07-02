@@ -2110,6 +2110,13 @@ a.spurt-row:hover .spurt-name {
   gap: 16px;
   padding: 15px 14px;
   border-top: 1px solid var(--landing-line);
+  color: inherit;
+  text-decoration: none;
+  transition: background 140ms ease;
+}
+
+.snapshot-row:hover {
+  background: color-mix(in srgb, var(--landing-ink) 4%, transparent);
 }
 
 /* Top row (3 cols) sits flush with the panel's top padding — drop the divider

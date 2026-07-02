@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
         hostname: "**.googleusercontent.com"
       }
     ]
+  },
+  async redirects() {
+    return [
+      { source: "/indices", destination: "/market/", permanent: true },
+      { source: "/indices/:slug*", destination: "/market/", permanent: true }
+    ];
   }
 };
 

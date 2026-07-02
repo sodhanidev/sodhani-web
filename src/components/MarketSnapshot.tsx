@@ -3,40 +3,44 @@ import Link from "next/link";
 import { css } from "@/lib/css-module";
 import styles from "@/app/page.module.css";
 import { formatIndianNumber } from "@/lib/data/format";
-import { getMarketOverview, type MarketQuote } from "@/lib/data/indices";
+import { getAllIndices, type MarketIndex } from "@/lib/data/indices-nse";
 import { SPARK_H, SPARK_W, sparkPoints } from "@/lib/data/spark";
 
-function SnapshotRow({ quote }: { quote: MarketQuote }) {
-  const direction = quote.changePct >= 0 ? "up" : "down";
-  const value = `${quote.prefix ?? ""}${formatIndianNumber(quote.value, { dp: quote.dp })}`;
+function SnapshotRow({ index }: { index: MarketIndex }) {
+  const direction = (index.changePct ?? 0) >= 0 ? "up" : "down";
+  const value = formatIndianNumber(index.value, { dp: 2 });
 
   return (
-    <div className={css(styles, "snapshot-row")}>
-      <span className={css(styles, "snapshot-label")}>{quote.label}</span>
-      <svg
-        className={css(styles, `snapshot-spark ${direction}`)}
-        viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <polyline points={sparkPoints(quote.spark)} fill="none" strokeWidth={1.75} />
-      </svg>
+    <Link href="/market/" className={css(styles, "snapshot-row")}>
+      <span className={css(styles, "snapshot-label")}>{index.label}</span>
+      {index.spark.length > 1 ? (
+        <svg
+          className={css(styles, `snapshot-spark ${direction}`)}
+          viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <polyline points={sparkPoints(index.spark)} fill="none" strokeWidth={1.75} />
+        </svg>
+      ) : (
+        <span />
+      )}
       <span className={css(styles, "snapshot-figures")}>
         <span className={css(styles, "numeric snapshot-value")}>{value}</span>
         <span className={css(styles, `snapshot-change ${direction}`)}>
           <span aria-hidden="true">{direction === "up" ? "▲" : "▼"}</span>
-          {formatIndianNumber(Math.abs(quote.changePct), { dp: 2, suffix: "%" })}
+          {formatIndianNumber(Math.abs(index.changePct ?? 0), { dp: 2, suffix: "%" })}
         </span>
       </span>
-    </div>
+    </Link>
   );
 }
 
 export function MarketSnapshot() {
-  // Landing page shows a trimmed snapshot; the full set lives on /market.
-  const quotes = getMarketOverview()
-    .flatMap((group) => group.quotes)
-    .slice(0, 9);
+  // Landing shows a trimmed set of real NSE indices; the full board lives on
+  // /market.
+  const indices = getAllIndices().slice(0, 9);
+  if (!indices.length) return null;
 
   return (
     <section className={css(styles, "dash-section")}>
@@ -47,8 +51,8 @@ export function MarketSnapshot() {
         </Link>
       </div>
       <div className={css(styles, "snapshot-panel")}>
-        {quotes.map((quote) => (
-          <SnapshotRow key={quote.id} quote={quote} />
+        {indices.map((index) => (
+          <SnapshotRow key={index.slug} index={index} />
         ))}
       </div>
     </section>

@@ -204,6 +204,22 @@ export const MARKET_OVERVIEW: MarketQuoteGroup[] = [
         changePct: 0.27,
         dp: 2,
         spark: [105.2, 105.28, 105.41, 105.36, 105.49, 105.55, 105.6, 105.64]
+      },
+      {
+        id: "jpyinr",
+        label: "JPY / INR",
+        value: 0.5312,
+        changePct: -0.18,
+        dp: 4,
+        spark: [0.5325, 0.5331, 0.5322, 0.5318, 0.5309, 0.5314, 0.5316, 0.5312]
+      },
+      {
+        id: "aedinr",
+        label: "AED / INR",
+        value: 22.71,
+        changePct: 0.05,
+        dp: 2,
+        spark: [22.69, 22.7, 22.72, 22.7, 22.71, 22.72, 22.7, 22.71]
       }
     ]
   }
