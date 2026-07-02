@@ -11,7 +11,7 @@ function SnapshotRow({ index }: { index: MarketIndex }) {
   const value = formatIndianNumber(index.value, { dp: 2 });
 
   return (
-    <Link href="/market/" className={css(styles, "snapshot-row")}>
+    <Link href={`/indices/${index.slug}/`} className={css(styles, "snapshot-row")}>
       <span className={css(styles, "snapshot-label")}>{index.label}</span>
       {index.spark.length > 1 ? (
         <svg

@@ -22,7 +22,7 @@ function IndexCell({ index }: { index: MarketIndex }) {
   const w = (n: number) => `${(n / total) * 100}%`;
 
   return (
-    <Link href="/market/" className={css(styles, "idx-cell idx-link")}>
+    <Link href={`/indices/${index.slug}/`} className={css(styles, "idx-cell idx-link")}>
       <span className={css(styles, "idx-label")}>{index.label}</span>
       <span className={css(styles, "numeric idx-value")}>
         {formatIndianNumber(index.value, { dp: 2 })}

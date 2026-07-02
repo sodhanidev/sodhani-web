@@ -1175,7 +1175,7 @@
      shows the surface — never a grey block — at any column count. */
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--surface);
 }
