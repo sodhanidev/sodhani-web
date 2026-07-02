@@ -94,7 +94,7 @@ export function MarketMoversTabs({ gainers, losers }: MarketMoversTabsProps) {
               <span className={css(styles, `dash-mover-change ${direction}`)}>
                 {volumeMultiple === null ? (
                   <>
-                    <span aria-hidden="true">{direction === "up" ? "UP" : "DN"}</span>
+                    <span className={css(styles, "dash-mover-icon")} aria-hidden="true" />
                     {formatIndianNumber(Math.abs(mover.changePct ?? 0), { dp: 2, suffix: "%" })}
                   </>
                 ) : (

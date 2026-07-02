@@ -154,6 +154,12 @@
 
 }
 
+.brand-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;

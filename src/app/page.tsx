@@ -9,7 +9,6 @@ import { MarketMoversTabs, type Mover } from "@/components/MarketMoversTabs";
 import { MarketBreadthPanel } from "@/components/MarketBreadthPanel";
 import { RaCallsPanel } from "@/components/RaCallsPanel";
 import { MarketSnapshot } from "@/components/MarketSnapshot";
-import { PromoBanner } from "@/components/PromoBanner";
 import { AdvisoryCard } from "@/components/AdvisoryCard";
 import { ResearchReports } from "@/components/ResearchReports";
 import { RailScroller } from "@/components/RailScroller";
@@ -153,9 +152,6 @@ export default function HomePage() {
           </Link>
         </RailScroller>
       </section>
-
-      {/* SEBI RA promo banner */}
-      <PromoBanner />
 
       {/* Market today: dense asymmetric bento of live market data */}
       <section className={css(styles, "dash-section")}>
