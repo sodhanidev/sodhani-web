@@ -1,0 +1,302 @@
+/* /indices/[slug] — Groww-style detail: flat surfaces, hairline borders, airy
+   whitespace, one green / one red for all financial data, tabular numbers.
+   Surfaces use theme tokens so dark mode works; only the gain/loss hues are
+   pinned to Groww's palette (they read well on both themes). */
+
+.indices-scope {
+  --up: #00b386;
+  --down: #eb5b3c;
+}
+
+.up {
+  color: var(--up);
+}
+
+.down {
+  color: var(--down);
+}
+
+/* ---- Detail layout ---- */
+.detail {
+  display: grid;
+  gap: 28px;
+}
+
+.back {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.section {
+  display: grid;
+  gap: 12px;
+}
+
+.detail .eyebrow {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.detail h1 {
+  margin: 4px 0 0;
+  font-size: clamp(24px, 3.2vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.section-lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ---- Header value + spark + stats ---- */
+.head-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.head-value-block {
+  display: grid;
+  gap: 4px;
+}
+
+.head-value {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.head-chg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.head-chg.up {
+  color: var(--up);
+}
+
+.head-chg.down {
+  color: var(--down);
+}
+
+.head-spark {
+  width: clamp(120px, 30%, 240px);
+  height: 56px;
+}
+
+.head-spark.up {
+  stroke: var(--up);
+}
+
+.head-spark.down {
+  stroke: var(--down);
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.stat {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--surface);
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-val {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ---- Breadth bar ---- */
+.breadth {
+  display: grid;
+  gap: 10px;
+}
+
+.breadth-bar {
+  display: flex;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.breadth-seg {
+  height: 100%;
+}
+
+.breadth-adv {
+  background: var(--up);
+}
+
+.breadth-dec {
+  background: var(--down);
+}
+
+.breadth-unch {
+  background: var(--muted);
+}
+
+.breadth-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.breadth-legend b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 999px;
+  vertical-align: baseline;
+}
+
+.dot-adv {
+  background: var(--up);
+}
+
+.dot-dec {
+  background: var(--down);
+}
+
+.dot-unch {
+  background: var(--muted);
+}
+
+/* ---- Heatmap ---- */
+.heatmap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tile {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-width: 58px;
+  padding: 10px 8px;
+  border-radius: 6px;
+  color: var(--ink);
+  text-decoration: none;
+  text-align: center;
+  overflow: hidden;
+}
+
+.tile-code {
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile-pct {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* ---- Constituents table ---- */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  padding: 10px 14px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+
+.table th:first-child,
+.table td:first-child {
+  text-align: left;
+}
+
+.table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.table a:hover {
+  color: var(--accent);
+}
+
+.num.up {
+  color: var(--up);
+}
+
+.num.down {
+  color: var(--down);
+}
+
+@media (max-width: 760px) {
+  .stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
