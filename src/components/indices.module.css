@@ -118,7 +118,7 @@
 
 .stat-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -292,6 +292,22 @@
 }
 
 .num.down {
+  color: var(--down);
+}
+
+/* ---- /indices list: change % stacked under the value ---- */
+.idx-list-chg {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.idx-list-chg.up {
+  color: var(--up);
+}
+
+.idx-list-chg.down {
   color: var(--down);
 }
 

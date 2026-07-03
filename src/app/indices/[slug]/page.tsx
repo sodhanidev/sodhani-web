@@ -76,6 +76,7 @@ export default async function IndexDetailPage({ params }: PageProps) {
                 <tr>
                   <th>Company</th>
                   <th>LTP</th>
+                  <th>Chg</th>
                   <th>Change %</th>
                   <th>52W High / Low</th>
                 </tr>
@@ -89,6 +90,7 @@ export default async function IndexDetailPage({ params }: PageProps) {
                         {c.hasPage ? <Link href={companyHref(c.code)}>{c.name}</Link> : c.name}
                       </td>
                       <td className={css(styles, "numeric num")}>{formatIndianNumber(c.ltp, { dp: 2 })}</td>
+                      <td className={css(styles, `numeric num ${dir}`)}>{signed(c.changeVal, 2)}</td>
                       <td className={css(styles, `numeric num ${dir}`)}>{signed(c.changePct, 2, "%")}</td>
                       <td className={css(styles, "numeric num")}>
                         {formatIndianNumber(c.yearHigh, { dp: 2 })} / {formatIndianNumber(c.yearLow, { dp: 2 })}

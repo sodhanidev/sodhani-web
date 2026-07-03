@@ -23,6 +23,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 // open / day-range / 52W-range stat row.
 export function IndexHeader({ index }: { index: MarketIndex }) {
   const dir = (index.changePct ?? 0) >= 0 ? "up" : "down";
+  const prevClose =
+    index.value !== null && index.changeVal !== null ? index.value - index.changeVal : null;
 
   return (
     <header className={css(styles, "section")}>
@@ -50,6 +52,7 @@ export function IndexHeader({ index }: { index: MarketIndex }) {
       </div>
       <div className={css(styles, "stat-row")}>
         <Stat label="Open" value={formatIndianNumber(index.open, { dp: 2 })} />
+        <Stat label="Prev. Close" value={formatIndianNumber(prevClose, { dp: 2 })} />
         <Stat label="Day High" value={formatIndianNumber(index.dayHigh, { dp: 2 })} />
         <Stat label="Day Low" value={formatIndianNumber(index.dayLow, { dp: 2 })} />
         <Stat label="52W High / Low" value={`${formatIndianNumber(index.yearHigh, { dp: 2 })} / ${formatIndianNumber(index.yearLow, { dp: 2 })}`} />
